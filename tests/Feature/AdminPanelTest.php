@@ -44,7 +44,7 @@ class AdminPanelTest extends TestCase
             '/admin/products', '/admin/products/create', '/admin/products/'.Product::first()->slug.'/edit',
             '/admin/categories', '/admin/categories/create', '/admin/categories/educational/edit', '/admin/age-groups',
             '/admin/customers', '/admin/customers/create', "/admin/customers/{$this->admin->id}/edit", '/admin/coupons', '/admin/countries',
-            '/admin/hero-slides', '/admin/faqs', '/admin/content-pages', '/admin/content-pages/1/edit', '/admin/contact-messages'];
+            '/admin/hero-slides', '/admin/abandoned-carts', '/admin/faqs', '/admin/content-pages', '/admin/content-pages/1/edit', '/admin/contact-messages'];
 
         foreach ($urls as $url) {
             $this->assertSame(200, $this->get($url)->status(), $url);

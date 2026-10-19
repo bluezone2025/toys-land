@@ -74,6 +74,31 @@ class StoreFlowTest extends TestCase
         $this->get('/cart')->assertSee(\App\Support\Shop::price($a->price))->assertDontSee($foreign->name_ar);
     }
 
+    public function test_cart_survives_a_new_session_and_shows_reminder(): void
+    {
+        $product = Product::first();
+        $this->postJson('/cart', ['product_id' => $product->id])->assertOk();
+        $token = \App\Models\SavedCart::firstOrFail()->token;
+
+        // Returning visitor: new session, same browser cookie.
+        $this->flushSession();
+        $this->withCookie(\App\Support\Cart::COOKIE, $token)->get('/')
+            ->assertSee('cart-reminder', false)->assertSee($product->image_url);
+        $this->get('/cart')->assertSee($product->name_ar);
+    }
+
+    public function test_cart_reminder_email_is_sent_once(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+        $user = \App\Models\User::factory()->create();
+        $this->actingAs($user)->postJson('/cart', ['product_id' => Product::first()->id])->assertOk();
+        \App\Models\SavedCart::query()->update(['updated_at' => now()->subHours(5)]);
+
+        $this->artisan('cart:remind')->assertSuccessful();
+        $this->artisan('cart:remind')->assertSuccessful();
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\CartReminder::class, 1);
+    }
+
     public function test_shipping_fee_applies_below_threshold(): void
     {
         $product = Product::where('price', '<', 5)->first();

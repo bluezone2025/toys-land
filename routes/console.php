@@ -13,3 +13,5 @@ Schedule::call(function () {
     \App\Models\Visit::where('created_at', '<', now()->subMonths(6))->delete();
     \App\Models\AnalyticsEvent::where('created_at', '<', now()->subMonths(12))->delete();
 })->daily()->name('prune-analytics');
+
+Schedule::command('cart:remind')->hourly();

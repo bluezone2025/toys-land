@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Support\Cart;
 use App\Support\Favorites;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -79,5 +80,6 @@ class AuthController extends Controller
         $request->session()->regenerate();
         session($keep);
         Favorites::mergeGuest();
+        Cart::mergeOnLogin();
     }
 }

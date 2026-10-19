@@ -4,20 +4,58 @@ namespace App\Support;
 
 use App\Models\Product;
 use App\Models\ProductOption;
+use App\Models\SavedCart;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Str;
+use Throwable;
 use Illuminate\Support\Collection;
 
 /**
- * Session cart. Only product/option ids and quantities are stored; prices are always re-read from the database.
+ * Session cart mirrored to the `carts` table (keyed by user or a long-lived cookie) so it survives
+ * the session and can drive reminders. Only ids and quantities are stored; prices are re-read.
  */
 class Cart
 {
     public const KEY = 'cart';
 
+    public const COOKIE = 'cart_token';
+
     protected static ?Collection $items = null;
 
     public static function raw(): array
     {
-        return session(self::KEY, []);
+        $cart = session(self::KEY);
+        if ($cart === null) {
+            // New session: bring back the cart saved for this user / browser.
+            $cart = static::record()?->items ?? [];
+            session([self::KEY => $cart]);
+            if ($cart) {
+                session()->now('cart_restored', true);
+            }
+        }
+
+        return $cart;
+    }
+
+    protected static function record(): ?SavedCart
+    {
+        if ($id = auth()->id()) {
+            return SavedCart::where('user_id', $id)->latest('updated_at')->first();
+        }
+        $token = request()->cookie(self::COOKIE);
+
+        return $token ? SavedCart::where('token', $token)->whereNull('user_id')->first() : null;
+    }
+
+    /** After login: combine the guest cart with the one saved on the account. */
+    public static function mergeOnLogin(): void
+    {
+        $guest = session(self::KEY) ?? [];
+        $saved = SavedCart::where('user_id', auth()->id())->latest('updated_at')->first()?->items ?? [];
+        if ($token = request()->cookie(self::COOKIE)) {
+            SavedCart::where('token', $token)->whereNull('user_id')->delete();
+        }
+        static::save(array_merge($saved, $guest));
     }
 
     public static function add(Product $product, array $optionIds = [], int $qty = 1): void
@@ -139,5 +177,20 @@ class Cart
     {
         session([self::KEY => $cart]);
         static::$items = null;
+
+        try {
+            $token = request()->cookie(self::COOKIE) ?: (string) Str::uuid();
+            Cookie::queue(self::COOKIE, $token, 60 * 24 * 365);
+
+            $record = static::record() ?? new SavedCart(auth()->check() ? ['user_id' => auth()->id()] : ['token' => $token]);
+            $record->fill([
+                'items' => $cart,
+                'items_count' => static::count(),
+                'subtotal' => static::subtotal(),
+                'reminded_at' => null,
+            ])->save();
+        } catch (Throwable $e) {
+            report($e);
+        }
     }
 }

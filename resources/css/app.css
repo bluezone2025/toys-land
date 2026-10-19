@@ -68,3 +68,32 @@ label:has(> .option-radio:checked), label:has(> .option-check:checked) { border-
     body { background-color: #ffffff !important; }
     .content-90 { width: 100% !important; max-width: 100% !important; }
 }
+
+/* Long unbroken text (e.g. "testtesttest...") wraps instead of overflowing. */
+.wrap-anywhere { overflow-wrap: anywhere; word-break: break-word; }
+
+/* Add-to-cart feedback */
+.fly-to-cart {
+    position: fixed;
+    z-index: 70;
+    border-radius: 1rem;
+    object-fit: cover;
+    pointer-events: none;
+    box-shadow: 0 10px 30px rgba(14, 165, 233, 0.35);
+    transition: transform 0.75s cubic-bezier(0.55, 0, 0.3, 1), opacity 0.75s ease, width 0.75s ease, height 0.75s ease;
+}
+@keyframes badge-bump { 0% { transform: scale(1); } 40% { transform: scale(1.6); } 70% { transform: scale(0.9); } 100% { transform: scale(1); } }
+.badge-bump { animation: badge-bump 0.5s ease; }
+@keyframes cart-shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 50% { transform: rotate(10deg); } 75% { transform: rotate(-6deg); } }
+.cart-shake { animation: cart-shake 0.5s ease; }
+.btn-added { background-color: #10b981 !important; }
+
+/* Product gallery lightbox */
+#lightbox { transition: opacity 0.25s ease; }
+#lightbox-img { transition: opacity 0.2s ease, transform 0.25s ease; }
+
+/* Cart reminder */
+@keyframes slide-up { from { transform: translateY(120%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.slide-up { animation: slide-up 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes wiggle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-10deg); } 40% { transform: rotate(10deg); } 60% { transform: rotate(-6deg); } 80% { transform: rotate(6deg); } }
+.wiggle { animation: wiggle 1s ease 0.5s 2; }

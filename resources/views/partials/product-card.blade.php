@@ -18,8 +18,8 @@
             </a>
         </div>
         <div class="p-4">
-            <a href="{{ route('products.show', $p) }}" class="font-bold text-base text-slate-800 hover:text-sky-600 transition block mb-1 line-clamp-1">{{ $p->tr('name') }}</a>
-            <p class="text-slate-500 text-xs mb-3 line-clamp-2">{{ $p->tr('desc') }}</p>
+            <a href="{{ route('products.show', $p) }}" class="font-bold text-base text-slate-800 hover:text-sky-600 transition block mb-1 line-clamp-1 wrap-anywhere">{{ $p->tr('name') }}</a>
+            <p class="text-slate-500 text-xs mb-3 line-clamp-2 wrap-anywhere">{{ $p->tr('desc') }}</p>
             <div class="flex items-center justify-between">
                 <div>
                     <span class="text-pink-600 font-black text-lg">{{ money($p->price) }}</span>
@@ -38,7 +38,7 @@
     <div class="p-4 pt-0 flex gap-2">
         <a href="{{ route('products.show', $p) }}" class="flex-1 bg-slate-100 text-slate-700 py-2 rounded-xl font-bold hover:bg-slate-200 transition text-center text-xs">{{ __('store.details') }}</a>
         @if ($p->inStock())
-            <button onclick="quickAddToCart({{ $p->id }})" class="flex-1 bg-sky-500 text-white py-2 rounded-xl font-bold hover:bg-sky-600 transition text-xs cursor-pointer">{{ __('store.addToCart') }}</button>
+            <button onclick="quickAddToCart({{ $p->id }}, this)" class="flex-1 bg-sky-500 text-white py-2 rounded-xl font-bold hover:bg-sky-600 transition text-xs cursor-pointer">{{ __('store.addToCart') }}</button>
         @else
             <button disabled class="flex-1 bg-slate-200 text-slate-400 py-2 rounded-xl font-bold text-xs cursor-not-allowed">{{ __('store.addToCart') }}</button>
         @endif

@@ -51,7 +51,7 @@
                 <i class="fa-solid fa-heart text-base"></i>
                 <span data-fav-count class="absolute -top-1 -right-1 bg-pink-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">{{ $favCount }}</span>
             </a>
-            <a href="{{ route('cart') }}" class="relative p-2.5 bg-slate-100 text-slate-700 rounded-xl hover:bg-sky-50 hover:text-sky-600 transition" title="{{ __('store.cartTitle') }}">
+            <a href="{{ route('cart') }}" data-cart-icon class="relative p-2.5 bg-slate-100 text-slate-700 rounded-xl hover:bg-sky-50 hover:text-sky-600 transition" title="{{ __('store.cartTitle') }}">
                 <i class="fa-solid fa-bag-shopping text-base"></i>
                 <span data-cart-count class="absolute -top-1 -right-1 bg-sky-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">{{ $cartCount }}</span>
             </a>

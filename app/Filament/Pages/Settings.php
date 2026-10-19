@@ -37,7 +37,7 @@ class Settings extends Page
     public ?array $data = [];
 
     /** Toggles are stored as '1' / '0' strings. */
-    protected const TOGGLES = ['welcome_enabled', 'pay_knet_enabled', 'pay_card_enabled', 'pay_applepay_enabled', 'pay_cod_enabled'];
+    protected const TOGGLES = ['cart_reminder_enabled', 'welcome_enabled', 'pay_knet_enabled', 'pay_card_enabled', 'pay_applepay_enabled', 'pay_cod_enabled'];
 
     public function mount(): void
     {
@@ -92,6 +92,10 @@ class Settings extends Page
                         Toggle::make('pay_cod_enabled')->label('الدفع عند الاستلام'),
                     ]),
                     ...self::pair('invoice_policy', 'سياسة الضمان في الفاتورة', true),
+                    Section::make('تذكير السلة المتروكة')->columns(2)->columnSpanFull()->schema([
+                        Toggle::make('cart_reminder_enabled')->label('إرسال إيميل تذكير للعملاء المسجلين اللي تركوا منتجات في السلة'),
+                        TextInput::make('cart_reminder_hours')->label('يرسل التذكير بعد (ساعة)')->numeric()->minValue(1)->maxValue(72)->default(3),
+                    ]),
                 ]),
                 Tab::make('الصفحة الرئيسية')->icon(Heroicon::OutlinedHome)->columns(2)->schema([
                     ...self::pair('home_age_title', 'عنوان قسم الأعمار'),

@@ -19,21 +19,26 @@
                     <button type="button" onclick="toggleFavorite({{ $product->id }}, event)" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-9 h-9 bg-white/95 rounded-full flex items-center justify-center shadow-sm z-10 hover:scale-110 transition cursor-pointer">
                         <i class="fav-icon-{{ $product->id }} {{ \App\Support\Favorites::has($product->id) ? 'fa-solid text-pink-500' : 'fa-regular text-slate-400' }} fa-heart text-sm"></i>
                     </button>
-                    <img id="main-image" src="{{ $product->image_url }}" class="w-full h-[300px] sm:h-[380px] object-cover rounded-2xl bg-slate-50" alt="{{ $product->tr('name') }}">
+                    <button type="button" onclick="openLightbox(window.currentImage || 0)" class="block w-full cursor-zoom-in group relative" title="{{ tt('تكبير الصورة', 'Zoom image') }}">
+                        <img id="main-image" src="{{ $product->image_url }}" class="w-full h-[300px] sm:h-[380px] object-cover rounded-2xl bg-slate-50" alt="{{ $product->tr('name') }}">
+                        <span class="absolute bottom-3 {{ $rtl ? 'left-3' : 'right-3' }} bg-white/90 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm opacity-90 group-hover:opacity-100 transition">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i> {{ count($gallery) > 1 ? tt('شوف كل الصور', 'View all photos').' ('.count($gallery).')' : tt('تكبير', 'Zoom') }}
+                        </span>
+                    </button>
                     @if (count($gallery) > 1)
                         <div class="flex gap-2 mt-3 overflow-x-auto no-scrollbar">
-                            @foreach ($gallery as $img)
-                                <button type="button" onclick="document.getElementById('main-image').src='{{ $img }}'" class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:border-sky-500 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt=""></button>
+                            @foreach ($gallery as $i => $img)
+                                <button type="button" onclick="document.getElementById('main-image').src='{{ $img }}'; window.currentImage = {{ $i }};" class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:border-sky-500 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt=""></button>
                             @endforeach
                         </div>
                     @endif
                 </div>
-                <div class="lg:col-span-7">
+                <div class="lg:col-span-7 min-w-0">
                     @if ($product->ageLabel())
                         <span class="bg-sky-50 text-sky-700 px-2.5 py-1 rounded-md text-xs font-bold inline-block mb-2">{{ tt('العمر المناسب: ', 'Recommended Age: ') }}{{ $product->ageLabel() }}</span>
                     @endif
-                    <h1 class="text-2xl lg:text-3xl font-black text-slate-800 mb-2">{{ $product->tr('name') }}</h1>
-                    <p class="text-slate-600 leading-relaxed mb-5 text-sm">{!! nl2br(e($product->tr('desc'))) !!}</p>
+                    <h1 class="text-2xl lg:text-3xl font-black text-slate-800 mb-2 wrap-anywhere">{{ $product->tr('name') }}</h1>
+                    <p class="text-slate-600 leading-relaxed mb-5 text-sm wrap-anywhere">{!! nl2br(e($product->tr('desc'))) !!}</p>
 
                     @if ($editions->isNotEmpty() || $addons->isNotEmpty())
                         <div class="border-t border-b border-slate-100 py-5 space-y-5 mb-5">
@@ -89,6 +94,28 @@
                     </div>
                 </div>
             </form>
+        </div>
+
+        <!-- معرض صور المنتج -->
+        <div id="lightbox" data-images='@json($gallery)' class="hidden fixed inset-0 z-[60] bg-slate-950/90 backdrop-blur-sm items-center justify-center p-4 flex-col">
+            <button type="button" onclick="closeLightbox()" class="absolute top-4 {{ $rtl ? 'left-4' : 'right-4' }} w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10" title="{{ tt('إغلاق', 'Close') }}">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="relative w-full max-w-4xl flex items-center justify-center">
+                @if (count($gallery) > 1)
+                    <button type="button" onclick="lightboxStep({{ $rtl ? -1 : 1 }})" class="absolute right-0 sm:-right-14 w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10"><i class="fa-solid fa-chevron-right"></i></button>
+                    <button type="button" onclick="lightboxStep({{ $rtl ? 1 : -1 }})" class="absolute left-0 sm:-left-14 w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10"><i class="fa-solid fa-chevron-left"></i></button>
+                @endif
+                <img id="lightbox-img" src="{{ $gallery[0] ?? '' }}" class="max-h-[75vh] max-w-full rounded-2xl shadow-2xl object-contain select-none" alt="{{ $product->tr('name') }}">
+            </div>
+            <p id="lightbox-counter" dir="ltr" class="text-white/80 text-xs font-bold mt-3">1 / {{ count($gallery) }}</p>
+            @if (count($gallery) > 1)
+                <div class="flex gap-2 mt-3 overflow-x-auto no-scrollbar max-w-full px-2">
+                    @foreach ($gallery as $img)
+                        <button type="button" data-thumb class="shrink-0 w-14 h-14 rounded-xl overflow-hidden ring-sky-400 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt=""></button>
+                    @endforeach
+                </div>
+            @endif
         </div>
 
         @if ($related->isNotEmpty())
