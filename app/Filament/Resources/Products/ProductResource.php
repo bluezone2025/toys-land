@@ -15,6 +15,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ReplicateAction;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -82,10 +83,14 @@ class ProductResource extends Resource
                     TextInput::make('name_ar')->label('الاسم (عربي)')->required()->maxLength(255),
                     TextInput::make('name_en')->label('الاسم (English)')->required()->maxLength(255)->extraInputAttributes(['dir' => 'ltr'])
                         ->live(onBlur: true)
-                        ->afterStateUpdated(fn (Set $set, ?string $state, string $operation) => $operation === 'create' ? $set('slug', Str::slug((string) $state)) : null),
+                        ->afterStateUpdated(fn (Set $set, ?string $state, string $operation) => $operation === 'create' ? $set('slug', Str::slug((string) $state)) : null)
+                        ->helperText('رابط المنتج يتولد تلقائياً من الاسم الإنجليزي'),
                     ...Fields::bilingual('desc', 'الوصف', textarea: true),
                     ...Fields::bilingual('badge', 'الشارة (مثال: الأكثر طلباً 🚀)'),
-                    TextInput::make('slug')->label('رابط المنتج (slug)')->required()->unique(ignoreRecord: true)->alphaDash()->maxLength(255)->extraInputAttributes(['dir' => 'ltr']),
+                    TextInput::make('slug')->label('رابط المنتج (slug)')->required()->unique(ignoreRecord: true)->maxLength(255)->extraInputAttributes(['dir' => 'ltr'])
+                        ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                        ->validationMessages(['regex' => 'الرابط لازم يكون بحروف إنجليزية صغيرة وأرقام وشرطة (-) فقط، مثل: smart-robot'])
+                        ->dehydrateStateUsing(fn (?string $state) => Str::slug((string) $state)),
                     TextInput::make('sku')->label('رمز المنتج SKU')->unique(ignoreRecord: true)->maxLength(100),
                 ]),
                 Section::make('السعر والمخزون')->columnSpan(1)->schema([
@@ -93,14 +98,33 @@ class ProductResource extends Resource
                     TextInput::make('compare_price')->label('السعر قبل الخصم')->numeric()->minValue(0)->step(0.001)->suffix('KWD')
                         ->helperText('اختياري: يظهر مشطوباً بجانب السعر'),
                     TextInput::make('stock')->label('الكمية بالمخزون')->required()->integer()->minValue(0)->default(0),
-                    Select::make('category_id')->label('القسم')->relationship('category', 'title_ar')->searchable()->preload()->required(),
-                    Select::make('age_group_id')->label('الفئة العمرية')->relationship('ageGroup', 'title_ar')->preload(),
+                    Select::make('categories')->label('الأقسام')->relationship('categories', 'title_ar')->multiple()->searchable()->preload()->required()
+                        ->helperText('تقدر تختار أكثر من قسم'),
+                    Select::make('ageGroups')->label('الفئات العمرية')->relationship('ageGroups', 'title_ar')->multiple()->preload()
+                        ->helperText('تقدر تختار أكثر من فئة'),
                     Toggle::make('is_active')->label('ظاهر بالمتجر')->default(true),
                     Toggle::make('is_best_seller')->label('ضمن "الأكثر طلباً" بالرئيسية'),
-                    Toggle::make('has_options')->label('يقبل الإصدارات والإضافات')->default(true),
                     TextInput::make('sort')->label('الترتيب')->integer()->default(0),
                 ]),
             ]),
+            Section::make('الإصدارات والإضافات')
+                ->description('خاصة بهذا المنتج فقط. اتركها فاضية إذا المنتج ما له خيارات. أول إصدار سعره 0 يكون هو الاختيار الافتراضي.')
+                ->columnSpanFull()->collapsible()->schema([
+                    Repeater::make('options')->label('')->relationship('options')
+                        ->orderColumn('sort')->reorderable()->collapsible()->cloneable()
+                        ->addActionLabel('إضافة إصدار أو إضافة')
+                        ->itemLabel(fn (array $state) => trim(($state['type'] ?? '') === 'edition' ? '🎯 إصدار: ' : '➕ إضافة: ').' '.($state['name_ar'] ?? '').(filled($state['price'] ?? null) && (float) $state['price'] > 0 ? ' (+'.(float) $state['price'].' د.ك)' : ''))
+                        ->columns(6)
+                        ->schema([
+                            Select::make('type')->label('النوع')->options(['edition' => 'إصدار (اختيار واحد)', 'addon' => 'إضافة (اختيار متعدد)'])->default('addon')->required()->live()->columnSpan(2),
+                            TextInput::make('name_ar')->label('الاسم (عربي)')->required()->columnSpan(2),
+                            TextInput::make('name_en')->label('الاسم (English)')->extraInputAttributes(['dir' => 'ltr'])->columnSpan(2),
+                            TextInput::make('price')->label('السعر الإضافي (د.ك)')->numeric()->minValue(0)->step(0.001)->default(0)->required()->columnSpan(2),
+                            TextInput::make('icon')->label('أيقونة (إيموجي)')->maxLength(10)->columnSpan(2),
+                            Toggle::make('is_active')->label('مفعل')->default(true)->inline(false)->columnSpan(2),
+                        ])
+                        ->default([]),
+                ]),
             Section::make('الصور')->columnSpanFull()->columns(2)->schema([
                 Fields::image('products')->label('الصورة الرئيسية')->required(fn (?Product $record) => blank($record?->image)),
                 FileUpload::make('gallery')->label('صور إضافية')->image()->multiple()->reorderable()->disk('public')->directory('products/gallery')->maxFiles(8)->maxSize(4096),
@@ -116,8 +140,8 @@ class ProductResource extends Resource
                 ImageColumn::make('image')->label('')->getStateUsing(fn (Product $r) => $r->image_url)->square()->size(48),
                 TextColumn::make('name_ar')->label('المنتج')->searchable(['name_ar', 'name_en', 'sku'])->sortable()
                     ->description(fn (Product $r) => $r->name_en)->wrap(),
-                TextColumn::make('category.title_ar')->label('القسم')->badge()->sortable(),
-                TextColumn::make('ageGroup.key')->label('العمر')->badge()->color('gray'),
+                TextColumn::make('categories.title_ar')->label('الأقسام')->badge()->limitList(2)->expandableLimitedList(),
+                TextColumn::make('ageGroups.key')->label('العمر')->badge()->color('gray'),
                 TextColumn::make('price')->label('السعر')->numeric(3)->suffix(' د.ك')->sortable(),
                 TextColumn::make('stock')->label('المخزون')->sortable()->badge()
                     ->color(fn (int $state) => $state <= 0 ? 'danger' : ($state <= 3 ? 'warning' : 'success')),
@@ -128,15 +152,23 @@ class ProductResource extends Resource
                 TextColumn::make('created_at')->label('أضيف في')->date()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('category_id')->label('القسم')->relationship('category', 'title_ar'),
-                SelectFilter::make('age_group_id')->label('الفئة العمرية')->relationship('ageGroup', 'title_ar'),
+                SelectFilter::make('categories')->label('القسم')->relationship('categories', 'title_ar')->multiple()->preload(),
+                SelectFilter::make('ageGroups')->label('الفئة العمرية')->relationship('ageGroups', 'title_ar')->multiple()->preload(),
                 TernaryFilter::make('is_active')->label('ظاهر بالمتجر'),
                 Filter::make('low_stock')->label('مخزون منخفض (3 أو أقل)')->query(fn (Builder $q) => $q->where('stock', '<=', 3)),
             ])
             ->recordActions([
                 EditAction::make(),
                 ReplicateAction::make()->label('نسخ')
-                    ->mutateRecordDataUsing(fn (array $data) => [...$data, 'slug' => $data['slug'].'-'.Str::lower(Str::random(4)), 'sku' => null, 'sales_count' => 0, 'views_count' => 0]),
+                    ->excludeAttributes(['sales_count', 'views_count'])
+                    ->mutateRecordDataUsing(fn (array $data) => [...$data, 'slug' => $data['slug'].'-'.Str::lower(Str::random(4)), 'sku' => null])
+                    ->after(function (Product $replica, Product $record) {
+                        $replica->categories()->sync($record->categories->pluck('id'));
+                        $replica->ageGroups()->sync($record->ageGroups->pluck('id'));
+                        foreach ($record->options as $option) {
+                            $replica->options()->create($option->only(['type', 'name_ar', 'name_en', 'icon', 'price', 'sort', 'is_active']));
+                        }
+                    }),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

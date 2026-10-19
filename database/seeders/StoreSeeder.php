@@ -10,7 +10,6 @@ use App\Models\Faq;
 use App\Models\HeroSlide;
 use App\Models\Page;
 use App\Models\Product;
-use App\Models\ProductOption;
 use App\Models\Setting;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Http;
@@ -100,9 +99,6 @@ class StoreSeeder extends Seeder
             ['addon', 'كرت إهداء باسم الياهل', 'Custom Name Gift Card', '💌', 0.5],
             ['addon', 'جنطة حفظ اللعبة', 'Toy Storage Bag', '🎒', 1.25],
         ];
-        foreach ($options as $i => [$type, $ar, $en, $icon, $price]) {
-            ProductOption::updateOrCreate(['type' => $type, 'name_en' => $en], ['name_ar' => $ar, 'icon' => $icon, 'price' => $price, 'sort' => $i]);
-        }
 
         $catIds = Category::pluck('id', 'slug');
         $ageIds = AgeGroup::pluck('id', 'key');
@@ -121,9 +117,7 @@ class StoreSeeder extends Seeder
             ['slug' => 'spacious-kids-indoor-play-tent-castle', 'category' => 'outdoor', 'age' => '3-5', 'name_ar' => 'خيمة اللعب المنزلية الوسيعة لليهال', 'name_en' => 'Spacious Kids Indoor Play Tent Castle', 'price' => 10.50, 'badge_ar' => 'زاوية الوناسة ⛺', 'badge_en' => 'Cozy Corner ⛺', 'image' => 'https://images.unsplash.com/photo-1526634332515-d56c5fd16991?auto=format&fit=crop&w=700&q=80', 'desc_ar' => 'خيمة لعب وسيعة تنصفط وتتركب بسهولة، معاها حبل ليتات دافي يسوي جو خيالي لعيالك بالبيت.', 'desc_en' => 'Easy-to-assemble foldable kids play tent complete with warm star string lights for a magical hideout.'],
         ];
         foreach ($products as $i => $p) {
-            Product::updateOrCreate(['slug' => $p['slug']], [
-                'category_id' => $catIds[$p['category']],
-                'age_group_id' => $ageIds[$p['age']],
+            $product = Product::updateOrCreate(['slug' => $p['slug']], [
                 'sku' => 'TL-'.str_pad((string) ($i + 1), 4, '0', STR_PAD_LEFT),
                 'stock' => 50,
                 'is_best_seller' => true,
@@ -131,6 +125,13 @@ class StoreSeeder extends Seeder
                 ...collect($p)->except(['slug', 'category', 'age', 'image'])->all(),
                 'image' => $this->localImage($p['image'], 'products'),
             ]);
+            $product->categories()->syncWithoutDetaching([$catIds[$p['category']]]);
+            $product->ageGroups()->syncWithoutDetaching([$ageIds[$p['age']]]);
+            if (! $product->options()->exists()) {
+                foreach ($options as $j => [$type, $ar, $en, $icon, $price]) {
+                    $product->options()->create(['type' => $type, 'name_ar' => $ar, 'name_en' => $en, 'icon' => $icon, 'price' => $price, 'sort' => $j]);
+                }
+            }
         }
 
         $slides = [

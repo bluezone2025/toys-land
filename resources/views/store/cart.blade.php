@@ -19,7 +19,7 @@
                                 <img src="{{ $item->product->image_url }}" class="w-20 h-20 rounded-xl object-cover bg-slate-50 border border-slate-100 shrink-0" alt="">
                                 <div>
                                     <a href="{{ route('products.show', $item->product) }}" class="font-bold text-base text-slate-800 hover:text-sky-600 transition block">{{ $item->product->tr('name') }}</a>
-                                    <p class="text-[11px] text-slate-500 mb-1.5">{{ \App\Support\Cart::optionsLabel($item->options, app()->getLocale()) }}</p>
+                                    <p class="text-[11px] text-slate-500 mb-1.5">{{ \App\Support\Cart::optionsLabel($item->options, app()->getLocale(), $item->product) }}</p>
                                     <span class="text-pink-600 font-black text-sm">{{ money($item->unit_price) }}</span>
                                 </div>
                             </div>

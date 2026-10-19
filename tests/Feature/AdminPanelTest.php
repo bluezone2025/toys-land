@@ -42,7 +42,7 @@ class AdminPanelTest extends TestCase
 
         $urls = ['/admin', '/admin/analytics', '/admin/settings', '/admin/orders', "/admin/orders/{$order->number}",
             '/admin/products', '/admin/products/create', '/admin/products/'.Product::first()->slug.'/edit',
-            '/admin/categories', '/admin/categories/create', '/admin/categories/educational/edit', '/admin/age-groups', '/admin/product-options',
+            '/admin/categories', '/admin/categories/create', '/admin/categories/educational/edit', '/admin/age-groups',
             '/admin/customers', '/admin/customers/create', "/admin/customers/{$this->admin->id}/edit", '/admin/coupons', '/admin/countries',
             '/admin/hero-slides', '/admin/faqs', '/admin/content-pages', '/admin/content-pages/1/edit', '/admin/contact-messages'];
 
@@ -76,6 +76,39 @@ class AdminPanelTest extends TestCase
             ->assertHasNoFormErrors()
             ->assertRedirect('/admin/categories/test-cat/edit');
         $this->get('/admin/categories/test-cat/edit')->assertOk();
+    }
+
+    public function test_product_with_several_categories_ages_and_own_options(): void
+    {
+        $this->actingAs($this->admin);
+        $cats = \App\Models\Category::take(2)->pluck('id')->all();
+        $ages = \App\Models\AgeGroup::take(2)->pluck('id')->all();
+
+        Livewire::test(\App\Filament\Resources\Products\Pages\CreateProduct::class)
+            ->fillForm([
+                'name_ar' => 'لعبة تجربة', 'name_en' => 'Test Toy', 'slug' => 'test-toy', 'price' => 10, 'stock' => 5,
+                'categories' => $cats, 'ageGroups' => $ages,
+                'image' => \Illuminate\Http\UploadedFile::fake()->image('t.jpg'),
+                'options' => [
+                    ['type' => 'edition', 'name_ar' => 'عادي', 'name_en' => 'Basic', 'price' => 0, 'is_active' => true],
+                    ['type' => 'addon', 'name_ar' => 'شريطة', 'name_en' => 'Ribbon', 'price' => 0.5, 'is_active' => true],
+                ],
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors()
+            ->assertRedirect('/admin/products/test-toy/edit');
+
+        $product = Product::where('slug', 'test-toy')->firstOrFail();
+        $this->assertEqualsCanonicalizing($cats, $product->categories->pluck('id')->all());
+        $this->assertCount(2, $product->ageGroups);
+        $this->assertSame(['Basic', 'Ribbon'], $product->options->pluck('name_en')->all());
+        $this->get('/admin/products/test-toy/edit')->assertOk();
+
+        // Shows in each chosen category and only offers its own options.
+        foreach (\App\Models\Category::whereIn('id', $cats)->get() as $category) {
+            $this->get("/category/{$category->slug}")->assertSee('لعبة تجربة');
+        }
+        $this->get('/products/test-toy')->assertSee('شريطة')->assertDontSee('تغليف هدية كشخة');
     }
 
     public function test_settings_page_saves(): void

@@ -29,13 +29,13 @@
                     @endif
                 </div>
                 <div class="lg:col-span-7">
-                    @if ($product->ageGroup)
-                        <span class="bg-sky-50 text-sky-700 px-2.5 py-1 rounded-md text-xs font-bold inline-block mb-2">{{ tt('العمر المناسب: ', 'Recommended Age: ') }}{{ $product->ageGroup->key }} {{ tt('سنوات', 'Years') }}</span>
+                    @if ($product->ageLabel())
+                        <span class="bg-sky-50 text-sky-700 px-2.5 py-1 rounded-md text-xs font-bold inline-block mb-2">{{ tt('العمر المناسب: ', 'Recommended Age: ') }}{{ $product->ageLabel() }}</span>
                     @endif
                     <h1 class="text-2xl lg:text-3xl font-black text-slate-800 mb-2">{{ $product->tr('name') }}</h1>
                     <p class="text-slate-600 leading-relaxed mb-5 text-sm">{!! nl2br(e($product->tr('desc'))) !!}</p>
 
-                    @if ($product->has_options && ($editions->isNotEmpty() || $addons->isNotEmpty()))
+                    @if ($editions->isNotEmpty() || $addons->isNotEmpty())
                         <div class="border-t border-b border-slate-100 py-5 space-y-5 mb-5">
                             @if ($editions->isNotEmpty())
                                 <div>
@@ -113,5 +113,6 @@
         document.querySelectorAll('#product-form .option-radio:checked, #product-form .option-check:checked').forEach(el => extra += parseFloat(el.dataset.extra) || 0);
         document.getElementById('dynamic-price').innerText = ((basePriceKD + extra) * rate).toFixed(2) + ' ' + symbol;
     }
+    document.addEventListener('DOMContentLoaded', calcCustomPrice);
 </script>
 @endpush

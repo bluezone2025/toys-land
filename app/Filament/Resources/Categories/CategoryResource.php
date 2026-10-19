@@ -46,7 +46,10 @@ class CategoryResource extends Resource
                 ...Fields::bilingual('title', 'اسم القسم', required: true),
                 ...Fields::bilingual('desc', 'وصف مختصر'),
                 ...Fields::bilingual('badge', 'الشارة'),
-                TextInput::make('slug')->label('الرابط (slug)')->required()->unique(ignoreRecord: true)->alphaDash()->extraInputAttributes(['dir' => 'ltr']),
+                TextInput::make('slug')->label('الرابط (slug)')->required()->unique(ignoreRecord: true)->extraInputAttributes(['dir' => 'ltr'])
+                    ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                    ->validationMessages(['regex' => 'الرابط لازم يكون بحروف إنجليزية صغيرة وأرقام وشرطة (-) فقط، مثل: smart-toys'])
+                    ->dehydrateStateUsing(fn (?string $state) => \Illuminate\Support\Str::slug((string) $state)),
                 Select::make('home_group')->label('يظهر في سلايدر الرئيسية')->options([
                     'edu' => 'ألعاب الذكاء والعلوم والمكعبات',
                     'fun' => 'عالم الدمى والسيارات والمغامرات',

@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\ProductOption;
 use App\Models\User;
 use Database\Seeders\StoreSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -33,7 +32,7 @@ class StoreFlowTest extends TestCase
     public function test_guest_can_buy_with_cash_on_delivery_and_coupon(): void
     {
         $product = Product::where('slug', 'smart-talking-space-robot')->first();
-        $addon = ProductOption::where('type', 'addon')->where('name_en', 'Luxury Gift Wrap')->first();
+        $addon = $product->options()->where('type', 'addon')->where('name_en', 'Luxury Gift Wrap')->first();
         $stock = $product->stock;
 
         $this->postJson('/cart', ['product_id' => $product->id, 'qty' => 2, 'addons' => [$addon->id]])
@@ -64,6 +63,15 @@ class StoreFlowTest extends TestCase
         $this->get("/invoice/{$order->number}")->assertForbidden();
         $this->get("/tracking?order={$order->number}&phone=99999999")->assertOk()->assertSee($order->number);
         $this->get("/tracking?order={$order->number}&phone=11111111")->assertOk()->assertDontSee('#'.$order->number);
+    }
+
+    public function test_options_of_another_product_are_ignored(): void
+    {
+        [$a, $b] = Product::take(2)->get()->all();
+        $foreign = $b->options()->where('type', 'addon')->first();
+
+        $this->postJson('/cart', ['product_id' => $a->id, 'addons' => [$foreign->id]])->assertOk();
+        $this->get('/cart')->assertSee(\App\Support\Shop::price($a->price))->assertDontSee($foreign->name_ar);
     }
 
     public function test_shipping_fee_applies_below_threshold(): void

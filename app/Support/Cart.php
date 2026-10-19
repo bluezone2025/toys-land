@@ -75,15 +75,15 @@ class Cart
         }
 
         $raw = static::raw();
-        $products = Product::active()->whereIn('id', array_column($raw, 'product_id'))->get()->keyBy('id');
-        $options = ProductOption::active()->get()->keyBy('id');
+        $products = Product::active()->with(['options' => fn ($q) => $q->where('is_active', true)])
+            ->whereIn('id', array_column($raw, 'product_id'))->get()->keyBy('id');
 
-        return static::$items = collect($raw)->map(function ($row, $key) use ($products, $options) {
+        return static::$items = collect($raw)->map(function ($row, $key) use ($products) {
             $product = $products[$row['product_id']] ?? null;
             if (! $product) {
                 return null;
             }
-            $selected = collect($row['options'])->map(fn ($id) => $options[$id] ?? null)->filter()->values();
+            $selected = $product->options->whereIn('id', $row['options'])->values();
             $unit = (float) $product->price + (float) $selected->sum('price');
 
             return (object) [
@@ -102,30 +102,36 @@ class Cart
         return round((float) static::items()->sum('total'), 3);
     }
 
-    /** "Standard Edition | Gift Wrap, Batteries" in the given locale. */
-    public static function optionsLabel(Collection $options, string $locale): string
+    /** "Standard Edition | Gift Wrap, Batteries" in the given locale; empty for products without options. */
+    public static function optionsLabel(Collection $options, string $locale, Product $product): string
     {
-        $editions = $options->where('type', 'edition')->map(fn ($o) => $o->{"name_{$locale}"});
-        $addons = $options->where('type', 'addon')->map(fn ($o) => $o->{"name_{$locale}"});
-        if ($editions->isEmpty()) {
-            $default = ProductOption::active()->where('type', 'edition')->where('price', 0)->first();
-            $editions = collect([$default?->{"name_{$locale}"} ?? ($locale === 'ar' ? 'الإصدار العادي' : 'Standard Edition')]);
+        $name = fn ($o) => $o->{"name_{$locale}"} ?: $o->name_ar;
+        $editions = $options->where('type', 'edition')->map($name);
+        $addons = $options->where('type', 'addon')->map($name);
+        if ($editions->isEmpty() && ($default = static::defaultEdition($product))) {
+            $editions = collect([$name($default)]);
         }
 
-        return $editions->implode(', ').($addons->isNotEmpty() ? ' | '.$addons->implode(', ') : '');
+        return collect([$editions->implode(', '), $addons->implode(', ')])->filter()->implode(' | ');
+    }
+
+    /** The first free edition is the pre-selected one and is not stored in the cart. */
+    public static function defaultEdition(Product $product): ?ProductOption
+    {
+        return $product->options->where('type', 'edition')->where('is_active', true)->first(fn ($o) => (float) $o->price == 0);
     }
 
     protected static function validOptionIds(Product $product, array $ids): array
     {
-        if (! $product->has_options || ! $ids) {
+        if (! $ids) {
             return [];
         }
-        $options = ProductOption::active()->whereIn('id', $ids)->get();
+        $options = $product->options()->where('is_active', true)->whereIn('id', $ids)->get();
         // Only one edition may be chosen; any number of add-ons.
         $edition = $options->where('type', 'edition')->first();
 
         return $options->where('type', 'addon')->pluck('id')
-            ->when($edition && (float) $edition->price > 0, fn ($c) => $c->push($edition->id))
+            ->when($edition && $edition->id !== static::defaultEdition($product)?->id, fn ($c) => $c->push($edition->id))
             ->map(fn ($id) => (int) $id)->values()->all();
     }
 

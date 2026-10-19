@@ -25,7 +25,7 @@ class AccountController extends Controller
 
         if (! $user) {
             return view('account.guest-favorites', [
-                'favorites' => Product::active()->with('ageGroup')->whereIn('id', Favorites::ids())->get(),
+                'favorites' => Product::active()->with('ageGroups')->whereIn('id', Favorites::ids())->get(),
             ]);
         }
 
@@ -33,7 +33,7 @@ class AccountController extends Controller
             'tab' => $tab,
             'user' => $user,
             'orders' => $user->orders()->withSum('items', 'qty')->latest('id')->get(),
-            'favorites' => $user->favoriteProducts()->active()->with('ageGroup')->get(),
+            'favorites' => $user->favoriteProducts()->active()->with('ageGroups')->get(),
             'addresses' => $user->addresses()->orderByDesc('is_default')->latest('id')->get(),
         ]);
     }

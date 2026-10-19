@@ -6,7 +6,7 @@ use App\Models\Concerns\HasImage;
 use App\Models\Concerns\Translatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
@@ -19,19 +19,32 @@ class Product extends Model
         'price' => 'decimal:3',
         'compare_price' => 'decimal:3',
         'gallery' => 'array',
-        'has_options' => 'boolean',
         'is_best_seller' => 'boolean',
         'is_active' => 'boolean',
     ];
 
-    public function category(): BelongsTo
+    public function categories(): BelongsToMany
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Category::class);
     }
 
-    public function ageGroup(): BelongsTo
+    public function ageGroups(): BelongsToMany
     {
-        return $this->belongsTo(AgeGroup::class);
+        return $this->belongsToMany(AgeGroup::class)->orderBy('sort');
+    }
+
+    /** Editions and add-ons offered on this product. */
+    public function options(): HasMany
+    {
+        return $this->hasMany(ProductOption::class)->orderBy('sort')->orderBy('id');
+    }
+
+    /** "3-5، 6-8" */
+    public function ageLabel(): ?string
+    {
+        $keys = $this->ageGroups->pluck('key');
+
+        return $keys->isEmpty() ? null : $keys->implode(is_rtl() ? '، ' : ', ').' '.tt('سنوات', 'Years');
     }
 
     public function orderItems(): HasMany

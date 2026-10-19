@@ -5,8 +5,8 @@
             @if ($p->tr('badge'))
                 <span class="absolute top-3 {{ $rtl ? 'right-3' : 'left-3' }} bg-white/95 text-sky-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-sm z-10">{{ $p->tr('badge') }}</span>
             @endif
-            @if ($p->ageGroup)
-                <span class="absolute bottom-2 {{ $rtl ? 'left-2' : 'right-2' }} bg-slate-900/75 text-white text-[10px] font-medium px-2 py-0.5 rounded-md z-10">{{ $p->ageGroup->key }} {{ tt('سنوات', 'Years') }}</span>
+            @if ($p->ageLabel())
+                <span class="absolute bottom-2 {{ $rtl ? 'left-2' : 'right-2' }} bg-slate-900/75 text-white text-[10px] font-medium px-2 py-0.5 rounded-md z-10">{{ $p->ageLabel() }}</span>
             @endif
 
             <button onclick="toggleFavorite({{ $p->id }}, event)" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-8 h-8 bg-white/95 backdrop-blur rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 transition cursor-pointer" title="{{ __('store.favorites') }}">

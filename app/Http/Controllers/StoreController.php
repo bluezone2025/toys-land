@@ -7,7 +7,6 @@ use App\Models\AnalyticsEvent;
 use App\Models\Category;
 use App\Models\HeroSlide;
 use App\Models\Product;
-use App\Models\ProductOption;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -15,7 +14,7 @@ class StoreController extends Controller
 {
     public function home()
     {
-        $base = fn () => Product::active()->with('ageGroup')->sorted();
+        $base = fn () => Product::active()->with('ageGroups')->sorted();
         $groupIds = fn (string $group) => Category::active()->where('home_group', $group)->pluck('id');
 
         $eduIds = $groupIds('edu');
@@ -27,8 +26,8 @@ class StoreController extends Controller
             'ageGroups' => AgeGroup::active()->get(),
             'bestSellers' => $base()->where('is_best_seller', true)->take(12)->get()
                 ->whenEmpty(fn () => $base()->orderByDesc('sales_count')->take(12)->get()),
-            'eduProducts' => $base()->whereIn('category_id', $eduIds)->take(12)->get(),
-            'funProducts' => $base()->whereIn('category_id', $funIds)->take(12)->get(),
+            'eduProducts' => $base()->whereHas('categories', fn (Builder $q) => $q->whereIn('categories.id', $eduIds))->take(12)->get(),
+            'funProducts' => $base()->whereHas('categories', fn (Builder $q) => $q->whereIn('categories.id', $funIds))->take(12)->get(),
             'eduLink' => route('products.index', array_filter(['category' => $firstSlug($eduIds)])),
             'funLink' => route('products.index', array_filter(['category' => $firstSlug($funIds)])),
             'catalog' => $base()->take(20)->get(),
@@ -42,7 +41,7 @@ class StoreController extends Controller
         $search = trim((string) $request->query('search'));
         $sort = (string) $request->query('sort', 'default');
 
-        $query = Product::active()->with('ageGroup');
+        $query = Product::active()->with('ageGroups');
         $title = __('store.allToys');
 
         if ($search !== '') {
@@ -55,11 +54,11 @@ class StoreController extends Controller
             }
         }
         if ($age) {
-            $query->whereHas('ageGroup', fn (Builder $q) => $q->where('key', $age));
+            $query->whereHas('ageGroups', fn (Builder $q) => $q->where('key', $age));
             $title = tt('ألعاب مناسبة لعمر (', 'Toys for Age (').$age.')';
         }
         if ($selected !== 'all' && ($category = Category::where('slug', $selected)->first())) {
-            $query->where('category_id', $category->id);
+            $query->whereHas('categories', fn (Builder $q) => $q->where('categories.id', $category->id));
             $title = $search === '' && ! $age ? $category->tr('title') : $title;
         }
         $title = $title === __('store.allToys') ? tt('كل ألعاب اليهال', 'All Kids Toys') : $title;
@@ -82,9 +81,9 @@ class StoreController extends Controller
 
         $age = $request->query('age');
         $sort = (string) $request->query('sort', 'default');
-        $query = $category->products()->active()->with('ageGroup');
+        $query = $category->products()->active()->with('ageGroups');
         if ($age) {
-            $query->whereHas('ageGroup', fn (Builder $q) => $q->where('key', $age));
+            $query->whereHas('ageGroups', fn (Builder $q) => $q->where('key', $age));
         }
         $this->applySort($query, $sort);
 
@@ -102,14 +101,22 @@ class StoreController extends Controller
         abort_unless($product->is_active, 404);
         $product->increment('views_count');
 
-        $options = ProductOption::active()->get();
+        $product->load(['ageGroups', 'categories', 'options' => fn ($q) => $q->where('is_active', true)]);
+        $categoryIds = $product->categories->pluck('id');
+
+        // Same-category products first, then the rest of the catalog.
+        $related = Product::active()->with('ageGroups')->whereKeyNot($product->id)
+            ->whereHas('categories', fn (Builder $q) => $q->whereIn('categories.id', $categoryIds))->sorted()->take(12)->get();
+        if ($related->count() < 12) {
+            $related = $related->concat(Product::active()->with('ageGroups')->whereKeyNot($product->id)
+                ->whereNotIn('id', $related->pluck('id'))->sorted()->take(12 - $related->count())->get());
+        }
 
         return view('store.product', [
-            'product' => $product->load('ageGroup', 'category'),
-            'editions' => $options->where('type', 'edition')->values(),
-            'addons' => $options->where('type', 'addon')->values(),
-            'related' => Product::active()->with('ageGroup')->whereKeyNot($product->id)
-                ->orderByRaw('category_id = ? desc', [$product->category_id])->sorted()->take(12)->get(),
+            'product' => $product,
+            'editions' => $product->options->where('type', 'edition')->values(),
+            'addons' => $product->options->where('type', 'addon')->values(),
+            'related' => $related,
         ]);
     }
 
