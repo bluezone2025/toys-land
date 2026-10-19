@@ -1,0 +1,117 @@
+@extends('layouts.store', ['active' => 'products', 'title' => $product->tr('name'), 'metaDescription' => $product->tr('desc')])
+
+@php $rtl = is_rtl(); $gallery = $product->galleryUrls(); @endphp
+
+@section('content')
+    <div class="content-90 py-8">
+        <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 text-slate-600 hover:text-sky-600 font-bold mb-6 text-xs">
+            <i class="fa-solid {{ $rtl ? 'fa-arrow-right' : 'fa-arrow-left' }}"></i> {{ tt('ردة حق قائمة الألعاب', 'Back to All Toys') }}
+        </a>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 lg:p-10 mb-12">
+            <form method="POST" action="{{ route('cart.add') }}" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" id="product-form">
+                @csrf
+                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                <div class="lg:col-span-5 relative">
+                    @if ($product->tr('badge'))
+                        <span class="absolute top-3 {{ $rtl ? 'right-3' : 'left-3' }} bg-white/95 text-sky-700 font-bold text-xs px-3 py-1 rounded-full shadow-sm z-10">{{ $product->tr('badge') }}</span>
+                    @endif
+                    <button type="button" onclick="toggleFavorite({{ $product->id }}, event)" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-9 h-9 bg-white/95 rounded-full flex items-center justify-center shadow-sm z-10 hover:scale-110 transition cursor-pointer">
+                        <i class="fav-icon-{{ $product->id }} {{ \App\Support\Favorites::has($product->id) ? 'fa-solid text-pink-500' : 'fa-regular text-slate-400' }} fa-heart text-sm"></i>
+                    </button>
+                    <img id="main-image" src="{{ $product->image_url }}" class="w-full h-[300px] sm:h-[380px] object-cover rounded-2xl bg-slate-50" alt="{{ $product->tr('name') }}">
+                    @if (count($gallery) > 1)
+                        <div class="flex gap-2 mt-3 overflow-x-auto no-scrollbar">
+                            @foreach ($gallery as $img)
+                                <button type="button" onclick="document.getElementById('main-image').src='{{ $img }}'" class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:border-sky-500 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt=""></button>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+                <div class="lg:col-span-7">
+                    @if ($product->ageGroup)
+                        <span class="bg-sky-50 text-sky-700 px-2.5 py-1 rounded-md text-xs font-bold inline-block mb-2">{{ tt('العمر المناسب: ', 'Recommended Age: ') }}{{ $product->ageGroup->key }} {{ tt('سنوات', 'Years') }}</span>
+                    @endif
+                    <h1 class="text-2xl lg:text-3xl font-black text-slate-800 mb-2">{{ $product->tr('name') }}</h1>
+                    <p class="text-slate-600 leading-relaxed mb-5 text-sm">{!! nl2br(e($product->tr('desc'))) !!}</p>
+
+                    @if ($product->has_options && ($editions->isNotEmpty() || $addons->isNotEmpty()))
+                        <div class="border-t border-b border-slate-100 py-5 space-y-5 mb-5">
+                            @if ($editions->isNotEmpty())
+                                <div>
+                                    <label class="block font-bold text-slate-800 mb-2 text-xs">{{ tt('1. نقي إصدار اللعبة:', '1. Select Edition:') }}</label>
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                                        @foreach ($editions as $i => $o)
+                                            <label class="border border-slate-200 rounded-xl p-3 flex items-center gap-2 cursor-pointer transition">
+                                                <input type="radio" name="edition" value="{{ $o->id }}" data-extra="{{ $o->price }}" class="option-radio" @checked($i === 0) onchange="calcCustomPrice()">
+                                                <span class="font-bold">{{ $o->tr('name') }}@if ($o->price > 0) (+{{ rtrim(rtrim(number_format($o->price * \App\Support\Shop::country()->rate, 2, '.', ''), '0'), '.') }})@endif</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                            @if ($addons->isNotEmpty())
+                                <div>
+                                    <label class="block font-bold text-slate-800 mb-2 text-xs">{{ tt('2. إضافات وتغليف الهدايا:', '2. Gift Wrapping & Add-ons:') }}</label>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                        @foreach ($addons as $o)
+                                            <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-xl border border-slate-200 transition">
+                                                <input type="checkbox" name="addons[]" value="{{ $o->id }}" data-extra="{{ $o->price }}" class="option-check" onchange="calcCustomPrice()">
+                                                <span>{{ $o->icon }} {{ $o->tr('name') }} (+{{ number_format($o->price * \App\Support\Shop::country()->rate, 2, '.', '') }})</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div>
+                            <span class="text-slate-400 text-xs block">{{ tt('السعر مع الإضافات:', 'Total Price:') }}</span>
+                            <span id="dynamic-price" class="text-2xl lg:text-3xl font-black text-pink-600">{{ money($product->price) }}</span>
+                            @if ($product->compare_price > $product->price)
+                                <span class="text-slate-400 line-through text-sm {{ $rtl ? 'mr-2' : 'ml-2' }}">{{ money($product->compare_price) }}</span>
+                            @endif
+                        </div>
+                        @if ($product->inStock())
+                            <div class="flex items-center gap-3 w-full sm:w-auto">
+                                <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50 shrink-0">
+                                    <button type="button" onclick="const q=document.getElementById('qty'); q.value=Math.max(1, +q.value-1)" class="px-3.5 py-3 hover:bg-slate-200 font-bold text-xs cursor-pointer">-</button>
+                                    <input id="qty" name="qty" type="number" min="1" max="{{ $product->stock }}" value="1" class="w-10 text-center bg-transparent font-bold text-xs focus:outline-none">
+                                    <button type="button" onclick="const q=document.getElementById('qty'); q.value=Math.min({{ $product->stock }}, +q.value+1)" class="px-3.5 py-3 hover:bg-slate-200 font-bold text-xs cursor-pointer">+</button>
+                                </div>
+                                <button type="submit" class="w-full sm:w-auto min-w-[220px] bg-sky-500 hover:bg-sky-600 text-white py-3.5 px-6 rounded-xl font-bold text-sm transition cursor-pointer">{{ __('store.addToCart') }} 🛒</button>
+                            </div>
+                        @else
+                            <span class="bg-red-50 text-red-600 font-bold text-sm px-6 py-3.5 rounded-xl">{{ tt('نفدت الكمية حالياً', 'Currently out of stock') }}</span>
+                        @endif
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        @if ($related->isNotEmpty())
+            @include('partials.slider-section', [
+                'id' => 'related-slider',
+                'title' => tt('ألعاب ثانية يمكن تعجب ولدك أو بنتك', 'You May Also Like'),
+                'sub' => null,
+                'products' => $related,
+                'wrapClass' => 'pt-4',
+            ])
+        @endif
+    </div>
+@endsection
+
+@push('scripts')
+<script>
+    const basePriceKD = {{ (float) $product->price }};
+    const rate = {{ (float) \App\Support\Shop::country()->rate }};
+    const symbol = @json(\App\Support\Shop::country()->tr('symbol'));
+    function calcCustomPrice() {
+        let extra = 0;
+        document.querySelectorAll('#product-form .option-radio:checked, #product-form .option-check:checked').forEach(el => extra += parseFloat(el.dataset.extra) || 0);
+        document.getElementById('dynamic-price').innerText = ((basePriceKD + extra) * rate).toFixed(2) + ' ' + symbol;
+    }
+</script>
+@endpush

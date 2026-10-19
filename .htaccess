@@ -1,0 +1,5 @@
+# Used only when the domain's document root cannot point at /public (shared cPanel hosting).
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
