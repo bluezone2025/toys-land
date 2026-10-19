@@ -40,9 +40,9 @@ class AdminPanelTest extends TestCase
         $order = Order::firstOrFail();
         $this->actingAs($this->admin);
 
-        $urls = ['/admin', '/admin/analytics', '/admin/settings', '/admin/orders', "/admin/orders/{$order->id}",
-            '/admin/products', '/admin/products/create', '/admin/products/'.Product::first()->id.'/edit',
-            '/admin/categories', '/admin/categories/create', '/admin/categories/1/edit', '/admin/age-groups', '/admin/product-options',
+        $urls = ['/admin', '/admin/analytics', '/admin/settings', '/admin/orders', "/admin/orders/{$order->number}",
+            '/admin/products', '/admin/products/create', '/admin/products/'.Product::first()->slug.'/edit',
+            '/admin/categories', '/admin/categories/create', '/admin/categories/educational/edit', '/admin/age-groups', '/admin/product-options',
             '/admin/customers', '/admin/customers/create', "/admin/customers/{$this->admin->id}/edit", '/admin/coupons', '/admin/countries',
             '/admin/hero-slides', '/admin/faqs', '/admin/content-pages', '/admin/content-pages/1/edit', '/admin/contact-messages'];
 
@@ -64,6 +64,18 @@ class AdminPanelTest extends TestCase
         Livewire::test(\App\Filament\Widgets\Analytics\SearchTermsTable::class)->assertSee('robot');
         Livewire::test(\App\Filament\Widgets\Analytics\ActiveVisitorsTable::class)->assertSee('/products');
         $this->get("/invoice/{$order->number}")->assertOk();
+    }
+
+    public function test_create_redirects_to_working_edit_page(): void
+    {
+        $this->actingAs($this->admin);
+
+        Livewire::test(\App\Filament\Resources\Categories\Pages\CreateCategory::class)
+            ->fillForm(['title_ar' => 'تجربة', 'title_en' => 'Test', 'slug' => 'test-cat', 'image' => \Illuminate\Http\UploadedFile::fake()->image('a.jpg')])
+            ->call('create')
+            ->assertHasNoFormErrors()
+            ->assertRedirect('/admin/categories/test-cat/edit');
+        $this->get('/admin/categories/test-cat/edit')->assertOk();
     }
 
     public function test_settings_page_saves(): void

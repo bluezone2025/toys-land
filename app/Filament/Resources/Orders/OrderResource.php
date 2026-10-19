@@ -31,8 +31,6 @@ use UnitEnum;
 
 class OrderResource extends Resource
 {
-    protected static ?string $recordRouteKeyName = 'id';
-
     protected static ?string $model = Order::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;

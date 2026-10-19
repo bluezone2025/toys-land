@@ -24,7 +24,7 @@
         </table>
         <p style="text-align:left; font-size:16px;"><b>الإجمالي: {{ number_format((float) $order->total, 3) }} د.ك</b></p>
         @if ($forAdmin)
-            <p><a href="{{ url('/admin/orders/'.$order->id) }}" style="background:#0ea5e9; color:#fff; padding:10px 18px; border-radius:10px; text-decoration:none;">عرض الطلب في لوحة التحكم</a></p>
+            <p><a href="{{ \App\Filament\Resources\Orders\OrderResource::getUrl('view', ['record' => $order]) }}" style="background:#0ea5e9; color:#fff; padding:10px 18px; border-radius:10px; text-decoration:none;">عرض الطلب في لوحة التحكم</a></p>
         @else
             <p><a href="{{ route('tracking', ['order' => $order->number, 'phone' => $order->phone]) }}" style="background:#0ea5e9; color:#fff; padding:10px 18px; border-radius:10px; text-decoration:none;">تتبع طلبك</a></p>
         @endif
