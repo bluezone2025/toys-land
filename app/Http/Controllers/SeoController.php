@@ -49,7 +49,9 @@ class SeoController extends Controller
                 $entries->push([route('products.show', $product), $product->updated_at, '0.7', $product->image]);
             }
 
-            return view('seo.sitemap', ['entries' => $entries])->render();
+            // The XML declaration is added here, not in the view: with short_open_tag on,
+            // PHP would read "<?xml" in a template as code.
+            return '<'.'?xml version="1.0" encoding="UTF-8"?'.">\n".view('seo.sitemap', ['entries' => $entries])->render();
         });
 
         return response($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
