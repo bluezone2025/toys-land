@@ -127,8 +127,10 @@ class ProductResource extends Resource
                 ]),
             Fields::seoSection(),
             Section::make('الصور')->columnSpanFull()->columns(2)->schema([
-                Fields::image('products')->label('الصورة الرئيسية')->required(fn (?Product $record) => blank($record?->image)),
-                FileUpload::make('gallery')->label('صور إضافية')->image()->multiple()->reorderable()->disk('public')->directory('products/gallery')->maxFiles(8)->maxSize(4096),
+                Fields::image('products', size: '1200 × 1200 بكسل (مربعة)')->label('الصورة الرئيسية')->required(fn (?Product $record) => blank($record?->image)),
+                FileUpload::make('gallery')->label('صور إضافية')->image()->multiple()->reorderable()->disk('public')->directory('products/gallery')->maxFiles(8)->maxSize(4096)
+                    ->automaticallyResizeImagesMode('contain')->automaticallyResizeImagesToWidth('1600')->automaticallyResizeImagesToHeight('1600')->automaticallyUpscaleImagesWhenResizing(false)
+                    ->helperText(Fields::sizeHint('1200 × 1200 بكسل (مربعة)', 'حتى 8 صور، يمكنك ترتيبها بالسحب')),
             ]),
         ]);
     }

@@ -56,7 +56,7 @@ class CategoryResource extends Resource
                 ])->placeholder('لا يظهر'),
                 TextInput::make('sort')->label('الترتيب')->integer()->default(0),
                 Toggle::make('is_active')->label('ظاهر')->default(true)->inline(false),
-                Fields::image('categories')->required(fn (?Category $record) => blank($record?->image))->columnSpanFull(),
+                Fields::image('categories', size: '800 × 600 بكسل')->required(fn (?Category $record) => blank($record?->image))->columnSpanFull(),
             ]),
             Fields::seoSection(),
         ]);

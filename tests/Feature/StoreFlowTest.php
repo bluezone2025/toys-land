@@ -99,7 +99,7 @@ class StoreFlowTest extends TestCase
         // Returning visitor: new session, same browser cookie.
         $this->flushSession();
         $this->withCookie(\App\Support\Cart::COOKIE, $token)->get('/')
-            ->assertSee('cart-reminder', false)->assertSee($product->image_url);
+            ->assertSee('cart-reminder', false)->assertSee(\App\Support\Img::url($product->image, 160));
         $this->get('/cart')->assertSee($product->name_ar);
     }
 

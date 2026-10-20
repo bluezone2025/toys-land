@@ -45,7 +45,7 @@ class HeroSlideResource extends Resource
             Select::make('theme')->label('ألوان الشريحة')->options(['slate' => 'داكن + زر أزرق', 'sky' => 'أزرق + زر وردي', 'indigo' => 'نيلي + زر أصفر'])->default('slate')->required(),
             TextInput::make('sort')->label('الترتيب')->integer()->default(0),
             Toggle::make('is_active')->label('ظاهرة')->default(true)->inline(false),
-            Fields::image('slides')->required(fn (?HeroSlide $record) => blank($record?->image))->columnSpanFull(),
+            Fields::image('slides', size: '1920 × 600 بكسل (عريضة) — اجعل العنصر المهم في منتصف الصورة')->required(fn (?HeroSlide $record) => blank($record?->image))->columnSpanFull(),
         ]);
     }
 

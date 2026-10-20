@@ -24,13 +24,13 @@ class StoreController extends Controller
         return view('store.home', [
             'slides' => HeroSlide::active()->get(),
             'ageGroups' => AgeGroup::active()->get(),
-            'bestSellers' => $base()->where('is_best_seller', true)->take(12)->get()
-                ->whenEmpty(fn () => $base()->orderByDesc('sales_count')->take(12)->get()),
-            'eduProducts' => $base()->whereHas('categories', fn (Builder $q) => $q->whereIn('categories.id', $eduIds))->take(12)->get(),
-            'funProducts' => $base()->whereHas('categories', fn (Builder $q) => $q->whereIn('categories.id', $funIds))->take(12)->get(),
+            'bestSellers' => $base()->where('is_best_seller', true)->take(10)->get()
+                ->whenEmpty(fn () => $base()->orderByDesc('sales_count')->take(10)->get()),
+            'eduProducts' => $base()->whereHas('categories', fn (Builder $q) => $q->whereIn('categories.id', $eduIds))->take(10)->get(),
+            'funProducts' => $base()->whereHas('categories', fn (Builder $q) => $q->whereIn('categories.id', $funIds))->take(10)->get(),
             'eduLink' => ($slug = $firstSlug($eduIds)) ? route('category.show', $slug) : route('products.index'),
             'funLink' => ($slug = $firstSlug($funIds)) ? route('category.show', $slug) : route('products.index'),
-            'catalog' => $base()->take(20)->get(),
+            'catalog' => $base()->take(15)->get(),
         ]);
     }
 

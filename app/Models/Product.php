@@ -72,6 +72,12 @@ class Product extends Model
         return $this->stock > 0;
     }
 
+    /** Main image followed by the extra gallery images (stored paths or URLs). */
+    public function galleryPaths(): array
+    {
+        return collect([$this->image, ...($this->gallery ?? [])])->filter()->unique()->values()->all();
+    }
+
     public function galleryUrls(): array
     {
         return collect([$this->image, ...($this->gallery ?? [])])

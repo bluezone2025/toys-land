@@ -10,8 +10,10 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\StoreController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/robots.txt', [\App\Http\Controllers\SeoController::class, 'robots']);
-Route::get('/sitemap.xml', [\App\Http\Controllers\SeoController::class, 'sitemap'])->name('sitemap');
+Route::middleware(\App\Http\Middleware\CompressResponse::class)->group(function () {
+    Route::get('/robots.txt', [\App\Http\Controllers\SeoController::class, 'robots']);
+    Route::get('/sitemap.xml', [\App\Http\Controllers\SeoController::class, 'sitemap'])->name('sitemap');
+});
 
 // Arabic lives at "/", English at "/en/..." — same routes, clean crawlable URLs.
 $storeRoutes = function () {

@@ -145,7 +145,7 @@
             <a href="{{ route('products.index') }}" class="flex items-center gap-3 p-2 rounded-xl hover:bg-sky-50">🌈 {{ __('store.catAll') }}</a>
             @foreach ($navCategories as $c)
                 <a href="{{ route('category.show', $c) }}" class="flex items-center gap-3 p-2 rounded-xl hover:bg-sky-50">
-                    <img src="{{ $c->image_url }}" class="w-8 h-8 rounded-lg object-cover shrink-0" alt="{{ $c->tr('title') }}">
+                    <img src="{{ \App\Support\Img::url($c->image, 96) }}" width="32" height="32" loading="lazy" class="w-8 h-8 rounded-lg object-cover shrink-0" alt="{{ $c->tr('title') }}">
                     <span>{{ $c->tr('title') }}</span>
                 </a>
             @endforeach

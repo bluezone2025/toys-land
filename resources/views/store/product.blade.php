@@ -39,7 +39,13 @@
     'schema' => $schema,
 ])
 
-@php $rtl = is_rtl(); $gallery = $product->galleryUrls(); @endphp
+@php
+    $rtl = is_rtl();
+    $paths = $product->galleryPaths();
+    $gallery = array_map(fn ($p) => \App\Support\Img::url($p, 1600), $paths); // lightbox
+    $mainImages = array_map(fn ($p) => \App\Support\Img::url($p, 800), $paths);
+    $thumbs = array_map(fn ($p) => \App\Support\Img::url($p, 160), $paths);
+@endphp
 
 @section('content')
     <div class="content-90 py-8">
@@ -59,15 +65,15 @@
                         <i class="fav-icon-{{ $product->id }} {{ \App\Support\Favorites::has($product->id) ? 'fa-solid text-pink-500' : 'fa-regular text-slate-400' }} fa-heart text-sm"></i>
                     </button>
                     <button type="button" onclick="openLightbox(window.currentImage || 0)" class="block w-full cursor-zoom-in group relative" title="{{ tt('تكبير الصورة', 'Zoom image') }}">
-                        <img id="main-image" fetchpriority="high" src="{{ $product->image_url }}" class="w-full h-[300px] sm:h-[380px] object-cover rounded-2xl bg-slate-50" alt="{{ $product->tr('name') }}">
+                        <img id="main-image" fetchpriority="high" src="{{ $mainImages[0] ?? $product->image_url }}" width="800" height="380" class="w-full h-[300px] sm:h-[380px] object-cover rounded-2xl bg-slate-50" alt="{{ $product->tr('name') }}">
                         <span class="absolute bottom-3 {{ $rtl ? 'left-3' : 'right-3' }} bg-white/90 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm opacity-90 group-hover:opacity-100 transition">
                             <i class="fa-solid fa-magnifying-glass-plus"></i> {{ count($gallery) > 1 ? tt('شوف كل الصور', 'View all photos').' ('.count($gallery).')' : tt('تكبير', 'Zoom') }}
                         </span>
                     </button>
                     @if (count($gallery) > 1)
                         <div class="flex gap-2 mt-3 overflow-x-auto no-scrollbar">
-                            @foreach ($gallery as $i => $img)
-                                <button type="button" onclick="document.getElementById('main-image').src='{{ $img }}'; window.currentImage = {{ $i }};" class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:border-sky-500 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt="{{ $product->tr('name') }}"></button>
+                            @foreach ($thumbs as $i => $img)
+                                <button type="button" onclick="document.getElementById('main-image').src='{{ $mainImages[$i] }}'; window.currentImage = {{ $i }};" class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:border-sky-500 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt="{{ $product->tr('name') }}"></button>
                             @endforeach
                         </div>
                     @endif
@@ -150,7 +156,7 @@
             <p id="lightbox-counter" dir="ltr" class="text-white/80 text-xs font-bold mt-3">1 / {{ count($gallery) }}</p>
             @if (count($gallery) > 1)
                 <div class="flex gap-2 mt-3 overflow-x-auto no-scrollbar max-w-full px-2">
-                    @foreach ($gallery as $img)
+                    @foreach ($thumbs as $img)
                         <button type="button" data-thumb class="shrink-0 w-14 h-14 rounded-xl overflow-hidden ring-sky-400 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt="{{ $product->tr('name') }}"></button>
                     @endforeach
                 </div>

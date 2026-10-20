@@ -35,7 +35,7 @@ class Fields
             ]);
     }
 
-    public static function image(string $directory, string $field = 'image', string $label = 'الصورة'): FileUpload
+    public static function image(string $directory, string $field = 'image', string $label = 'الصورة', string $size = '1200 × 1200 بكسل'): FileUpload
     {
         return FileUpload::make($field)
             ->label($label)
@@ -48,6 +48,12 @@ class Fields
             ->automaticallyResizeImagesToHeight('1600')
             ->automaticallyUpscaleImagesWhenResizing(false)
             ->maxSize(4096)
-            ->helperText('يفضل صورة بعرض 1200 بكسل أو أكثر (حد أقصى 4MB)');
+            ->helperText(self::sizeHint($size));
+    }
+
+    /** Advisory size note shown under uploads; nothing is enforced. */
+    public static function sizeHint(string $size, string $extra = 'JPG أو PNG أو WebP، حتى 4MB'): string
+    {
+        return "📐 المقاس المقترح: {$size} — {$extra}. (استرشادي فقط، والصور الأكبر يتم تصغيرها تلقائياً)";
     }
 }

@@ -124,9 +124,9 @@ class Settings extends Page
                     ...self::pair('home_intro_title', 'عنوان الفقرة التعريفية أسفل الصفحة الرئيسية'),
                     ...self::pair('home_intro', 'نص الفقرة التعريفية (يفيد في ظهور الموقع في Google)', true),
                     FileUpload::make('og_image')->label('صورة المشاركة الافتراضية (واتساب / فيسبوك)')->image()->disk('public')->directory('seo')
-                        ->helperText('المقاس المثالي 1200×630'),
+                        ->helperText(\App\Filament\Support\Fields::sizeHint('1200 × 630 بكسل', 'JPG أو PNG — تظهر عند مشاركة رابط الموقع')),
                     FileUpload::make('favicon')->label('أيقونة الموقع (Favicon)')->image()->disk('public')->directory('seo')
-                        ->helperText('صورة مربعة 512×512 بصيغة PNG'),
+                        ->helperText(\App\Filament\Support\Fields::sizeHint('512 × 512 بكسل (مربعة)', 'PNG بخلفية شفافة')),
                     TextInput::make('google_site_verification')->label('كود التحقق من Google Search Console')->placeholder('الكود فقط بدون <meta>'),
                     TextInput::make('bing_site_verification')->label('كود التحقق من Bing Webmaster'),
                     TextInput::make('ga4_id')->label('Google Analytics (GA4) Measurement ID')->placeholder('G-XXXXXXXXXX'),
@@ -135,7 +135,8 @@ class Settings extends Page
                 Tab::make('نافذة الترحيب')->icon(Heroicon::OutlinedSparkles)->columns(2)->schema([
                     Toggle::make('welcome_enabled')->label('إظهار نافذة الترحيب للزوار')->columnSpanFull(),
                     FileUpload::make('welcome_video_upload')->label('رفع فيديو (MP4) — اختياري')->disk('public')->directory('welcome')
-                        ->acceptedFileTypes(['video/mp4'])->maxSize(20480)->dehydrated(false),
+                        ->acceptedFileTypes(['video/mp4'])->maxSize(20480)->dehydrated(false)
+                        ->helperText('🎬 المقترح: فيديو MP4 أفقي 1280 × 720، مدته من 10 إلى 20 ثانية، وحجمه أقل من 8MB حتى يعمل بسرعة على الجوال. (استرشادي فقط، الحد الأقصى 20MB)'),
                     TextInput::make('welcome_video')->label('أو رابط الفيديو المباشر (MP4)')->extraInputAttributes(['dir' => 'ltr']),
                     ...self::pair('welcome_badge', 'الشارة'),
                     ...self::pair('welcome_title', 'العنوان'),

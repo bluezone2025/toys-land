@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('store', [
             \App\Http\Middleware\SetStoreLocale::class,
             \App\Http\Middleware\TrackVisit::class,
+            \App\Http\Middleware\CompressResponse::class,
         ]);
         $middleware->redirectUsersTo(fn () => route('account'));
     })

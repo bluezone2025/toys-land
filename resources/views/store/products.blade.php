@@ -32,7 +32,7 @@
             </a>
             @foreach ($navCategories as $c)
                 <a href="{{ route('category.show', $c) }}" class="flex items-center gap-2.5 p-2 rounded-2xl border transition {{ $selected === $c->slug && ! $age ? 'border-sky-500 bg-sky-50 shadow-sm ring-2 ring-sky-500/20' : 'border-slate-200 bg-white hover:bg-slate-50' }}">
-                    <img src="{{ $c->image_url }}" class="w-11 h-11 rounded-xl object-cover shrink-0" alt="{{ $c->tr('title') }}">
+                    <img src="{{ \App\Support\Img::url($c->image, 96) }}" width="48" height="48" loading="lazy" class="w-11 h-11 rounded-xl object-cover shrink-0" alt="{{ $c->tr('title') }}">
                     <div class="overflow-hidden">
                         <span class="font-black text-xs text-slate-800 block truncate">{{ $c->tr('title') }}</span>
                         <span class="text-[10px] text-slate-500 block truncate">{{ $c->tr('desc') }}</span>

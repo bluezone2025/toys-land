@@ -14,7 +14,7 @@
             </button>
 
             <a href="{{ route('products.show', $p) }}" class="block">
-                <img src="{{ $p->image_url }}" alt="{{ $p->tr('name') }}" width="400" height="192" loading="lazy" decoding="async" class="w-full h-48 object-cover hover:scale-105 transition duration-300">
+                <img src="{{ \App\Support\Img::url($p->image, 400) }}" srcset="{{ \App\Support\Img::srcset($p->image, [400, 640]) }}" sizes="(min-width: 1280px) 20vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw" alt="{{ $p->tr('name') }}" width="400" height="192" loading="lazy" decoding="async" class="w-full h-48 object-cover hover:scale-105 transition duration-300">
             </a>
         </div>
         <div class="p-4">

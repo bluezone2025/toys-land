@@ -15,7 +15,7 @@
 @section('content')
     <div class="content-90 py-8">
         <div class="relative rounded-3xl overflow-hidden bg-slate-900 text-white mb-8 shadow-md h-56 sm:h-64 flex items-center">
-            <img src="{{ $category->image_url }}" class="absolute inset-0 w-full h-full object-cover opacity-45" alt="{{ $category->tr('title') }}">
+            <img src="{{ \App\Support\Img::url($category->image, 1200) }}" srcset="{{ \App\Support\Img::srcset($category->image, [640, 1200]) }}" sizes="100vw" fetchpriority="high" class="absolute inset-0 w-full h-full object-cover opacity-45" alt="{{ $category->tr('title') }}">
             <div class="relative z-10 px-6 lg:px-12 max-w-2xl">
                 @if ($category->tr('badge'))
                     <span class="bg-amber-400 text-slate-950 px-3 py-0.5 rounded-full text-xs font-black inline-block mb-2">{{ $category->tr('badge') }}</span>
@@ -28,7 +28,7 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 mb-8">
             @foreach ($navCategories as $c)
                 <a href="{{ route('category.show', $c) }}" class="flex items-center gap-3 p-2.5 rounded-2xl border transition {{ $c->id === $category->id ? 'border-sky-500 bg-sky-50 shadow-sm' : 'border-slate-200 bg-white hover:bg-slate-50' }}">
-                    <img src="{{ $c->image_url }}" class="w-12 h-12 rounded-xl object-cover shrink-0" alt="{{ $c->tr('title') }}">
+                    <img src="{{ \App\Support\Img::url($c->image, 96) }}" width="48" height="48" loading="lazy" class="w-12 h-12 rounded-xl object-cover shrink-0" alt="{{ $c->tr('title') }}">
                     <div class="overflow-hidden">
                         <h4 class="font-black text-xs text-slate-800 truncate">{{ $c->tr('title') }}</h4>
                         <p class="text-[10px] text-slate-500 truncate">{{ $c->tr('desc') }}</p>

@@ -11,18 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('partials.seo')
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    {{-- Fonts and icons load without blocking the first paint. --}}
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    </noscript>
     @isset($preloadImage)
-        <link rel="preload" as="image" href="{{ $preloadImage }}" fetchpriority="high">
+        <link rel="preload" as="image" href="{{ \App\Support\Img::url($preloadImage, 960) }}" imagesrcset="{{ \App\Support\Img::srcset($preloadImage, [640, 960, 1600]) }}" imagesizes="100vw" fetchpriority="high">
     @endisset
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
@@ -91,7 +81,7 @@
                 <p class="text-xs text-slate-600 mb-3">{{ tt('لسه عندك '.$reminderItems->sum('qty').' قطعة بالسلة تنتظرك، كمّل طلبك قبل ما تخلص الكمية.', 'You still have '.$reminderItems->sum('qty').' item(s) waiting in your cart. Complete your order before they sell out.') }}</p>
                 <div class="flex items-center gap-2 mb-4">
                     @foreach ($reminderItems->take(4) as $item)
-                        <img src="{{ $item->product->image_url }}" class="w-12 h-12 rounded-xl object-cover border border-slate-100" alt="{{ $item->product->tr('name') }}">
+                        <img src="{{ \App\Support\Img::url($item->product->image, 160) }}" width="48" height="48" class="w-12 h-12 rounded-xl object-cover border border-slate-100" alt="{{ $item->product->tr('name') }}">
                     @endforeach
                     @if ($reminderItems->count() > 4)
                         <span class="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 text-xs font-black flex items-center justify-center">+{{ $reminderItems->count() - 4 }}</span>

@@ -53,7 +53,7 @@ class ContentPageResource extends Resource
                 ...Fields::bilingual('badge', 'الشارة'),
                 ...Fields::bilingual('title', 'العنوان', required: true),
                 ...Fields::bilingual('subtitle', 'النص التعريفي', textarea: true),
-                Fields::image('pages', label: 'صورة الخلفية (صفحة من نحن)')->columnSpanFull(),
+                Fields::image('pages', label: 'صورة الخلفية (صفحة من نحن)', size: '1600 × 600 بكسل (عريضة)')->columnSpanFull(),
                 Toggle::make('is_active')->label('الصفحة منشورة')->default(true),
             ]),
             Section::make('الأرقام والإحصائيات')->description('تظهر في صفحة "منو إحنا"')->columnSpanFull()
@@ -69,8 +69,8 @@ class ContentPageResource extends Resource
                 Repeater::make('cards')->label('')->columns(2)->reorderable()->collapsible()->addActionLabel('إضافة بطاقة')
                     ->itemLabel(fn (array $state) => $state['title_ar'] ?? null)
                     ->schema([
-                        TextInput::make('icon')->label('أيقونة FontAwesome')->placeholder('fa-solid fa-star')->extraInputAttributes(['dir' => 'ltr'])
-                            ->helperText('من موقع fontawesome.com/icons'),
+                        Select::make('icon')->label('الأيقونة')->searchable()->placeholder('بدون أيقونة')
+                            ->options(fn () => json_decode(file_get_contents(resource_path('icons.json')), true)),
                         Select::make('color')->label('اللون')->options(self::COLORS)->default('sky'),
                         TextInput::make('title_ar')->label('العنوان (عربي)')->required(),
                         TextInput::make('title_en')->label('العنوان (English)'),
