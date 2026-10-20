@@ -51,7 +51,9 @@ class SeoController extends Controller
 
             // The XML declaration is added here, not in the view: with short_open_tag on,
             // PHP would read "<?xml" in a template as code.
-            return '<'.'?xml version="1.0" encoding="UTF-8"?'.">\n".view('seo.sitemap', ['entries' => $entries])->render();
+            return '<'.'?xml version="1.0" encoding="UTF-8"?'.">\n"
+                .'<'.'?xml-stylesheet type="text/xsl" href="'.asset('sitemap.xsl').'"?'.">\n"
+                .view('seo.sitemap', ['entries' => $entries])->render();
         });
 
         return response($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
