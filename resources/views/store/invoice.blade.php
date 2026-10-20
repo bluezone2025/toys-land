@@ -65,7 +65,7 @@
                     @else
                         <span class="bg-red-400 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full inline-block mb-1">{{ tt('بانتظار الدفع', 'AWAITING PAYMENT') }}</span>
                     @endif
-                    <h2 class="text-lg font-black text-white">{{ tt('فاتورة ضريبية مبسطة', 'Official Tax Invoice') }}</h2>
+                    <h2 class="text-lg font-black text-white">{{ tt('فاتورة الطلب', 'Order Invoice') }}</h2>
                     <p class="text-amber-300 font-mono font-bold text-sm">#{{ $order->number }}</p>
                     <p class="text-slate-300 text-[11px] mt-0.5">{{ $order->created_at->timezone(config('app.display_timezone'))->format('Y/m/d h:i A') }}</p>
                 </div>
