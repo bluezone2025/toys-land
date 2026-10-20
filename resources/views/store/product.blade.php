@@ -59,7 +59,7 @@
                         <i class="fav-icon-{{ $product->id }} {{ \App\Support\Favorites::has($product->id) ? 'fa-solid text-pink-500' : 'fa-regular text-slate-400' }} fa-heart text-sm"></i>
                     </button>
                     <button type="button" onclick="openLightbox(window.currentImage || 0)" class="block w-full cursor-zoom-in group relative" title="{{ tt('تكبير الصورة', 'Zoom image') }}">
-                        <img id="main-image" src="{{ $product->image_url }}" class="w-full h-[300px] sm:h-[380px] object-cover rounded-2xl bg-slate-50" alt="{{ $product->tr('name') }}">
+                        <img id="main-image" fetchpriority="high" src="{{ $product->image_url }}" class="w-full h-[300px] sm:h-[380px] object-cover rounded-2xl bg-slate-50" alt="{{ $product->tr('name') }}">
                         <span class="absolute bottom-3 {{ $rtl ? 'left-3' : 'right-3' }} bg-white/90 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm opacity-90 group-hover:opacity-100 transition">
                             <i class="fa-solid fa-magnifying-glass-plus"></i> {{ count($gallery) > 1 ? tt('شوف كل الصور', 'View all photos').' ('.count($gallery).')' : tt('تكبير', 'Zoom') }}
                         </span>

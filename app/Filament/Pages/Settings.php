@@ -80,6 +80,8 @@ class Settings extends Page
                         TextInput::make('social_snapchat')->label('Snapchat')->url(),
                         TextInput::make('social_x')->label('X / Twitter')->url(),
                         TextInput::make('social_facebook')->label('Facebook')->url(),
+                        TextInput::make('social_youtube')->label('YouTube')->url(),
+                        TextInput::make('social_linkedin')->label('LinkedIn')->url(),
                     ]),
                 ]),
                 Tab::make('الدفع والشحن')->icon(Heroicon::OutlinedCreditCard)->columns(2)->schema([

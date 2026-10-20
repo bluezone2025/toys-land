@@ -17,10 +17,22 @@
                 <span class="text-xl font-black text-white">{{ $brand }} 🧸</span>
             </a>
             <p class="text-slate-400 text-xs leading-relaxed">{{ setting_tr('footer_about', __('store.footerAbout')) }}</p>
+            <address class="not-italic text-slate-300 text-xs mt-4 space-y-1.5">
+                @if (setting('phone'))
+                    <a href="tel:{{ preg_replace('/[^\d+]/', '', (string) setting('phone')) }}" class="flex items-center gap-2 hover:text-white"><i class="fa-solid fa-phone text-sky-400 w-4"></i> <span class="dir-ltr">{{ setting('phone') }}</span></a>
+                @endif
+                <a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-white"><i class="fa-brands fa-whatsapp text-emerald-400 w-4"></i> <span class="dir-ltr">+{{ $whatsapp }}</span></a>
+                @if (setting('admin_email'))
+                    <a href="mailto:{{ setting('admin_email') }}" class="flex items-center gap-2 hover:text-white"><i class="fa-solid fa-envelope text-sky-400 w-4"></i> {{ setting('admin_email') }}</a>
+                @endif
+                @if (setting_tr('address'))
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-pink-400 w-4"></i> {{ setting_tr('address') }}</span>
+                @endif
+            </address>
             <div class="flex gap-3 mt-4 text-lg text-slate-400">
-                @foreach (['instagram' => 'fa-instagram', 'tiktok' => 'fa-tiktok', 'snapchat' => 'fa-snapchat', 'x' => 'fa-x-twitter', 'facebook' => 'fa-facebook'] as $key => $icon)
+                @foreach (['instagram' => 'fa-instagram', 'tiktok' => 'fa-tiktok', 'snapchat' => 'fa-snapchat', 'x' => 'fa-x-twitter', 'facebook' => 'fa-facebook', 'youtube' => 'fa-youtube', 'linkedin' => 'fa-linkedin'] as $key => $icon)
                     @if (setting("social_{$key}"))
-                        <a href="{{ setting("social_{$key}") }}" target="_blank" rel="noopener" class="hover:text-white transition"><i class="fa-brands {{ $icon }}"></i></a>
+                        <a href="{{ setting("social_{$key}") }}" target="_blank" rel="noopener me" aria-label="{{ ucfirst($key) }}" class="hover:text-white transition"><i class="fa-brands {{ $icon }}"></i></a>
                     @endif
                 @endforeach
             </div>

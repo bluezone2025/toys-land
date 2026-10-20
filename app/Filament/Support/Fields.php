@@ -43,6 +43,10 @@ class Fields
             ->disk('public')
             ->directory($directory)
             ->imageEditor()
+            ->automaticallyResizeImagesMode('contain')
+            ->automaticallyResizeImagesToWidth('1600')
+            ->automaticallyResizeImagesToHeight('1600')
+            ->automaticallyUpscaleImagesWhenResizing(false)
             ->maxSize(4096)
             ->helperText('يفضل صورة بعرض 1200 بكسل أو أكثر (حد أقصى 4MB)');
     }

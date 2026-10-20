@@ -53,12 +53,16 @@ class Seo
     {
         $brand = static::brand();
 
-        return $page ? Str::limit($page, 60, '').' | '.$brand : (Setting::tr('seo_home_title') ?: $brand.' | '.Setting::tr('store_tagline', __('store.brandSub')));
+        return $page ? Str::limit($page, 60, '').' | '.$brand
+            : (Setting::tr('seo_home_title') ?: $brand.' | '.tt('ألعاب أطفال ذكية وتعليمية في الكويت والخليج', 'Smart & Educational Kids Toys in Kuwait'));
     }
 
     public static function description(?string $text): string
     {
-        $text = $text ?: (Setting::tr('seo_home_description') ?: Setting::tr('footer_about', __('store.footerAbout')));
+        $text = $text ?: (Setting::tr('seo_home_description') ?: tt(
+            'تويز لاند متجر ألعاب أطفال في الكويت والخليج: ألعاب ذكاء وعلوم، روبوتات، مكعبات وسيارات ريموت ودمى آمنة 100%، مع تغليف هدايا وتوصيل سريع ودفع آمن بكي نت.',
+            'Toys Land is a kids toy store in Kuwait & the GCC: STEM toys, robots, building blocks, RC cars and dolls, 100% safe, with gift wrapping and fast delivery.'
+        ));
 
         return Str::limit(trim(preg_replace('/\s+/', ' ', strip_tags((string) $text))), 158);
     }
@@ -77,7 +81,7 @@ class Seo
 
     public static function organization(): array
     {
-        $sameAs = collect(['instagram', 'tiktok', 'snapchat', 'x', 'facebook'])->map(fn ($k) => Setting::get("social_{$k}"))->filter()->values()->all();
+        $sameAs = collect(['instagram', 'tiktok', 'snapchat', 'x', 'facebook', 'youtube', 'linkedin'])->map(fn ($k) => Setting::get("social_{$k}"))->filter()->values()->all();
 
         return array_filter([
             '@context' => 'https://schema.org',

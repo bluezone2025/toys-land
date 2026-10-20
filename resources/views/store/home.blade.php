@@ -15,7 +15,7 @@
         ],
     ];
 @endphp
-@extends('layouts.store', ['active' => 'home', 'title' => null, 'schema' => $schema, 'metaImage' => $slides->first()?->image])
+@extends('layouts.store', ['active' => 'home', 'title' => null, 'schema' => $schema, 'metaImage' => $slides->first()?->image, 'preloadImage' => $slides->first()?->image_url])
 
 @php
     $rtl = is_rtl();
@@ -44,7 +44,7 @@
                 @foreach ($slides as $i => $s)
                     @php $th = $themes[$s->theme] ?? $themes['slate']; @endphp
                     <div class="hero-slide {{ $i === 0 ? 'slide-active' : 'slide-hidden' }} absolute inset-0">
-                        <img src="{{ $s->image_url }}" class="w-full h-full object-cover" alt="{{ $s->tr('title') }}">
+                        <img src="{{ $s->image_url }}" class="w-full h-full object-cover" alt="{{ $s->tr('title') }}" width="1800" height="480" @if ($i === 0) fetchpriority="high" loading="eager" decoding="async" @else loading="lazy" decoding="async" @endif>
                         <div class="absolute inset-0 {{ $gradDir }} {{ $th['overlay'] }} to-transparent flex items-center">
                             <div class="content-90">
                                 <div class="max-w-xl text-white">

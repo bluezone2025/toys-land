@@ -142,7 +142,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let seen = null;
         try { seen = localStorage.getItem('kids_welcomed'); } catch (e) {}
         if (seen === (document.body.dataset.welcomeVersion || 'true')) modal.remove();
-        else modal.classList.remove('hidden');
+        else {
+            modal.classList.remove('hidden');
+            const video = modal.querySelector('video');
+            const source = video?.querySelector('source[data-src]');
+            if (source) { source.src = source.dataset.src; video.load(); video.play().catch(() => {}); }
+        }
     }
 
     // Hero slider

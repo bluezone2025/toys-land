@@ -13,8 +13,17 @@
     @include('partials.seo')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    {{-- Fonts and icons load without blocking the first paint. --}}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </noscript>
+    @isset($preloadImage)
+        <link rel="preload" as="image" href="{{ $preloadImage }}" fetchpriority="high">
+    @endisset
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
         window.storeRoutes = { favorite: @json(route('favorites.toggle')), cartAdd: @json(route('cart.add')) };
@@ -34,8 +43,8 @@
                 <div class="relative bg-slate-900 h-60">
                     @php $welcomeVideo = \App\Models\Setting::get('welcome_video'); @endphp
                     @if ($welcomeVideo)
-                        <video autoplay muted loop playsinline class="w-full h-full object-cover">
-                            <source src="{{ \App\Models\Concerns\HasImage::imageUrl($welcomeVideo) }}" type="video/mp4">
+                        <video muted loop playsinline preload="none" class="w-full h-full object-cover" aria-label="{{ setting_tr('welcome_title', __('store.welcomeTitle')) }}">
+                            <source data-src="{{ \App\Models\Concerns\HasImage::imageUrl($welcomeVideo) }}" type="video/mp4">
                         </video>
                     @else
                         <img src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=900&q=80" class="w-full h-full object-cover" alt="{{ setting_tr('welcome_title', __('store.welcomeTitle')) }}">
