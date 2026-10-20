@@ -1,4 +1,15 @@
-@extends('layouts.store', ['active' => 'faq', 'title' => __('store.faq')])
+@php
+    $schema = [[
+        '@context' => 'https://schema.org',
+        '@type' => 'FAQPage',
+        'mainEntity' => $faqs->map(fn ($f) => [
+            '@type' => 'Question',
+            'name' => $f->tr('q'),
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f->tr('a')],
+        ])->values()->all(),
+    ]];
+@endphp
+@extends('layouts.store', ['active' => 'faq', 'title' => __('store.faq'), 'metaDescription' => tt('إجابات أسئلتكم عن التوصيل والدفع وتغليف الهدايا والاستبدال في ', 'Answers about delivery, payment, gift wrapping and returns at ').\App\Support\Seo::brand(), 'schema' => $schema])
 
 @php $whatsapp = preg_replace('/\D/', '', (string) setting('whatsapp', '96599999999')); @endphp
 

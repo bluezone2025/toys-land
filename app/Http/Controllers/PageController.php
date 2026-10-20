@@ -56,9 +56,10 @@ class PageController extends Controller
 
     public function locale(string $locale)
     {
-        session(['locale' => in_array($locale, ['ar', 'en']) ? $locale : 'ar']);
+        $locale = in_array($locale, ['ar', 'en']) ? $locale : 'ar';
+        session(['locale' => $locale]);
 
-        return back();
+        return redirect()->to(\App\Support\Seo::url($locale, strtok(url()->previous(), '?')));
     }
 
     public function country(Request $request)

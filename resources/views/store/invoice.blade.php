@@ -1,4 +1,4 @@
-@extends('layouts.store', ['active' => 'invoice', 'title' => tt('فاتورة', 'Invoice').' #'.$order->number, 'showWelcome' => false])
+@extends('layouts.store', ['noindex' => true, 'active' => 'invoice', 'title' => tt('فاتورة', 'Invoice').' #'.$order->number, 'showWelcome' => false])
 
 @php
     $rtl = is_rtl();

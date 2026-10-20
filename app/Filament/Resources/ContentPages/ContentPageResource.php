@@ -78,6 +78,7 @@ class ContentPageResource extends Resource
                         \Filament\Forms\Components\Textarea::make('body_en')->label('النص (English)')->rows(3),
                     ]),
             ]),
+            Fields::seoSection(),
             Section::make('محتوى إضافي حر')->columnSpanFull()->collapsed()->schema([
                 RichEditor::make('body_ar')->label('المحتوى (عربي)'),
                 RichEditor::make('body_en')->label('المحتوى (English)'),

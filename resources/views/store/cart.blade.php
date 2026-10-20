@@ -1,4 +1,4 @@
-@extends('layouts.store', ['active' => 'cart', 'title' => __('store.cartTitle')])
+@extends('layouts.store', ['noindex' => true, 'active' => 'cart', 'title' => __('store.cartTitle')])
 
 @section('content')
     <div class="content-90 py-8">

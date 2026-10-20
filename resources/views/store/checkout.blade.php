@@ -1,4 +1,4 @@
-@extends('layouts.store', ['active' => 'checkout', 'title' => tt('إتمام الطلب', 'Checkout'), 'showWelcome' => false])
+@extends('layouts.store', ['noindex' => true, 'active' => 'checkout', 'title' => tt('إتمام الطلب', 'Checkout'), 'showWelcome' => false])
 
 @php
     $rtl = is_rtl();

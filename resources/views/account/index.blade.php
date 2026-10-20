@@ -1,4 +1,4 @@
-@extends('layouts.store', ['active' => $tab === 'favorites' ? 'favorites' : 'profile', 'title' => __('store.profile')])
+@extends('layouts.store', ['noindex' => true, 'active' => $tab === 'favorites' ? 'favorites' : 'profile', 'title' => __('store.profile')])
 
 @php
     $rtl = is_rtl();

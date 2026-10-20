@@ -21,6 +21,20 @@ class Fields
         return [$make('ar', 'عربي'), $make('en', 'English')->extraInputAttributes(['dir' => 'ltr'])];
     }
 
+    /** Optional search-engine title/description; left empty they are generated automatically. */
+    public static function seoSection(): \Filament\Schemas\Components\Section
+    {
+        return \Filament\Schemas\Components\Section::make('تحسين الظهور في محركات البحث (SEO)')
+            ->description('اختياري: إذا تركتها فارغة يتم إنشاؤها تلقائياً من الاسم والوصف.')
+            ->columns(2)->columnSpanFull()->collapsible()->collapsed()
+            ->schema([
+                TextInput::make('seo_title_ar')->label('عنوان الصفحة في Google (عربي)')->maxLength(60)->helperText('حتى 60 حرف'),
+                TextInput::make('seo_title_en')->label('SEO title (English)')->maxLength(60)->extraInputAttributes(['dir' => 'ltr']),
+                Textarea::make('seo_description_ar')->label('وصف الصفحة في Google (عربي)')->rows(2)->maxLength(160)->helperText('حتى 160 حرف'),
+                Textarea::make('seo_description_en')->label('SEO description (English)')->rows(2)->maxLength(160)->extraInputAttributes(['dir' => 'ltr']),
+            ]);
+    }
+
     public static function image(string $directory, string $field = 'image', string $label = 'الصورة'): FileUpload
     {
         return FileUpload::make($field)

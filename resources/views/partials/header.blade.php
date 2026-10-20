@@ -7,13 +7,13 @@
     <div class="hidden md:flex items-center gap-3 shrink-0">
         <form method="POST" action="{{ route('country.switch') }}">
             @csrf
-            <select name="country" onchange="this.form.submit()" class="bg-white/20 text-white border border-white/40 rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none cursor-pointer">
+            <select name="country" aria-label="{{ __('store.countryCurrency') }}" onchange="this.form.submit()" class="bg-white/20 text-white border border-white/40 rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none cursor-pointer">
                 @foreach ($countries as $c)
                     <option value="{{ $c->code }}" @selected($country->code === $c->code) class="text-slate-800">{{ $c->tr('name') }} ({{ $c->tr('symbol') }})</option>
                 @endforeach
             </select>
         </form>
-        <a href="{{ route('locale.switch', $rtl ? 'en' : 'ar') }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/40 rounded-lg px-3 py-1 text-xs font-bold transition cursor-pointer">
+        <a href="{{ \App\Support\Seo::switchUrl($rtl ? 'en' : 'ar') }}" hreflang="{{ $rtl ? 'en' : 'ar' }}" class="bg-white/20 hover:bg-white/30 text-white border border-white/40 rounded-lg px-3 py-1 text-xs font-bold transition cursor-pointer">
             {{ $rtl ? 'English' : 'العربية' }}
         </a>
     </div>
@@ -22,7 +22,7 @@
 <header class="w-full bg-white shadow-sm sticky top-0 z-40 border-b border-gray-100">
     <div class="w-full px-4 sm:px-10 h-20 flex items-center justify-between gap-2">
         <div class="flex items-center gap-2.5 sm:gap-3">
-            <button onclick="openMobileDrawer()" class="md:hidden w-10 h-10 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center hover:bg-sky-50 hover:text-sky-600 transition cursor-pointer shrink-0" title="Menu">
+            <button aria-label="{{ tt('القائمة', 'Menu') }}" onclick="openMobileDrawer()" class="md:hidden w-10 h-10 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center hover:bg-sky-50 hover:text-sky-600 transition cursor-pointer shrink-0" title="Menu">
                 <i class="fa-solid fa-bars text-lg"></i>
             </button>
 
@@ -73,7 +73,7 @@
         <div class="p-5 bg-gradient-to-r from-sky-500 to-indigo-600 text-white">
             <div class="flex items-center justify-between mb-4">
                 <span class="font-black text-lg">{{ $brand }} 🧸</span>
-                <button onclick="closeMobileDrawer()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
+                <button aria-label="{{ tt('إغلاق القائمة', 'Close menu') }}" onclick="closeMobileDrawer()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -106,7 +106,7 @@
                 <label class="block text-[11px] font-bold text-slate-500 mb-1">{{ __('store.countryCurrency') }}</label>
                 <form method="POST" action="{{ route('country.switch') }}">
                     @csrf
-                    <select name="country" onchange="this.form.submit()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 cursor-pointer">
+                    <select name="country" aria-label="{{ __('store.countryCurrency') }}" onchange="this.form.submit()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 cursor-pointer">
                         @foreach ($countries as $c)
                             <option value="{{ $c->code }}" @selected($country->code === $c->code)>{{ $c->tr('name') }} ({{ $c->tr('symbol') }})</option>
                         @endforeach
@@ -115,7 +115,7 @@
             </div>
             <div>
                 <label class="block text-[11px] font-bold text-slate-500 mb-1">{{ __('store.siteLang') }}</label>
-                <a href="{{ route('locale.switch', $rtl ? 'en' : 'ar') }}" class="block text-center w-full bg-sky-100 text-sky-700 py-2 rounded-xl text-xs font-bold hover:bg-sky-200 transition cursor-pointer">
+                <a href="{{ \App\Support\Seo::switchUrl($rtl ? 'en' : 'ar') }}" hreflang="{{ $rtl ? 'en' : 'ar' }}" class="block text-center w-full bg-sky-100 text-sky-700 py-2 rounded-xl text-xs font-bold hover:bg-sky-200 transition cursor-pointer">
                     {{ __('store.switchLangBtn') }}
                 </a>
             </div>

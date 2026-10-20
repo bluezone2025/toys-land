@@ -125,6 +125,7 @@ class ProductResource extends Resource
                         ])
                         ->default([]),
                 ]),
+            Fields::seoSection(),
             Section::make('الصور')->columnSpanFull()->columns(2)->schema([
                 Fields::image('products')->label('الصورة الرئيسية')->required(fn (?Product $record) => blank($record?->image)),
                 FileUpload::make('gallery')->label('صور إضافية')->image()->multiple()->reorderable()->disk('public')->directory('products/gallery')->maxFiles(8)->maxSize(4096),

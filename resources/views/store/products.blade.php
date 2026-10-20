@@ -1,4 +1,4 @@
-@extends('layouts.store', ['active' => 'products', 'title' => $pageTitle])
+@extends('layouts.store', ['active' => 'products', 'title' => $pageTitle, 'metaDescription' => tt('تسوق ', 'Shop ').$pageTitle.tt(' — ألعاب أطفال آمنة وتعليمية مع توصيل سريع في الكويت والخليج.', ' — safe, educational kids toys with fast delivery in Kuwait & GCC.')])
 
 @php $rtl = is_rtl(); @endphp
 

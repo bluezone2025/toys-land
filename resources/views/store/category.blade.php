@@ -1,4 +1,16 @@
-@extends('layouts.store', ['active' => 'products', 'title' => $category->tr('title')])
+@php
+    $schema = [\App\Support\Seo::breadcrumbs([
+        [__('store.home'), \App\Support\Seo::url(app()->getLocale(), route('home'))],
+        [$category->tr('title'), \App\Support\Seo::url(app()->getLocale(), route('category.show', $category))],
+    ])];
+@endphp
+@extends('layouts.store', [
+    'active' => 'products',
+    'title' => $category->seo('title', $category->tr('title')),
+    'metaDescription' => $category->seo('description', $category->tr('desc').' — '.$category->tr('title').' | '.setting_tr('store_tagline', __('store.brandSub'))),
+    'metaImage' => $category->image,
+    'schema' => $schema,
+])
 
 @section('content')
     <div class="content-90 py-8">

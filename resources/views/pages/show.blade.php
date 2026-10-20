@@ -1,4 +1,9 @@
-@extends('layouts.store', ['active' => $page->slug, 'title' => $page->tr('title')])
+@extends('layouts.store', [
+    'active' => $page->slug,
+    'title' => $page->seo('title', $page->tr('title')),
+    'metaDescription' => $page->seo('description', $page->tr('subtitle') ?: collect($page->cards ?? [])->map(fn ($c) => \App\Models\Page::rowTr($c, 'body'))->implode(' ')),
+    'metaImage' => $page->image,
+])
 
 @php
     use App\Models\Page;

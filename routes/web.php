@@ -10,6 +10,9 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\StoreController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/robots.txt', [\App\Http\Controllers\SeoController::class, 'robots']);
+Route::get('/sitemap.xml', [\App\Http\Controllers\SeoController::class, 'sitemap'])->name('sitemap');
+
 Route::middleware('store')->group(function () {
     Route::get('/', [StoreController::class, 'home'])->name('home');
     Route::get('/products', [StoreController::class, 'index'])->name('products.index');

@@ -9,7 +9,7 @@
                 <span class="absolute bottom-2 {{ $rtl ? 'left-2' : 'right-2' }} bg-slate-900/75 text-white text-[10px] font-medium px-2 py-0.5 rounded-md z-10">{{ $p->ageLabel() }}</span>
             @endif
 
-            <button onclick="toggleFavorite({{ $p->id }}, event)" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-8 h-8 bg-white/95 backdrop-blur rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 transition cursor-pointer" title="{{ __('store.favorites') }}">
+            <button aria-label="{{ __('store.favorites') }}" onclick="toggleFavorite({{ $p->id }}, event)" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-8 h-8 bg-white/95 backdrop-blur rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 transition cursor-pointer" title="{{ __('store.favorites') }}">
                 <i class="fav-icon-{{ $p->id }} {{ $fav ? 'fa-solid text-pink-500' : 'fa-regular text-slate-400' }} fa-heart text-sm"></i>
             </button>
 

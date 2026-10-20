@@ -10,8 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ isset($title) ? $title.' - ' : '' }}{{ $brand }}</title>
-    <meta name="description" content="{{ $metaDescription ?? setting_tr('footer_about', __('store.footerAbout')) }}">
+    @include('partials.seo')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -29,7 +28,7 @@
         <!-- بوب أب فيديو ترحيبي -->
         <div id="welcome-modal" class="hidden no-print fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
             <div class="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-lg w-full border-4 border-yellow-300 relative">
-                <button onclick="closeWelcomeModal()" class="absolute top-4 left-4 z-20 w-9 h-9 bg-slate-900/60 hover:bg-slate-900 text-white rounded-full flex items-center justify-center font-black transition cursor-pointer">
+                <button aria-label="{{ tt('إغلاق', 'Close') }}" onclick="closeWelcomeModal()" class="absolute top-4 left-4 z-20 w-9 h-9 bg-slate-900/60 hover:bg-slate-900 text-white rounded-full flex items-center justify-center font-black transition cursor-pointer">
                     <i class="fa-solid fa-xmark text-base"></i>
                 </button>
                 <div class="relative bg-slate-900 h-60">
@@ -50,7 +49,7 @@
                 </div>
                 <div class="p-5 text-center bg-sky-50/50">
                     <p class="text-slate-600 text-xs sm:text-sm font-medium mb-4">{{ setting_tr('welcome_desc', __('store.welcomeDesc')) }}</p>
-                    <button onclick="closeWelcomeModal()" class="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 rounded-xl font-black text-sm shadow-md transition cursor-pointer">{{ setting_tr('welcome_btn', __('store.welcomeBtn')) }}</button>
+                    <button aria-label="{{ tt('إغلاق', 'Close') }}" onclick="closeWelcomeModal()" class="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 rounded-xl font-black text-sm shadow-md transition cursor-pointer">{{ setting_tr('welcome_btn', __('store.welcomeBtn')) }}</button>
                 </div>
             </div>
         </div>
@@ -77,7 +76,7 @@
         <div id="cart-reminder" class="no-print slide-up fixed bottom-24 {{ $rtl ? 'left-4 sm:left-6' : 'right-4 sm:right-6' }} z-50 w-[calc(100%-2rem)] max-w-sm bg-white rounded-3xl shadow-2xl border border-sky-100 overflow-hidden">
             <div class="bg-gradient-to-r from-sky-500 via-pink-500 to-amber-400 px-4 py-2.5 flex items-center justify-between text-white">
                 <span class="font-black text-sm flex items-center gap-2"><i class="fa-solid fa-bag-shopping wiggle"></i> {{ tt('لا تنسى سلتك! 🧸', "Don't forget your cart! 🧸") }}</span>
-                <button onclick="dismissCartReminder()" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark text-xs"></i></button>
+                <button aria-label="{{ tt('إغلاق', 'Close') }}" onclick="dismissCartReminder()" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark text-xs"></i></button>
             </div>
             <div class="p-4">
                 <p class="text-xs text-slate-600 mb-3">{{ tt('لسه عندك '.$reminderItems->sum('qty').' قطعة بالسلة تنتظرك، كمّل طلبك قبل ما تخلص الكمية.', 'You still have '.$reminderItems->sum('qty').' item(s) waiting in your cart. Complete your order before they sell out.') }}</p>

@@ -116,6 +116,18 @@ class Settings extends Page
                     ...self::pair('home_catalog_title', 'عنوان الكتالوج'),
                     ...self::pair('home_catalog_sub', 'وصف الكتالوج'),
                 ]),
+                Tab::make('SEO والتتبع')->icon(Heroicon::OutlinedMagnifyingGlass)->columns(2)->schema([
+                    ...self::pair('seo_home_title', 'عنوان الصفحة الرئيسية في Google'),
+                    ...self::pair('seo_home_description', 'وصف الموقع في Google', true),
+                    FileUpload::make('og_image')->label('صورة المشاركة الافتراضية (واتساب / فيسبوك)')->image()->disk('public')->directory('seo')
+                        ->helperText('المقاس المثالي 1200×630'),
+                    FileUpload::make('favicon')->label('أيقونة الموقع (Favicon)')->image()->disk('public')->directory('seo')
+                        ->helperText('صورة مربعة 512×512 بصيغة PNG'),
+                    TextInput::make('google_site_verification')->label('كود التحقق من Google Search Console')->placeholder('الكود فقط بدون <meta>'),
+                    TextInput::make('bing_site_verification')->label('كود التحقق من Bing Webmaster'),
+                    TextInput::make('ga4_id')->label('Google Analytics (GA4) Measurement ID')->placeholder('G-XXXXXXXXXX'),
+                    TextInput::make('facebook_pixel_id')->label('Facebook / Meta Pixel ID'),
+                ]),
                 Tab::make('نافذة الترحيب')->icon(Heroicon::OutlinedSparkles)->columns(2)->schema([
                     Toggle::make('welcome_enabled')->label('إظهار نافذة الترحيب للزوار')->columnSpanFull(),
                     FileUpload::make('welcome_video_upload')->label('رفع فيديو (MP4) — اختياري')->disk('public')->directory('welcome')
@@ -166,7 +178,9 @@ class Settings extends Page
             $state['welcome_version'] = (string) ((int) ($old['welcome_version'] ?? 1) + 1);
         }
 
-        Setting::put(collect($state)->except('welcome_video_upload')->map(fn ($v) => is_array($v) ? json_encode($v) : $v)->all());
+        // File uploads come back as [uuid => path]; store just the path.
+        Setting::put(collect($state)->except('welcome_video_upload')->map(fn ($v) => is_array($v) ? (reset($v) ?: null) : $v)->all());
+        \Illuminate\Support\Facades\Cache::forget('sitemap.xml');
 
         Notification::make()->success()->title('تم حفظ الإعدادات')->send();
     }

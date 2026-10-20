@@ -1,4 +1,4 @@
-@extends('layouts.store', ['active' => 'register', 'title' => __('store.register'), 'showWelcome' => false])
+@extends('layouts.store', ['noindex' => true, 'active' => 'register', 'title' => __('store.register'), 'showWelcome' => false])
 
 @section('content')
     <div class="content-90 py-12 flex justify-center">

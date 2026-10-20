@@ -58,6 +58,7 @@ class CategoryResource extends Resource
                 Toggle::make('is_active')->label('ظاهر')->default(true)->inline(false),
                 Fields::image('categories')->required(fn (?Category $record) => blank($record?->image))->columnSpanFull(),
             ]),
+            Fields::seoSection(),
         ]);
     }
 

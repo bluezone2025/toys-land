@@ -1,4 +1,4 @@
-@extends('layouts.store', ['active' => 'tracking', 'title' => __('store.liveTracking')])
+@extends('layouts.store', ['noindex' => true, 'active' => 'tracking', 'title' => __('store.liveTracking')])
 
 @php $rtl = is_rtl(); @endphp
 

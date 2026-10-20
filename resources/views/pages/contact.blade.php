@@ -1,4 +1,4 @@
-@extends('layouts.store', ['active' => 'contact', 'title' => __('store.contact')])
+@extends('layouts.store', ['active' => 'contact', 'title' => __('store.contact'), 'metaDescription' => tt('تواصل مع ', 'Contact ').\App\Support\Seo::brand().' — '.setting('phone').' — '.setting_tr('address', ''), 'schema' => [\App\Support\Seo::organization()]])
 
 @php
     $whatsapp = preg_replace('/\D/', '', (string) setting('whatsapp', '96599999999'));

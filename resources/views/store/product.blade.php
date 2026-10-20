@@ -1,4 +1,43 @@
-@extends('layouts.store', ['active' => 'products', 'title' => $product->tr('name'), 'metaDescription' => $product->tr('desc')])
+@php
+    $productUrl = \App\Support\Seo::canonical();
+    $firstCategory = $product->categories->first();
+    $schema = [
+        array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'Product',
+            'name' => $product->tr('name'),
+            'description' => \Illuminate\Support\Str::limit(strip_tags((string) $product->tr('desc')), 500),
+            'image' => array_map(fn ($u) => \App\Support\Seo::image($u), $product->galleryUrls()),
+            'sku' => $product->sku ?: (string) $product->id,
+            'url' => $productUrl,
+            'brand' => ['@type' => 'Brand', 'name' => \App\Support\Seo::brand()],
+            'category' => $firstCategory?->tr('title'),
+            'audience' => $product->ageGroups->isNotEmpty() ? ['@type' => 'PeopleAudience', 'suggestedMinAge' => (int) $product->ageGroups->first()->key] : null,
+            'offers' => [
+                '@type' => 'Offer',
+                'url' => $productUrl,
+                'price' => number_format((float) $product->price, 3, '.', ''),
+                'priceCurrency' => 'KWD',
+                'availability' => $product->inStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                'itemCondition' => 'https://schema.org/NewCondition',
+                'seller' => ['@id' => url('/').'#store'],
+            ],
+        ]),
+        \App\Support\Seo::breadcrumbs(array_values(array_filter([
+            [__('store.home'), \App\Support\Seo::url(app()->getLocale(), route('home'))],
+            $firstCategory ? [$firstCategory->tr('title'), \App\Support\Seo::url(app()->getLocale(), route('category.show', $firstCategory))] : null,
+            [$product->tr('name'), $productUrl],
+        ]))),
+    ];
+@endphp
+@extends('layouts.store', [
+    'active' => 'products',
+    'title' => $product->seo('title', $product->tr('name')),
+    'metaDescription' => $product->seo('description', $product->tr('desc')),
+    'metaImage' => $product->image,
+    'ogType' => 'product',
+    'schema' => $schema,
+])
 
 @php $rtl = is_rtl(); $gallery = $product->galleryUrls(); @endphp
 
@@ -16,7 +55,7 @@
                     @if ($product->tr('badge'))
                         <span class="absolute top-3 {{ $rtl ? 'right-3' : 'left-3' }} bg-white/95 text-sky-700 font-bold text-xs px-3 py-1 rounded-full shadow-sm z-10">{{ $product->tr('badge') }}</span>
                     @endif
-                    <button type="button" onclick="toggleFavorite({{ $product->id }}, event)" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-9 h-9 bg-white/95 rounded-full flex items-center justify-center shadow-sm z-10 hover:scale-110 transition cursor-pointer">
+                    <button type="button" aria-label="{{ __('store.favorites') }}" onclick="toggleFavorite({{ $product->id }}, event)" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-9 h-9 bg-white/95 rounded-full flex items-center justify-center shadow-sm z-10 hover:scale-110 transition cursor-pointer">
                         <i class="fav-icon-{{ $product->id }} {{ \App\Support\Favorites::has($product->id) ? 'fa-solid text-pink-500' : 'fa-regular text-slate-400' }} fa-heart text-sm"></i>
                     </button>
                     <button type="button" onclick="openLightbox(window.currentImage || 0)" class="block w-full cursor-zoom-in group relative" title="{{ tt('تكبير الصورة', 'Zoom image') }}">
@@ -83,7 +122,7 @@
                             <div class="flex items-center gap-3 w-full sm:w-auto">
                                 <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50 shrink-0">
                                     <button type="button" onclick="const q=document.getElementById('qty'); q.value=Math.max(1, +q.value-1)" class="px-3.5 py-3 hover:bg-slate-200 font-bold text-xs cursor-pointer">-</button>
-                                    <input id="qty" name="qty" type="number" min="1" max="{{ $product->stock }}" value="1" class="w-10 text-center bg-transparent font-bold text-xs focus:outline-none">
+                                    <input id="qty" name="qty" type="number" aria-label="{{ tt('الكمية', 'Quantity') }}" min="1" max="{{ $product->stock }}" value="1" class="w-10 text-center bg-transparent font-bold text-xs focus:outline-none">
                                     <button type="button" onclick="const q=document.getElementById('qty'); q.value=Math.min({{ $product->stock }}, +q.value+1)" class="px-3.5 py-3 hover:bg-slate-200 font-bold text-xs cursor-pointer">+</button>
                                 </div>
                                 <button type="submit" class="w-full sm:w-auto min-w-[220px] bg-sky-500 hover:bg-sky-600 text-white py-3.5 px-6 rounded-xl font-bold text-sm transition cursor-pointer">{{ __('store.addToCart') }} 🛒</button>
@@ -98,13 +137,13 @@
 
         <!-- معرض صور المنتج -->
         <div id="lightbox" data-images='@json($gallery)' class="hidden fixed inset-0 z-[60] bg-slate-950/90 backdrop-blur-sm items-center justify-center p-4 flex-col">
-            <button type="button" onclick="closeLightbox()" class="absolute top-4 {{ $rtl ? 'left-4' : 'right-4' }} w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10" title="{{ tt('إغلاق', 'Close') }}">
+            <button aria-label="{{ tt('إغلاق', 'Close') }}" type="button" onclick="closeLightbox()" class="absolute top-4 {{ $rtl ? 'left-4' : 'right-4' }} w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10" title="{{ tt('إغلاق', 'Close') }}">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
             <div class="relative w-full max-w-4xl flex items-center justify-center">
                 @if (count($gallery) > 1)
-                    <button type="button" onclick="lightboxStep({{ $rtl ? -1 : 1 }})" class="absolute right-0 sm:-right-14 w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10"><i class="fa-solid fa-chevron-right"></i></button>
-                    <button type="button" onclick="lightboxStep({{ $rtl ? 1 : -1 }})" class="absolute left-0 sm:-left-14 w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button aria-label="{{ $rtl ? tt('السابق', 'Previous') : tt('التالي', 'Next') }}" type="button" onclick="lightboxStep({{ $rtl ? -1 : 1 }})" class="absolute right-0 sm:-right-14 w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10"><i class="fa-solid fa-chevron-right"></i></button>
+                    <button aria-label="{{ $rtl ? tt('التالي', 'Next') : tt('السابق', 'Previous') }}" type="button" onclick="lightboxStep({{ $rtl ? 1 : -1 }})" class="absolute left-0 sm:-left-14 w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10"><i class="fa-solid fa-chevron-left"></i></button>
                 @endif
                 <img id="lightbox-img" src="{{ $gallery[0] ?? '' }}" class="max-h-[75vh] max-w-full rounded-2xl shadow-2xl object-contain select-none" alt="{{ $product->tr('name') }}">
             </div>

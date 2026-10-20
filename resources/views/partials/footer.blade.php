@@ -26,7 +26,7 @@
             </div>
         </div>
         <div>
-            <h4 class="font-bold mb-3 text-sky-400 text-sm">{{ __('store.quickLinks') }}</h4>
+            <h2 class="font-bold mb-3 text-sky-400 text-sm">{{ __('store.quickLinks') }}</h2>
             <ul class="space-y-2 text-slate-300 text-xs">
                 <li><a href="{{ route('home') }}" class="hover:text-white transition">{{ __('store.home') }}</a></li>
                 <li><a href="{{ route('products.index') }}" class="hover:text-white transition">{{ __('store.allToys') }}</a></li>
@@ -36,7 +36,7 @@
             </ul>
         </div>
         <div>
-            <h4 class="font-bold mb-3 text-sky-400 text-sm">{{ __('store.custService') }}</h4>
+            <h2 class="font-bold mb-3 text-sky-400 text-sm">{{ __('store.custService') }}</h2>
             <ul class="space-y-2 text-slate-300 text-xs">
                 <li><a href="{{ route('pages.terms') }}" class="hover:text-white transition">{{ __('store.terms') }}</a></li>
                 <li><a href="{{ route('pages.privacy') }}" class="hover:text-white transition">{{ __('store.privacy') }}</a></li>
@@ -45,7 +45,7 @@
             </ul>
         </div>
         <div>
-            <h4 class="font-bold mb-3 text-sky-400 text-sm">{{ __('store.safePay') }}</h4>
+            <h2 class="font-bold mb-3 text-sky-400 text-sm">{{ __('store.safePay') }}</h2>
             <p class="text-slate-400 text-xs mb-3">{{ __('store.safePayDesc') }}</p>
             <div class="flex gap-2.5 text-2xl text-slate-300">
                 <i class="fa-brands fa-cc-visa"></i>
