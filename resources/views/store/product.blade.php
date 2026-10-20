@@ -67,7 +67,7 @@
                     @if (count($gallery) > 1)
                         <div class="flex gap-2 mt-3 overflow-x-auto no-scrollbar">
                             @foreach ($gallery as $i => $img)
-                                <button type="button" onclick="document.getElementById('main-image').src='{{ $img }}'; window.currentImage = {{ $i }};" class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:border-sky-500 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt=""></button>
+                                <button type="button" onclick="document.getElementById('main-image').src='{{ $img }}'; window.currentImage = {{ $i }};" class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:border-sky-500 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt="{{ $product->tr('name') }}"></button>
                             @endforeach
                         </div>
                     @endif
@@ -151,7 +151,7 @@
             @if (count($gallery) > 1)
                 <div class="flex gap-2 mt-3 overflow-x-auto no-scrollbar max-w-full px-2">
                     @foreach ($gallery as $img)
-                        <button type="button" data-thumb class="shrink-0 w-14 h-14 rounded-xl overflow-hidden ring-sky-400 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt=""></button>
+                        <button type="button" data-thumb class="shrink-0 w-14 h-14 rounded-xl overflow-hidden ring-sky-400 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt="{{ $product->tr('name') }}"></button>
                     @endforeach
                 </div>
             @endif

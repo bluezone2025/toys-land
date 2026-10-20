@@ -119,6 +119,8 @@ class Settings extends Page
                 Tab::make('SEO والتتبع')->icon(Heroicon::OutlinedMagnifyingGlass)->columns(2)->schema([
                     ...self::pair('seo_home_title', 'عنوان الصفحة الرئيسية في Google'),
                     ...self::pair('seo_home_description', 'وصف الموقع في Google', true),
+                    ...self::pair('home_intro_title', 'عنوان الفقرة التعريفية أسفل الصفحة الرئيسية'),
+                    ...self::pair('home_intro', 'نص الفقرة التعريفية (يفيد في ظهور الموقع في Google)', true),
                     FileUpload::make('og_image')->label('صورة المشاركة الافتراضية (واتساب / فيسبوك)')->image()->disk('public')->directory('seo')
                         ->helperText('المقاس المثالي 1200×630'),
                     FileUpload::make('favicon')->label('أيقونة الموقع (Favicon)')->image()->disk('public')->directory('seo')

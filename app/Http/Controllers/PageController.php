@@ -59,7 +59,7 @@ class PageController extends Controller
         $locale = in_array($locale, ['ar', 'en']) ? $locale : 'ar';
         session(['locale' => $locale]);
 
-        return redirect()->to(\App\Support\Seo::url($locale, strtok(url()->previous(), '?')));
+        return redirect()->to(\App\Support\Seo::url($locale, url()->previous()));
     }
 
     public function country(Request $request)

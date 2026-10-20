@@ -16,7 +16,7 @@
                     @foreach ($items as $item)
                         <div class="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div class="flex items-center gap-3.5 w-full sm:w-auto min-w-0">
-                                <img src="{{ $item->product->image_url }}" class="w-20 h-20 rounded-xl object-cover bg-slate-50 border border-slate-100 shrink-0" alt="">
+                                <img src="{{ $item->product->image_url }}" class="w-20 h-20 rounded-xl object-cover bg-slate-50 border border-slate-100 shrink-0" alt="{{ $item->product->tr('name') }}">
                                 <div>
                                     <a href="{{ route('products.show', $item->product) }}" class="font-bold text-base text-slate-800 hover:text-sky-600 transition block wrap-anywhere">{{ $item->product->tr('name') }}</a>
                                     <p class="text-[11px] text-slate-500 mb-1.5">{{ \App\Support\Cart::optionsLabel($item->options, app()->getLocale(), $item->product) }}</p>

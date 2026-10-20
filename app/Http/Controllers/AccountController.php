@@ -12,7 +12,8 @@ class AccountController extends Controller
 {
     public function index(Request $request)
     {
-        $tab = in_array($request->query('tab'), ['orders', 'favorites', 'addresses', 'account']) ? $request->query('tab') : 'orders';
+        $tab = $request->route('tab') ?? $request->query('tab');
+        $tab = in_array($tab, ['orders', 'favorites', 'addresses', 'account']) ? $tab : 'orders';
 
         // Guests may still browse their session wishlist.
         if (! auth()->check()) {
@@ -48,7 +49,7 @@ class AccountController extends Controller
         ]);
         $user->update($data);
 
-        return redirect()->route('account', ['tab' => 'account'])->with('toast', tt('تم تحديث بياناتك الشخصية بنجاح ✅', 'Profile updated successfully ✅'));
+        return redirect()->route('account.tab', 'account')->with('toast', tt('تم تحديث بياناتك الشخصية بنجاح ✅', 'Profile updated successfully ✅'));
     }
 
     public function password(Request $request)
@@ -59,7 +60,7 @@ class AccountController extends Controller
         ]);
         $request->user()->update(['password' => $data['password']]);
 
-        return redirect()->route('account', ['tab' => 'account'])->with('toast', tt('تم تغيير كلمة المرور 🔒', 'Password updated 🔒'));
+        return redirect()->route('account.tab', 'account')->with('toast', tt('تم تغيير كلمة المرور 🔒', 'Password updated 🔒'));
     }
 
     public function storeAddress(Request $request)
@@ -72,7 +73,7 @@ class AccountController extends Controller
         $user = $request->user();
         $user->addresses()->create($data + ['is_default' => ! $user->addresses()->exists()]);
 
-        return redirect()->route('account', ['tab' => 'addresses'])->with('toast', tt('تم إضافة العنوان بنجاح 📍', 'Address added 📍'));
+        return redirect()->route('account.tab', 'addresses')->with('toast', tt('تم إضافة العنوان بنجاح 📍', 'Address added 📍'));
     }
 
     public function defaultAddress(Request $request, Address $address)
@@ -81,7 +82,7 @@ class AccountController extends Controller
         $request->user()->addresses()->update(['is_default' => false]);
         $address->update(['is_default' => true]);
 
-        return redirect()->route('account', ['tab' => 'addresses']);
+        return redirect()->route('account.tab', 'addresses');
     }
 
     public function destroyAddress(Request $request, Address $address)
@@ -89,6 +90,6 @@ class AccountController extends Controller
         abort_unless($address->user_id === $request->user()->id, 403);
         $address->delete();
 
-        return redirect()->route('account', ['tab' => 'addresses']);
+        return redirect()->route('account.tab', 'addresses');
     }
 }

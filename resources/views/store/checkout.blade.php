@@ -125,7 +125,7 @@
                 <div class="space-y-2 max-h-48 overflow-y-auto no-scrollbar">
                     @foreach ($items as $item)
                         <div class="flex items-center gap-2.5 text-[11px]">
-                            <img src="{{ $item->product->image_url }}" class="w-10 h-10 rounded-lg object-cover shrink-0" alt="">
+                            <img src="{{ $item->product->image_url }}" class="w-10 h-10 rounded-lg object-cover shrink-0" alt="{{ $item->product->tr('name') }}">
                             <span class="flex-1 font-bold text-slate-700 line-clamp-1">{{ $item->product->tr('name') }} × {{ $item->qty }}</span>
                             <span class="font-black text-slate-800 shrink-0">{{ money($item->total) }}</span>
                         </div>

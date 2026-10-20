@@ -58,7 +58,7 @@
                                     @endif
                                     <p class="text-sm md:text-base {{ $th['text'] }} mb-6">{{ $s->tr('desc') }}</p>
                                     @if ($s->tr('btn'))
-                                        <a href="{{ $s->link ?: route('products.index') }}" class="{{ $th['btn'] }} px-7 py-3.5 rounded-xl shadow-md transition inline-block text-sm">{{ $s->tr('btn') }}</a>
+                                        <a href="{{ $s->link ? (str_starts_with($s->link, '/') ? url($s->link) : $s->link) : route('products.index') }}" class="{{ $th['btn'] }} px-7 py-3.5 rounded-xl shadow-md transition inline-block text-sm">{{ $s->tr('btn') }}</a>
                                     @endif
                                 </div>
                             </div>
@@ -89,7 +89,7 @@
                 <div id="age-slider" class="flex gap-4 overflow-x-auto no-scrollbar pb-2 snap-x">
                     @foreach ($ageGroups as $a)
                         @php $ac = $ageColors[$a->color] ?? $ageColors['sky']; @endphp
-                        <a href="{{ route('products.index', ['age' => $a->key]) }}" class="min-w-[240px] sm:min-w-[270px] flex-1 snap-center bg-white {{ $ac[0] }} p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3 transition">
+                        <a href="{{ route('products.age', \App\Http\Controllers\StoreController::ageSlug($a->key)) }}" class="min-w-[240px] sm:min-w-[270px] flex-1 snap-center bg-white {{ $ac[0] }} p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3 transition">
                             <div class="w-12 h-12 rounded-xl {{ $ac[1] }} flex items-center justify-center text-lg font-black shrink-0">{{ $a->key }}</div>
                             <div>
                                 <h3 class="font-bold text-slate-800 text-sm">{{ $a->tr('title') }}</h3>
@@ -163,6 +163,14 @@
                     @include('partials.product-card', ['p' => $p])
                 @endforeach
             </div>
+        </section>
+
+        <section class="w-full mt-12 bg-white rounded-3xl border border-slate-100 shadow-sm p-6 sm:p-10">
+            <h2 class="text-xl font-black text-slate-800 mb-3">{{ setting_tr('home_intro_title', tt('تويز لاند: ألعاب ذكية وآمنة لعيالكم في الكويت والخليج', 'Toys Land: smart, safe toys for kids in Kuwait & the GCC')) }}</h2>
+            <div class="text-sm text-slate-600 leading-loose page-body">{!! nl2br(e(setting_tr('home_intro', tt(
+                'في تويز لاند نختار لكم ألعاب ذكية تفتح مخ عيالكم وتنمي إبداعهم: ألعاب العلوم والتجارب، الروبوتات، مكعبات التركيب، سيارات الريموت كنترول، الدمى والدباديب الناعمة، والألعاب الحركية والخارجية لكل الأعمار من سنة إلى 12 سنة. كل الألعاب أصلية وآمنة 100% ومطابقة لمعايير السلامة، مع تغليف هدايا فاخر وتوصيل سريع داخل الكويت ولكل دول الخليج، والدفع آمن عن طريق كي نت وفيزا وأبل باي أو عند الاستلام.',
+                'At Toys Land we pick smart toys that spark your children\'s minds and creativity: science kits, robots, building blocks, remote-control cars, soft dolls and teddies, and active outdoor toys for every age from 1 to 12. Every toy is authentic and 100% safe, with luxury gift wrapping, fast delivery across Kuwait and the GCC, and secure payment by KNET, Visa, Apple Pay or cash on delivery.'
+            )))) !!}</div>
         </section>
     </div>
 @endsection

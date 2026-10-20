@@ -13,11 +13,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/robots.txt', [\App\Http\Controllers\SeoController::class, 'robots']);
 Route::get('/sitemap.xml', [\App\Http\Controllers\SeoController::class, 'sitemap'])->name('sitemap');
 
-Route::middleware('store')->group(function () {
+// Arabic lives at "/", English at "/en/..." — same routes, clean crawlable URLs.
+$storeRoutes = function () {
     Route::get('/', [StoreController::class, 'home'])->name('home');
     Route::get('/products', [StoreController::class, 'index'])->name('products.index');
     Route::get('/products/{product}', [StoreController::class, 'show'])->name('products.show');
     Route::get('/category/{category}', [StoreController::class, 'category'])->name('category.show');
+    Route::get('/category/{category}/age/{age}', [StoreController::class, 'category'])->name('category.age');
+    Route::get('/age/{age}', [StoreController::class, 'index'])->name('products.age');
 
     Route::get('/cart', [CartController::class, 'show'])->name('cart');
     Route::post('/cart', [CartController::class, 'add'])->name('cart.add');
@@ -49,6 +52,7 @@ Route::middleware('store')->group(function () {
     Route::post('/country', [PageController::class, 'country'])->name('country.switch');
 
     Route::get('/account', [AccountController::class, 'index'])->name('account');
+    Route::get('/account/{tab}', [AccountController::class, 'index'])->whereIn('tab', ['orders', 'favorites', 'addresses', 'account'])->name('account.tab');
 
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -65,4 +69,7 @@ Route::middleware('store')->group(function () {
         Route::patch('/account/addresses/{address}', [AccountController::class, 'defaultAddress'])->name('addresses.default');
         Route::delete('/account/addresses/{address}', [AccountController::class, 'destroyAddress'])->name('addresses.destroy');
     });
-});
+};
+
+Route::middleware('store')->group($storeRoutes);
+Route::prefix('en')->name('en.')->middleware('store')->group($storeRoutes);

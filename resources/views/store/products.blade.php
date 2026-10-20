@@ -24,15 +24,15 @@
 
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
             <a href="{{ route('products.index') }}" class="flex items-center gap-2.5 p-2 rounded-2xl border transition {{ $selected === 'all' && ! $age && ! $search ? 'border-sky-500 bg-sky-50 shadow-sm ring-2 ring-sky-500/20' : 'border-slate-200 bg-white hover:bg-slate-50' }}">
-                <img src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=600&q=80" class="w-11 h-11 rounded-xl object-cover shrink-0" alt="">
+                <img src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=600&q=80" class="w-11 h-11 rounded-xl object-cover shrink-0" alt="{{ tt('كل الألعاب', 'All Toys') }}">
                 <div class="overflow-hidden">
                     <span class="font-black text-xs text-slate-800 block truncate">{{ tt('كل الألعاب', 'All Toys') }}</span>
                     <span class="text-[10px] text-slate-500 block truncate">{{ tt('جميع أقسام المتجر', 'Full store catalog') }}</span>
                 </div>
             </a>
             @foreach ($navCategories as $c)
-                <a href="{{ route('products.index', ['category' => $c->slug]) }}" class="flex items-center gap-2.5 p-2 rounded-2xl border transition {{ $selected === $c->slug && ! $age ? 'border-sky-500 bg-sky-50 shadow-sm ring-2 ring-sky-500/20' : 'border-slate-200 bg-white hover:bg-slate-50' }}">
-                    <img src="{{ $c->image_url }}" class="w-11 h-11 rounded-xl object-cover shrink-0" alt="">
+                <a href="{{ route('category.show', $c) }}" class="flex items-center gap-2.5 p-2 rounded-2xl border transition {{ $selected === $c->slug && ! $age ? 'border-sky-500 bg-sky-50 shadow-sm ring-2 ring-sky-500/20' : 'border-slate-200 bg-white hover:bg-slate-50' }}">
+                    <img src="{{ $c->image_url }}" class="w-11 h-11 rounded-xl object-cover shrink-0" alt="{{ $c->tr('title') }}">
                     <div class="overflow-hidden">
                         <span class="font-black text-xs text-slate-800 block truncate">{{ $c->tr('title') }}</span>
                         <span class="text-[10px] text-slate-500 block truncate">{{ $c->tr('desc') }}</span>

@@ -45,7 +45,7 @@
 
         <div class="flex gap-2 border-b border-slate-200 mb-6 overflow-x-auto no-scrollbar text-xs">
             @foreach ($tabs as $key => $label)
-                <a href="{{ route('account', ['tab' => $key]) }}" class="{{ $tab === $key ? 'px-5 py-3 font-black text-xs border-b-2 border-sky-500 text-sky-600 bg-sky-50/50 rounded-t-xl' : 'px-5 py-3 font-bold text-xs border-b-2 border-transparent text-slate-600 hover:text-slate-900' }} transition whitespace-nowrap">{{ $label }}</a>
+                <a href="{{ route('account.tab', $key) }}" class="{{ $tab === $key ? 'px-5 py-3 font-black text-xs border-b-2 border-sky-500 text-sky-600 bg-sky-50/50 rounded-t-xl' : 'px-5 py-3 font-bold text-xs border-b-2 border-transparent text-slate-600 hover:text-slate-900' }} transition whitespace-nowrap">{{ $label }}</a>
             @endforeach
         </div>
 

@@ -40,14 +40,14 @@
         <nav class="hidden md:flex items-center gap-6 lg:gap-7 font-bold text-sm">
             <a href="{{ route('home') }}" class="{{ $nav('home') }} transition">{{ __('store.home') }}</a>
             <a href="{{ route('products.index') }}" class="{{ $nav('products') }} transition">{{ __('store.allToys') }}</a>
-            <a href="{{ route('account', ['tab' => 'favorites']) }}" class="{{ $nav('favorites') }} transition flex items-center gap-1.5">{{ __('store.favorites') }} <span data-fav-count class="bg-pink-100 text-pink-600 text-[10px] px-1.5 rounded-full">{{ $favCount }}</span></a>
+            <a href="{{ route('account.tab', 'favorites') }}" class="{{ $nav('favorites') }} transition flex items-center gap-1.5">{{ __('store.favorites') }} <span data-fav-count class="bg-pink-100 text-pink-600 text-[10px] px-1.5 rounded-full">{{ $favCount }}</span></a>
             <a href="{{ route('pages.about') }}" class="{{ $nav('about') }} transition">{{ __('store.about') }}</a>
             <a href="{{ route('faq') }}" class="{{ $nav('faq') }} transition">{{ __('store.faq') }}</a>
             <a href="{{ route('contact') }}" class="{{ $nav('contact') }} transition">{{ __('store.contact') }}</a>
         </nav>
 
         <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            <a href="{{ route('account', ['tab' => 'favorites']) }}" class="relative p-2.5 bg-pink-50 text-pink-600 rounded-xl hover:bg-pink-100 transition" title="{{ __('store.favorites') }}">
+            <a href="{{ route('account.tab', 'favorites') }}" class="relative p-2.5 bg-pink-50 text-pink-600 rounded-xl hover:bg-pink-100 transition" title="{{ __('store.favorites') }}">
                 <i class="fa-solid fa-heart text-base"></i>
                 <span data-fav-count class="absolute -top-1 -right-1 bg-pink-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">{{ $favCount }}</span>
             </a>
@@ -125,7 +125,7 @@
             <p class="text-[11px] text-slate-400 mb-2 px-2">{{ __('store.myAccountPages') }}</p>
             <a href="{{ route('home') }}" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-sky-50 hover:text-sky-600"><i class="fa-solid fa-house w-5 text-sky-500 text-center"></i> {{ __('store.home') }}</a>
             <a href="{{ route('account') }}" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-sky-50 hover:text-sky-600"><i class="fa-solid fa-user-gear w-5 text-indigo-500 text-center"></i> {{ __('store.profileOrders') }}</a>
-            <a href="{{ route('account', ['tab' => 'favorites']) }}" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-sky-50 hover:text-sky-600">
+            <a href="{{ route('account.tab', 'favorites') }}" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-sky-50 hover:text-sky-600">
                 <span class="flex items-center gap-3"><i class="fa-solid fa-heart w-5 text-pink-500 text-center"></i> {{ __('store.myFavToys') }}</span>
                 <span data-fav-count class="bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full text-[10px]">{{ $favCount }}</span>
             </a>
@@ -145,7 +145,7 @@
             <a href="{{ route('products.index') }}" class="flex items-center gap-3 p-2 rounded-xl hover:bg-sky-50">🌈 {{ __('store.catAll') }}</a>
             @foreach ($navCategories as $c)
                 <a href="{{ route('category.show', $c) }}" class="flex items-center gap-3 p-2 rounded-xl hover:bg-sky-50">
-                    <img src="{{ $c->image_url }}" class="w-8 h-8 rounded-lg object-cover shrink-0" alt="">
+                    <img src="{{ $c->image_url }}" class="w-8 h-8 rounded-lg object-cover shrink-0" alt="{{ $c->tr('title') }}">
                     <span>{{ $c->tr('title') }}</span>
                 </a>
             @endforeach

@@ -25,7 +25,7 @@
         @if ($page->slug === 'about')
             <div class="relative rounded-3xl overflow-hidden bg-slate-900 text-white mb-10 shadow-md h-64 sm:h-80 flex items-center">
                 @if ($page->image_url)
-                    <img src="{{ $page->image_url }}" class="absolute inset-0 w-full h-full object-cover opacity-40" alt="">
+                    <img src="{{ $page->image_url }}" class="absolute inset-0 w-full h-full object-cover opacity-40" alt="{{ $page->tr('title') }}">
                 @endif
                 <div class="relative z-10 px-6 lg:px-14 max-w-2xl">
                     @if ($page->tr('badge'))<span class="bg-amber-400 text-slate-950 px-3.5 py-1 rounded-full text-xs font-black inline-block mb-3">{{ $page->tr('badge') }}</span>@endif

@@ -57,6 +57,6 @@ class SeoController extends Controller
 
     public static function alternate(string $url, string $locale): string
     {
-        return $locale === 'en' ? $url.'?lang=en' : $url;
+        return $locale === 'en' ? Seo::url('en', $url) : $url;
     }
 }

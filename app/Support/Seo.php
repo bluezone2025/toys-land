@@ -15,27 +15,28 @@ class Seo
     /** Query parameters that change page content and belong in canonical URLs. */
     protected const KEEP = ['category', 'age', 'page', 'sort'];
 
+
+    /** Same page in the given language: "/path" (Arabic) or "/en/path" (English). */
     public static function url(string $locale, ?string $url = null): string
     {
-        $url ??= request()->url();
-        $query = collect(request()->query())->only(self::KEEP)->filter(fn ($v) => $v !== null && $v !== '' && $v !== 'default' && $v !== 'all')->all();
-        unset($query['lang']);
+        $root = request()->root();
+        $path = $url !== null ? (parse_url($url, PHP_URL_PATH) ?? '/') : '/'.request()->path();
+        $path = preg_replace('#^/en(?=/|$)#', '', '/'.ltrim($path, '/'));
+        $path = $path === '/' ? '' : $path;
+
+        $query = $url !== null ? [] : collect(request()->query())->only(self::KEEP)
+            ->filter(fn ($v) => $v !== null && $v !== '' && $v !== 'default' && $v !== 'all')->all();
         if (($query['page'] ?? null) == 1) {
             unset($query['page']);
         }
-        if ($locale === 'en') {
-            $query['lang'] = 'en';
-        }
 
-        return $url.($query ? '?'.http_build_query($query) : '');
+        return $root.($locale === 'en' ? '/en' : '').$path.($query ? '?'.http_build_query($query) : '');
     }
 
-    /** Language switcher link: always carries ?lang= so it overrides the visitor's saved choice. */
+    /** Language switcher link. */
     public static function switchUrl(string $locale): string
     {
-        $url = static::url($locale);
-
-        return $locale === 'en' ? $url : $url.(str_contains($url, '?') ? '&' : '?').'lang=ar';
+        return static::url($locale);
     }
 
     public static function canonical(): string

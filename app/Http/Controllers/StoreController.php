@@ -28,8 +28,8 @@ class StoreController extends Controller
                 ->whenEmpty(fn () => $base()->orderByDesc('sales_count')->take(12)->get()),
             'eduProducts' => $base()->whereHas('categories', fn (Builder $q) => $q->whereIn('categories.id', $eduIds))->take(12)->get(),
             'funProducts' => $base()->whereHas('categories', fn (Builder $q) => $q->whereIn('categories.id', $funIds))->take(12)->get(),
-            'eduLink' => route('products.index', array_filter(['category' => $firstSlug($eduIds)])),
-            'funLink' => route('products.index', array_filter(['category' => $firstSlug($funIds)])),
+            'eduLink' => ($slug = $firstSlug($eduIds)) ? route('category.show', $slug) : route('products.index'),
+            'funLink' => ($slug = $firstSlug($funIds)) ? route('category.show', $slug) : route('products.index'),
             'catalog' => $base()->take(20)->get(),
         ]);
     }
@@ -37,7 +37,7 @@ class StoreController extends Controller
     public function index(Request $request)
     {
         $selected = (string) $request->query('category', 'all');
-        $age = $request->query('age');
+        $age = static::ageKey($request->route('age') ?? $request->query('age'));
         $search = trim((string) $request->query('search'));
         $sort = (string) $request->query('sort', 'default');
 
@@ -79,7 +79,7 @@ class StoreController extends Controller
     {
         abort_unless($category->is_active, 404);
 
-        $age = $request->query('age');
+        $age = static::ageKey($request->route('age') ?? $request->query('age'));
         $sort = (string) $request->query('sort', 'default');
         $query = $category->products()->active()->with('ageGroups');
         if ($age) {
@@ -118,6 +118,17 @@ class StoreController extends Controller
             'addons' => $product->options->where('type', 'addon')->values(),
             'related' => $related,
         ]);
+    }
+
+    /** URL-safe age keys: "9+" travels as "9-plus". */
+    public static function ageSlug(string $key): string
+    {
+        return str_replace('+', '-plus', $key);
+    }
+
+    protected static function ageKey(?string $slug): ?string
+    {
+        return $slug === null || $slug === '' ? null : str_replace('-plus', '+', $slug);
     }
 
     protected function applySort($query, string $sort): void

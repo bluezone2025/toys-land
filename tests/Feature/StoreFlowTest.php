@@ -25,8 +25,10 @@ class StoreFlowTest extends TestCase
         foreach (['/', '/products', '/products?age=3-5', '/products?search=robot', '/category/dolls', "/products/{$product->slug}", '/cart', '/about', '/privacy', '/terms', '/shipping', '/faq', '/contact', '/login', '/register', '/tracking'] as $url) {
             $this->get($url)->assertOk();
         }
-        $this->get('/lang/en');
-        $this->get('/')->assertOk()->assertSee('Toys Land')->assertSee('dir="ltr"', false);
+        $this->get('/en')->assertOk()->assertSee('Toys Land')->assertSee('dir="ltr"', false)
+            ->assertSee('href="'.url('/en/products').'"', false);
+        $this->get('/age/9-plus')->assertOk();
+        $this->get('/en/category/dolls/age/1-3')->assertOk()->assertSee('dir="ltr"', false);
     }
 
     public function test_guest_can_buy_with_cash_on_delivery_and_coupon(): void
@@ -121,9 +123,8 @@ class StoreFlowTest extends TestCase
         $this->from('/register')->post('/register', $form);
         $this->get('/register')->assertSee('مسجل عندنا من قبل')->assertSee('تأكيد كلمة المرور غير متطابق');
 
-        $this->get('/lang/en');
-        $this->from('/register')->post('/register', $form);
-        $this->get('/register')->assertSee('The email has already been taken');
+        $this->from('/en/register')->post('/en/register', $form);
+        $this->get('/en/register')->assertSee('The email has already been taken');
     }
 
     public function test_email_is_required_at_checkout(): void
@@ -185,7 +186,7 @@ class StoreFlowTest extends TestCase
         $this->assertTrue($user->favoriteProducts()->whereKey($product->id)->exists(), 'guest wishlist merged into account');
 
         foreach (['orders', 'favorites', 'addresses', 'account'] as $tab) {
-            $this->get("/account?tab={$tab}")->assertOk();
+            $this->get("/account/{$tab}")->assertOk();
         }
         $this->post('/account/addresses', ['title' => 'Home', 'area' => 'Hawally', 'details' => 'Block 1'])->assertRedirect();
         $this->assertTrue($user->addresses()->first()->is_default);

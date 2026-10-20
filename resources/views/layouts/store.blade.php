@@ -38,7 +38,7 @@
                             <source src="{{ \App\Models\Concerns\HasImage::imageUrl($welcomeVideo) }}" type="video/mp4">
                         </video>
                     @else
-                        <img src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=900&q=80" class="w-full h-full object-cover" alt="">
+                        <img src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=900&q=80" class="w-full h-full object-cover" alt="{{ setting_tr('welcome_title', __('store.welcomeTitle')) }}">
                     @endif
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent flex items-end p-5">
                         <div>
@@ -82,7 +82,7 @@
                 <p class="text-xs text-slate-600 mb-3">{{ tt('لسه عندك '.$reminderItems->sum('qty').' قطعة بالسلة تنتظرك، كمّل طلبك قبل ما تخلص الكمية.', 'You still have '.$reminderItems->sum('qty').' item(s) waiting in your cart. Complete your order before they sell out.') }}</p>
                 <div class="flex items-center gap-2 mb-4">
                     @foreach ($reminderItems->take(4) as $item)
-                        <img src="{{ $item->product->image_url }}" class="w-12 h-12 rounded-xl object-cover border border-slate-100" alt="">
+                        <img src="{{ $item->product->image_url }}" class="w-12 h-12 rounded-xl object-cover border border-slate-100" alt="{{ $item->product->tr('name') }}">
                     @endforeach
                     @if ($reminderItems->count() > 4)
                         <span class="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 text-xs font-black flex items-center justify-center">+{{ $reminderItems->count() - 4 }}</span>
