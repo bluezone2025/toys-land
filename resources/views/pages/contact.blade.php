@@ -42,7 +42,7 @@
                     <div class="hidden"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div><label class="block font-bold text-slate-700 mb-1">{{ tt('الاسم الكامل *', 'Full Name *') }}</label><input type="text" name="name" value="{{ old('name', auth()->user()?->name) }}" required maxlength="120" class="{{ $input }}"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1">{{ tt('رقم النقال *', 'Mobile Number *') }}</label><input type="tel" name="phone" value="{{ old('phone', auth()->user()?->phone) }}" required maxlength="20" class="{{ $input }}"></div>
+                        <div><label class="block font-bold text-slate-700 mb-1">{{ tt('رقم الهاتف *', 'Phone Number *') }}</label><input type="tel" name="phone" value="{{ old('phone', auth()->user()?->phone) }}" required maxlength="20" class="{{ $input }}"></div>
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">{{ tt('موضوع الرسالة', 'Inquiry Type') }}</label>

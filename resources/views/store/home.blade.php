@@ -76,12 +76,12 @@
     <div class="content-90">
         @if ($ageGroups->isNotEmpty())
             <section class="w-full mb-10">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
+                <div class="flex justify-between items-center gap-3 mb-4">
+                    <div class="min-w-0">
                         <h2 class="text-xl font-black text-slate-800">{{ setting_tr('home_age_title', __('store.ageSecTitle')) }}</h2>
                         <p class="text-slate-500 text-xs">{{ setting_tr('home_age_sub', __('store.ageSecSub')) }}</p>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 shrink-0">
                         <button aria-label="{{ tt('السابق', 'Previous') }}" onclick="scrollSlider('age-slider', 1)" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $prevIcon }} text-xs"></i></button>
                         <button aria-label="{{ tt('التالي', 'Next') }}" onclick="scrollSlider('age-slider', -1)" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $nextIcon }} text-xs"></i></button>
                     </div>
@@ -107,10 +107,10 @@
                     <h2 class="text-xl font-black text-slate-800">{{ setting_tr('home_cats_title', __('store.catsSecTitle')) }}</h2>
                     <p class="text-slate-500 text-xs">{{ setting_tr('home_cats_sub', __('store.catsSecSub')) }}</p>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 shrink-0">
                     <button aria-label="{{ tt('السابق', 'Previous') }}" onclick="scrollSlider('cats-slider', 1)" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $prevIcon }} text-xs"></i></button>
                     <button aria-label="{{ tt('التالي', 'Next') }}" onclick="scrollSlider('cats-slider', -1)" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $nextIcon }} text-xs"></i></button>
-                    <a href="{{ route('products.index') }}" class="text-sky-600 font-bold text-xs hover:underline">{{ __('store.viewAll') }}</a>
+                    <a href="{{ route('products.index') }}" class="text-sky-600 font-bold text-xs hover:underline whitespace-nowrap">{{ __('store.viewAll') }}</a>
                 </div>
             </div>
             <div id="cats-slider" class="flex gap-4 overflow-x-auto no-scrollbar pb-3 snap-x">

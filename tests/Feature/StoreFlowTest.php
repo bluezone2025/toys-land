@@ -45,7 +45,7 @@ class StoreFlowTest extends TestCase
             ->assertOk()->assertJsonPath('coupon', 'TOYS10 (10%)');
 
         $this->post('/checkout', [
-            'name' => 'Test Customer', 'email' => 'buyer@example.com', 'phone' => '96599999999', 'country' => 'KW', 'city' => 'Salmiya',
+            'name' => 'Test Customer', 'email' => 'buyer@example.com', 'phone' => '99999999', 'country' => 'KW', 'city' => 'Salmiya', 'street' => '10',
             'block' => '4', 'property_type' => 'apartment', 'apartment' => '12', 'payment_method' => 'cod', 'coupon' => 'TOYS10',
         ])->assertRedirect();
 
@@ -130,7 +130,7 @@ class StoreFlowTest extends TestCase
     public function test_email_is_required_at_checkout(): void
     {
         $this->postJson('/cart', ['product_id' => Product::first()->id]);
-        $this->post('/checkout', ['name' => 'X', 'phone' => '96512345678', 'country' => 'KW', 'city' => 'C', 'block' => '1', 'property_type' => 'house', 'apartment' => '1', 'payment_method' => 'cod'])
+        $this->post('/checkout', ['name' => 'X', 'phone' => '12345678', 'country' => 'KW', 'city' => 'C', 'street' => '1', 'block' => '1', 'property_type' => 'house', 'apartment' => '1', 'payment_method' => 'cod'])
             ->assertSessionHasErrors('email');
     }
 
@@ -188,8 +188,15 @@ class StoreFlowTest extends TestCase
         foreach (['orders', 'favorites', 'addresses', 'account'] as $tab) {
             $this->get("/account/{$tab}")->assertOk();
         }
-        $this->post('/account/addresses', ['title' => 'Home', 'area' => 'Hawally', 'details' => 'Block 1'])->assertRedirect();
+        $address = ['title' => 'Home', 'country' => 'KW', 'city' => 'Hawally', 'block' => '1', 'street' => '5', 'property_type' => 'house', 'apartment' => '7'];
+        $this->post('/account/addresses', $address)->assertRedirect();
+        $this->post('/account/addresses', $address)->assertRedirect();
+        $this->assertSame(1, $user->addresses()->count(), 'duplicate address is not saved twice');
         $this->assertTrue($user->addresses()->first()->is_default);
+
+        // The saved address is offered at checkout.
+        $this->postJson('/cart', ['product_id' => $product->id]);
+        $this->get('/checkout')->assertOk()->assertSee('Hawally')->assertSee('+965');
 
         $this->get('/admin')->assertForbidden();
         $this->post('/logout');

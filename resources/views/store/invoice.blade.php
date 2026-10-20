@@ -83,7 +83,7 @@
                         <h4 class="font-black text-xs text-sky-600 uppercase mb-3 flex items-center gap-2"><i class="fa-solid fa-user-check"></i> {{ tt('بيانات العميل (المشتري)', 'Customer Details') }}</h4>
                         <div class="space-y-2 text-xs">
                             <div class="flex justify-between gap-3 border-b border-slate-200/60 pb-1.5"><span class="text-slate-500">{{ tt('الاسم الكامل:', 'Full Name:') }}</span><span class="font-black text-slate-800">{{ $order->name }}</span></div>
-                            <div class="flex justify-between gap-3 border-b border-slate-200/60 pb-1.5"><span class="text-slate-500">{{ tt('رقم النقال:', 'Mobile:') }}</span><span class="font-bold text-slate-800 dir-ltr">{{ $order->phone }}</span></div>
+                            <div class="flex justify-between gap-3 border-b border-slate-200/60 pb-1.5"><span class="text-slate-500">{{ tt('رقم الهاتف:', 'Phone:') }}</span><span class="font-bold text-slate-800 dir-ltr">{{ $order->phone }}</span></div>
                             <div class="flex justify-between gap-3 border-b border-slate-200/60 pb-1.5"><span class="text-slate-500">{{ tt('البريد الإلكتروني:', 'Email:') }}</span><span class="font-bold text-slate-700">{{ $order->email ?: tt('غير مسجل', 'N/A') }}</span></div>
                             <div class="flex justify-between gap-3 pt-0.5"><span class="text-slate-500">{{ tt('وسيلة الدفع:', 'Payment Method:') }}</span><span class="font-black text-emerald-600">{{ $methodNames[$order->payment_method] ?? $order->payment_method }}</span></div>
                         </div>
@@ -92,7 +92,7 @@
                         <h4 class="font-black text-xs text-pink-600 uppercase mb-3 flex items-center gap-2"><i class="fa-solid fa-location-dot"></i> {{ tt('عنوان التوصيل التفصيلي', 'Delivery Address') }}</h4>
                         <div class="space-y-2 text-xs">
                             <div class="flex justify-between gap-3 border-b border-slate-200/60 pb-1.5"><span class="text-slate-500">{{ tt('الدولة والمنطقة:', 'Country & City:') }}</span><span class="font-black text-slate-800">{{ $country?->tr('name') }} - {{ $order->city }}</span></div>
-                            <div class="flex justify-between gap-3 border-b border-slate-200/60 pb-1.5"><span class="text-slate-500">{{ tt('تفاصيل العنوان:', 'Address:') }}</span><span class="font-bold text-slate-800">{{ tt('قطعة ', 'Block ') }}{{ $order->block }} - {{ $types[$order->property_type] ?? $order->property_type }} {{ $order->apartment }}</span></div>
+                            <div class="flex justify-between gap-3 border-b border-slate-200/60 pb-1.5"><span class="text-slate-500">{{ tt('تفاصيل العنوان:', 'Address:') }}</span><span class="font-bold text-slate-800">{{ $order->addressLine() }}</span></div>
                             <div class="flex justify-between gap-3 pt-0.5"><span class="text-slate-500">{{ tt('ملاحظات العميل:', 'Notes:') }}</span><span class="font-medium text-slate-600">{{ $order->notes ?: tt('لا توجد ملاحظات', 'No extra notes') }}</span></div>
                         </div>
                     </div>

@@ -10,7 +10,7 @@
         <b>{{ $ar ? 'رقم الطلب' : 'Order No.' }}:</b> #{{ $order->number }}<br>
         <b>{{ $ar ? 'التاريخ' : 'Date' }}:</b> {{ $order->created_at->format('Y/m/d h:i A') }}<br>
         <b>{{ $ar ? 'الاسم' : 'Name' }}:</b> {{ $order->name }} — <span dir="ltr">{{ $order->phone }}</span><br>
-        <b>{{ $ar ? 'العنوان' : 'Address' }}:</b> {{ $order->country?->tr('name') }} - {{ $order->city }} - {{ $ar ? 'قطعة' : 'Block' }} {{ $order->block }} - {{ $order->apartment }}<br>
+        <b>{{ $ar ? 'العنوان' : 'Address' }}:</b> {{ $order->country?->tr('name') }} — {{ $order->addressLine() }}<br>
         <b>{{ $ar ? 'طريقة الدفع' : 'Payment' }}:</b> {{ $methods[$order->payment_method] ?? $order->payment_method }}
         @if ($order->payment_status === 'paid') <span style="color:#059669;">({{ $ar ? 'مدفوع' : 'Paid' }} ✓)</span>@endif
         @if ($order->notes)<br><b>{{ $ar ? 'ملاحظات' : 'Notes' }}:</b> {{ $order->notes }}@endif

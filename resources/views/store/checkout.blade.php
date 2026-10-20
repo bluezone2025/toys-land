@@ -1,10 +1,12 @@
-@extends('layouts.store', ['noindex' => true, 'active' => 'checkout', 'title' => tt('إتمام الطلب', 'Checkout'), 'showWelcome' => false])
+@extends('layouts.store', ['noindex' => true, 'floatingBar' => true, 'active' => 'checkout', 'title' => tt('إتمام الطلب', 'Checkout'), 'showWelcome' => false])
 
 @php
     $rtl = is_rtl();
     $input = 'w-full border border-slate-200 rounded-xl p-3 focus:outline-none focus:border-sky-500';
     $user = auth()->user();
-    $addr = $user?->addresses()->orderByDesc('is_default')->first();
+    $savedAddresses = $user ? $user->addresses()->orderByDesc('is_default')->latest('id')->get() : collect();
+    $addressValues = $savedAddresses->first()?->formValues() ?? [];
+    $phoneNumber = \App\Http\Controllers\CheckoutController::localNumber($user?->phone);
     $methods = [
         'knet' => ['icon' => '<span class="text-[10px] tracking-widest leading-none">KNET</span><i class="fa-solid fa-money-check text-sm mt-1"></i>', 'box' => 'bg-gradient-to-br from-blue-600 to-sky-500 flex-col font-black', 'title' => tt('كي نت (KNet)', 'KNet Local Debit'), 'tag' => tt('الأسرع بالكويت', 'Popular'), 'desc' => tt('دفع فوري آمن عبر بطاقات البنوك الكويتية', 'Instant payment via Kuwaiti bank cards')],
         'card' => ['icon' => '<i class="fa-brands fa-cc-visa"></i>', 'box' => 'bg-gradient-to-br from-indigo-600 to-purple-600 text-xl', 'title' => 'Visa / MasterCard', 'tag' => null, 'desc' => tt('البطاقات الائتمانية ومسبقة الدفع الخليجية والعالمية', 'All GCC & International credit/debit cards')],
@@ -16,7 +18,7 @@
 @endphp
 
 @section('content')
-    <div class="content-90 py-8">
+    <div class="content-90 py-8 pb-28 lg:pb-8">
         <h1 class="text-2xl font-black text-slate-800 mb-6">{{ tt('إتمام الطلب والدفع الآمن', 'Secure Checkout & Delivery') }}</h1>
 
         @if ($errors->any())
@@ -25,45 +27,57 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('checkout.store') }}" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <form method="POST" action="{{ route('checkout.store') }}" id="checkout-form" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             @csrf
-            <div class="lg:col-span-8 space-y-6">
-                <!-- الخطوة 1: بيانات المستخدم -->
-                <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 space-y-4 shadow-sm">
+            <div class="lg:col-span-8 space-y-6 min-w-0">
+                <!-- الخطوة 1: بيانات العميل -->
+                <div class="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-8 space-y-4 shadow-sm">
                     <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
                         <span class="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center font-black text-sm shadow-sm">1</span>
                         <div>
-                            <h2 class="text-base sm:text-lg font-black text-slate-800">{{ tt('بيانات العميل وعنوان التوصيل', 'Customer & Delivery Address') }}</h2>
-                            <p class="text-[11px] text-slate-400">{{ tt('يرجى تعبئة البيانات بدقة لضمان سرعة وصول المندوب', 'Please fill in your details accurately for fast delivery') }}</p>
+                            <h2 class="text-base sm:text-lg font-black text-slate-800">{{ tt('بيانات العميل', 'Customer Details') }}</h2>
+                            <p class="text-[11px] text-slate-400">{{ tt('نرسل الفاتورة على بريدك ونتواصل معك على رقمك لتأكيد التوصيل', 'We email your invoice and call this number to arrange delivery') }}</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2">
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('الاسم الكامل *', 'Full Name *') }}</label><input type="text" name="name" value="{{ old('name', $user?->name) }}" required maxlength="120" class="{{ $input }}" placeholder="{{ tt('الاسم الكريم', 'Enter full name') }}"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم النقال *', 'Mobile Number *') }}</label><input type="tel" name="phone" value="{{ old('phone', $user?->phone) }}" required maxlength="20" class="{{ $input }} dir-ltr {{ $rtl ? 'text-right' : '' }}" placeholder="965xxxxxxxx"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('البريد الإلكتروني * (نرسل عليه الفاتورة)', 'Email Address * (we send your invoice here)') }}</label><input type="email" name="email" value="{{ old('email', $user?->email) }}" required maxlength="150" class="{{ $input }}" placeholder="name@example.com"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('الدولة *', 'Country *') }}</label>
-                            <select name="country" id="c-country" onchange="refreshSummary()" class="{{ $input }} bg-white">
-                                @foreach ($countries as $c)
-                                    <option value="{{ $c->code }}" @selected(old('country', \App\Support\Shop::country()->code) === $c->code)>{{ $c->tr('name') }}</option>
-                                @endforeach
-                            </select>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('الاسم الكامل *', 'Full Name *') }}</label><input type="text" name="name" value="{{ old('name', $user?->name) }}" required maxlength="120" autocomplete="name" class="{{ $input }}" placeholder="{{ tt('الاسم الكريم', 'Enter full name') }}"></div>
+                        <div>@include('partials.phone-field', ['value' => $phoneNumber])</div>
+                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('البريد الإلكتروني *', 'Email Address *') }}</label><input type="email" name="email" value="{{ old('email', $user?->email) }}" required maxlength="150" autocomplete="email" class="{{ $input }} dir-ltr" placeholder="name@example.com"></div>
+                    </div>
+                </div>
+
+                <!-- الخطوة 2: عنوان التوصيل -->
+                <div class="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-8 space-y-4 shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+                        <span class="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center font-black text-sm shadow-sm">2</span>
+                        <div>
+                            <h2 class="text-base sm:text-lg font-black text-slate-800">{{ tt('عنوان التوصيل', 'Delivery Address') }}</h2>
+                            <p class="text-[11px] text-slate-400">{{ tt('يرجى تعبئة العنوان بدقة لضمان سرعة وصول المندوب', 'Please fill in your address accurately for fast delivery') }}</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('المنطقة / المدينة *', 'City / Area *') }}</label><input type="text" name="city" value="{{ old('city', $addr?->area) }}" required maxlength="100" class="{{ $input }}" placeholder="{{ tt('مثال: السالمية', 'e.g. Salmiya') }}"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('القطعة *', 'Block *') }}</label><input type="text" name="block" value="{{ old('block') }}" required maxlength="50" class="{{ $input }}" placeholder="{{ tt('رقم القطعة', 'Block No.') }}"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('نوع السكن *', 'Property Type *') }}</label>
-                            <select name="property_type" class="{{ $input }} bg-white">
-                                <option value="house" @selected(old('property_type') === 'house')>{{ tt('منزل / بيت', 'House / Villa') }}</option>
-                                <option value="apartment" @selected(old('property_type') === 'apartment')>{{ tt('شقة', 'Apartment') }}</option>
-                                <option value="office" @selected(old('property_type') === 'office')>{{ tt('مكتب', 'Office') }}</option>
-                            </select>
+
+                    {{-- Saved addresses: from the account, or remembered on this device for guests (filled by JS). --}}
+                    <div id="saved-addresses" class="{{ $savedAddresses->isEmpty() ? 'hidden' : '' }}">
+                        <p class="text-xs font-black text-slate-700 mb-2">📍 {{ tt('عناوينك المحفوظة — اختر واحد', 'Your saved addresses — pick one') }}</p>
+                        <div id="saved-addresses-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            @foreach ($savedAddresses as $saved)
+                                <button type="button" data-fill='@json($saved->formValues())' class="saved-address text-start border-2 border-slate-200 hover:border-sky-400 rounded-2xl p-3 transition cursor-pointer">
+                                    <span class="font-black text-sm text-slate-800 flex items-center gap-2">{{ $saved->title }} @if ($saved->is_default)<span class="bg-sky-100 text-sky-700 text-[10px] px-2 py-0.5 rounded-md">{{ tt('الأساسي', 'Default') }}</span>@endif</span>
+                                    <span class="block text-[11px] text-slate-500 mt-1">{{ $saved->summary() }}</span>
+                                </button>
+                            @endforeach
                         </div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم المنزل / الشقة *', 'House / Apt No. *') }}</label><input type="text" name="apartment" value="{{ old('apartment') }}" required maxlength="100" class="{{ $input }}" placeholder="{{ tt('الرقم', 'Number') }}"></div>
+                        <p class="text-[11px] text-slate-400 mt-3 mb-1">{{ tt('أو اكتب عنوان جديد:', 'Or enter a new address:') }}</p>
                     </div>
-                    @if ($addr)
-                        <p class="text-[11px] text-slate-500 bg-slate-50 rounded-xl p-2.5">📍 {{ tt('عنوانك المحفوظ:', 'Saved address:') }} <b>{{ $addr->title }}</b> — {{ $addr->area }}، {{ $addr->details }}</p>
-                    @endif
+
+                    @include('partials.address-fields', ['values' => $addressValues])
+
+                    @auth
+                        <label class="flex items-center gap-2 text-xs text-slate-600 cursor-pointer">
+                            <input type="checkbox" name="save_address" value="1" @checked(old('save_address', $savedAddresses->isEmpty())) class="w-4 h-4 accent-sky-500">
+                            {{ tt('احفظ هذا العنوان في حسابي', 'Save this address to my account') }}
+                        </label>
+                    @endauth
                     <div class="text-xs"><label class="block font-bold text-slate-700 mb-1.5">{{ tt('ملاحظات الطلب أو التغليف (اختياري)', 'Delivery or Gift Notes (Optional)') }}</label><textarea name="notes" rows="2" maxlength="1000" class="{{ $input }}" placeholder="{{ tt('اكتب أي ملاحظة للمندوب أو عبارة على كرت الهدية...', 'Any special instructions or gift card message...') }}">{{ old('notes') }}</textarea></div>
                 </div>
 
@@ -71,7 +85,7 @@
                 <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 space-y-5 shadow-sm">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                         <div class="flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center font-black text-sm shadow-sm">2</span>
+                            <span class="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center font-black text-sm shadow-sm">3</span>
                             <div>
                                 <h2 class="text-base sm:text-lg font-black text-slate-800">{{ tt('نقي طريقة الدفع الآمنة (MyFatoorah)', 'Select Secure Payment Method (MyFatoorah)') }}</h2>
                                 <p class="text-[11px] text-slate-400">{{ tt('جميع المعاملات مشفرة ومحمية بنسبة 100%', 'All transactions are 100% encrypted and secure') }}</p>
@@ -146,11 +160,20 @@
                 </div>
                 <div class="flex justify-between items-center font-black text-base pt-1">
                     <span>{{ __('store.total') }}:</span>
-                    <span id="chk-total" class="text-pink-600 text-2xl">{{ money($subtotal) }}</span>
+                    <span id="chk-total" data-total class="text-pink-600 text-2xl">{{ money($subtotal) }}</span>
                 </div>
                 <button type="submit" class="w-full bg-sky-500 hover:bg-sky-600 text-white py-4 rounded-2xl font-black text-sm cursor-pointer shadow-md transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-circle-check"></i>
-                    <span>{{ tt('اعتمد الطلب وأصدر الفاتورة 🧾', 'Confirm Order & Issue Invoice 🧾') }}</span>
+                    <span>{{ tt('الدفع وإصدار الفاتورة 🧾', 'Pay & Issue Invoice 🧾') }}</span>
+                </button>
+            </div>
+            <div class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] px-4 py-3 flex items-center gap-3">
+                <div class="shrink-0">
+                    <span class="block text-[10px] text-slate-500 font-bold">{{ __('store.total') }}</span>
+                    <span data-total class="text-pink-600 font-black text-lg">{{ money($subtotal) }}</span>
+                </div>
+                <button type="submit" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white py-3.5 rounded-2xl font-black text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-lock"></i> {{ tt('الدفع وإصدار الفاتورة', 'Pay & Issue Invoice') }}
                 </button>
             </div>
         </form>
@@ -159,15 +182,20 @@
 
 @push('scripts')
 <script>
+    const form = document.getElementById('checkout-form');
+    const countrySelect = form.querySelector('[data-country-select]');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    const ADDRESS_KEYS = ['country', 'city', 'block', 'street', 'avenue', 'property_type', 'apartment', 'floor'];
+
     async function refreshSummary(showMsg = false) {
         const res = await fetch(@json(route('checkout.summary')), {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-            body: JSON.stringify({ coupon: document.getElementById('coupon-input').value, country: document.getElementById('c-country').value }),
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({ coupon: document.getElementById('coupon-input').value, country: countrySelect.value }),
         });
         const d = await res.json();
         document.getElementById('chk-subtotal').innerText = d.subtotal;
-        document.getElementById('chk-total').innerText = d.total;
+        document.querySelectorAll('[data-total]').forEach(el => el.innerText = d.total);
         const ship = document.getElementById('chk-shipping');
         ship.innerText = d.shipping;
         ship.className = (d.shipping_free ? 'text-emerald-600' : 'text-slate-800') + ' font-bold';
@@ -181,6 +209,58 @@
             if (!document.getElementById('coupon-input').value) msg.classList.add('hidden');
         }
     }
-    document.addEventListener('DOMContentLoaded', () => refreshSummary());
+
+    function syncDialCode() {
+        const dial = countrySelect.selectedOptions[0]?.dataset.dial;
+        if (dial) document.querySelectorAll('[data-dial-code]').forEach(el => el.innerText = '+' + dial);
+    }
+
+    function fillAddress(values, button) {
+        ADDRESS_KEYS.forEach(key => {
+            const field = form.elements[key];
+            if (field && values[key] !== undefined && values[key] !== null) field.value = values[key];
+        });
+        document.querySelectorAll('.saved-address').forEach(b => b.classList.toggle('border-sky-500', b === button));
+        document.querySelectorAll('.saved-address').forEach(b => b.classList.toggle('bg-sky-50', b === button));
+        syncDialCode();
+        refreshSummary();
+    }
+
+    // Guests: remember the last few addresses on this device only.
+    @guest
+    (() => {
+        let saved = [];
+        try { saved = JSON.parse(localStorage.getItem('kids_addresses') || '[]'); } catch (e) {}
+        const list = document.getElementById('saved-addresses-list');
+        saved.forEach(values => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'saved-address text-start border-2 border-slate-200 hover:border-sky-400 rounded-2xl p-3 transition cursor-pointer';
+            b.dataset.fill = JSON.stringify(values);
+            const title = document.createElement('span');
+            title.className = 'font-black text-sm text-slate-800 block';
+            title.textContent = values.city || '';
+            const line = document.createElement('span');
+            line.className = 'block text-[11px] text-slate-500 mt-1';
+            line.textContent = [values.block && @json(tt('قطعة ', 'Block ')) + values.block, values.street && @json(tt('شارع ', 'Street ')) + values.street, values.apartment].filter(Boolean).join(@json(tt('، ', ', ')));
+            b.append(title, line);
+            list.appendChild(b);
+        });
+        if (saved.length) document.getElementById('saved-addresses').classList.remove('hidden');
+        form.addEventListener('submit', () => {
+            const values = Object.fromEntries(ADDRESS_KEYS.map(k => [k, form.elements[k]?.value || '']));
+            const key = v => [v.city, v.block, v.street, v.apartment].join('|');
+            const next = [values, ...saved.filter(v => key(v) !== key(values))].slice(0, 3);
+            try { localStorage.setItem('kids_addresses', JSON.stringify(next)); } catch (e) {}
+        });
+    })();
+    @endguest
+
+    document.addEventListener('click', e => {
+        const b = e.target.closest('.saved-address');
+        if (b) fillAddress(JSON.parse(b.dataset.fill), b);
+    });
+    countrySelect.addEventListener('change', () => { syncDialCode(); refreshSummary(); });
+    document.addEventListener('DOMContentLoaded', () => { syncDialCode(); refreshSummary(); });
 </script>
 @endpush

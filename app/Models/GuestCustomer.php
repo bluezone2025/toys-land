@@ -28,7 +28,7 @@ class GuestCustomer extends Model
             'phone' => $order->phone,
             'country_code' => $order->country_code,
             'city' => $order->city,
-            'address' => tt('قطعة ', 'Block ').$order->block.' - '.$order->apartment,
+            'address' => $order->addressLine(),
             'locale' => $order->locale,
             'orders_count' => $guest->orders_count + 1,
             'total_spent' => (float) $guest->total_spent + (float) $order->total,

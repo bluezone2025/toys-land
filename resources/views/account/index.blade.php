@@ -119,8 +119,8 @@
                                 <span class="absolute top-4 {{ $rtl ? 'left-4' : 'right-4' }} bg-sky-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-lg">{{ tt('العنوان الأساسي', 'Default') }}</span>
                             @endif
                             <h4 class="font-black text-slate-800 text-sm mb-1.5">{{ $addr->title }}</h4>
-                            <p class="text-slate-600 font-medium">{{ $addr->details }}</p>
-                            <p class="text-slate-400 text-[11px] mt-1.5">{{ $addr->area }}</p>
+                            <p class="text-slate-600 font-medium">{{ $addr->summary() }}</p>
+                            <p class="text-slate-400 text-[11px] mt-1.5">{{ \App\Support\Shop::countries()->firstWhere('code', $addr->country_code)?->tr('name') }}</p>
                             <div class="flex gap-4 mt-3">
                                 @unless ($addr->is_default)
                                     <form method="POST" action="{{ route('addresses.default', $addr) }}">@csrf @method('PATCH')<button class="text-sky-600 hover:underline text-[11px] font-bold cursor-pointer">{{ tt('اجعله الأساسي', 'Make Default') }}</button></form>
@@ -130,15 +130,14 @@
                         </div>
                     @endforeach
                 </div>
-                <form method="POST" action="{{ route('addresses.store') }}" class="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3 text-xs max-w-xl">
+                <form method="POST" action="{{ route('addresses.store') }}" class="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-4 text-xs max-w-3xl">
                     @csrf
                     <h4 class="font-black text-slate-800 text-sm">{{ tt('+ إضافة عنوان توصيل يديد', '+ Add New Delivery Address') }}</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <input type="text" name="title" required maxlength="100" placeholder="{{ tt('اسم العنوان (مثال: بيت الوالد، الشاليه)', 'Address Title (e.g. Home)') }}" class="border border-slate-200 rounded-xl p-2.5 bg-white">
-                        <input type="text" name="area" required maxlength="100" placeholder="{{ tt('المنطقة / المحافظة', 'City / Area') }}" class="border border-slate-200 rounded-xl p-2.5 bg-white">
-                    </div>
-                    <input type="text" name="details" required maxlength="255" placeholder="{{ tt('القطعة، الشارع، رقم المنزل أو الشقة', 'Block, Street, House/Apt No.') }}" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white">
-                    <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white px-5 py-2.5 rounded-xl font-bold cursor-pointer">{{ tt('حفظ العنوان', 'Save Address') }}</button>
+                    @if ($errors->any())
+                        <div class="bg-red-50 text-red-600 rounded-xl p-3 font-bold">@foreach ($errors->all() as $e)<p>• {{ $e }}</p>@endforeach</div>
+                    @endif
+                    @include('partials.address-fields', ['values' => [], 'withTitle' => true])
+                    <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white px-5 py-3 rounded-xl font-bold cursor-pointer">{{ tt('حفظ العنوان', 'Save Address') }}</button>
                 </form>
             </div>
         @else
@@ -152,7 +151,7 @@
                         @csrf @method('PUT')
                         <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('الاسم الكامل', 'Full Name') }}</label><input type="text" name="name" value="{{ old('name', $user->name) }}" required class="w-full border border-slate-200 rounded-xl p-3"></div>
                         <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('البريد الإلكتروني', 'Email Address') }}</label><input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full border border-slate-200 rounded-xl p-3"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم النقال', 'Mobile Number') }}</label><input type="tel" name="phone" value="{{ old('phone', $user->phone) }}" class="w-full border border-slate-200 rounded-xl p-3"></div>
+                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم الهاتف', 'Phone Number') }}</label><input type="tel" name="phone" value="{{ old('phone', $user->phone) }}" class="w-full border border-slate-200 rounded-xl p-3"></div>
                         <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-xl font-bold transition cursor-pointer shadow-sm">{{ tt('حفظ التعديلات ✅', 'Save Changes ✅') }}</button>
                     </form>
                 </div>

@@ -7,13 +7,13 @@
         @if (! $order)
             <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 lg:p-10 max-w-xl mx-auto">
                 <h1 class="text-xl lg:text-2xl font-black text-slate-800 mb-2">{{ tt('تتبع حالة طلبك المباشر 🛵', 'Live Order Tracking 🛵') }}</h1>
-                <p class="text-slate-500 text-xs mb-6">{{ tt('اكتب رقم الطلب ورقم النقال اللي سجلت فيه الطلب', 'Enter your order number and the mobile number used at checkout') }}</p>
+                <p class="text-slate-500 text-xs mb-6">{{ tt('اكتب رقم الطلب ورقم الهاتف اللي سجلت فيه الطلب', 'Enter your order number and the phone number used at checkout') }}</p>
                 @if ($notFound)
                     <p class="bg-red-50 text-red-600 text-xs font-bold rounded-xl p-3 mb-4">{{ tt('ما لقينا طلب بهالبيانات، تأكد من الرقم وحاول مرة ثانية.', 'No order matches these details. Please check and try again.') }}</p>
                 @endif
                 <form method="GET" class="space-y-3.5 text-xs">
                     <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم الطلب', 'Order Number') }}</label><input name="order" value="{{ request('order') }}" required placeholder="TOY-123456" class="w-full border border-slate-200 rounded-xl p-3 uppercase focus:outline-none focus:border-sky-500"></div>
-                    <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم النقال', 'Mobile Number') }}</label><input name="phone" value="{{ request('phone') }}" required class="w-full border border-slate-200 rounded-xl p-3 focus:outline-none focus:border-sky-500"></div>
+                    <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم الهاتف', 'Phone Number') }}</label><input name="phone" value="{{ request('phone') }}" required class="w-full border border-slate-200 rounded-xl p-3 focus:outline-none focus:border-sky-500"></div>
                     <button class="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 rounded-xl font-bold cursor-pointer">{{ tt('تتبع الطلب', 'Track Order') }}</button>
                 </form>
             </div>

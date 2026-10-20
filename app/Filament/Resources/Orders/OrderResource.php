@@ -117,7 +117,7 @@ class OrderResource extends Resource
                 Section::make('عنوان التوصيل')->columnSpan(1)->schema([
                     TextEntry::make('country.name_ar')->label('الدولة'),
                     TextEntry::make('city')->label('المنطقة'),
-                    TextEntry::make('address')->label('العنوان')->getStateUsing(fn (Order $r) => 'قطعة '.$r->block.' - '.(['house' => 'منزل', 'apartment' => 'شقة', 'office' => 'مكتب'][$r->property_type] ?? '').' '.$r->apartment),
+                    TextEntry::make('address')->label('العنوان')->getStateUsing(fn (Order $r) => $r->addressLine()),
                     TextEntry::make('notes')->label('ملاحظات')->placeholder('لا توجد'),
                 ]),
                 Section::make('الطلب والدفع')->columnSpan(1)->schema([

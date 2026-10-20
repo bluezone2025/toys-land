@@ -1,7 +1,7 @@
-@extends('layouts.store', ['noindex' => true, 'active' => 'cart', 'title' => __('store.cartTitle')])
+@extends('layouts.store', ['noindex' => true, 'floatingBar' => true, 'active' => 'cart', 'title' => __('store.cartTitle')])
 
 @section('content')
-    <div class="content-90 py-8">
+    <div class="content-90 py-8 pb-28 lg:pb-8">
         @if ($items->isEmpty())
             <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-12 text-center max-w-xl mx-auto my-6">
                 <div class="text-5xl text-slate-300 mb-4"><i class="fa-solid fa-bag-shopping"></i></div>
@@ -53,6 +53,16 @@
                     <a href="{{ route('checkout') }}" class="w-full block text-center bg-sky-500 hover:bg-sky-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-sm transition mb-3">{{ __('store.checkoutBtn') }}</a>
                     <a href="{{ route('products.index') }}" class="w-full block text-center bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-xs transition">{{ __('store.continueShopping') }}</a>
                 </div>
+            </div>
+
+            <div class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] px-4 py-3 flex items-center gap-3">
+                <div class="shrink-0">
+                    <span class="block text-[10px] text-slate-500 font-bold">{{ __('store.total') }} ({{ $count }} {{ __('store.pieces') }})</span>
+                    <span class="text-pink-600 font-black text-lg">{{ money($subtotal + $shipping) }}</span>
+                </div>
+                <a href="{{ route('checkout') }}" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white py-3.5 rounded-2xl font-black text-sm shadow-md flex items-center justify-center gap-2">
+                    {{ tt('إتمام الطلب والدفع', 'Checkout') }} <i class="fa-solid {{ is_rtl() ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
+                </a>
             </div>
         @endif
     </div>

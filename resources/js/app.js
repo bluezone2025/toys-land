@@ -27,15 +27,17 @@ window.showToast = function (msg) {
 
 window.openMobileDrawer = function () {
     const drawer = document.getElementById('mobile-drawer');
-    drawer.classList.remove('translate-x-full', '-translate-x-full');
+    drawer.classList.remove('translate-x-full', '-translate-x-full', 'invisible');
     drawer.classList.add('translate-x-0');
+    drawer.setAttribute('aria-hidden', 'false');
     document.getElementById('drawer-overlay').classList.remove('hidden');
 };
 
 window.closeMobileDrawer = function () {
     const drawer = document.getElementById('mobile-drawer');
     drawer.classList.remove('translate-x-0');
-    drawer.classList.add(isRTL ? 'translate-x-full' : '-translate-x-full');
+    drawer.classList.add(isRTL ? 'translate-x-full' : '-translate-x-full', 'invisible');
+    drawer.setAttribute('aria-hidden', 'true');
     document.getElementById('drawer-overlay').classList.add('hidden');
 };
 

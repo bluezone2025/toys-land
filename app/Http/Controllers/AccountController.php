@@ -67,11 +67,16 @@ class AccountController extends Controller
     {
         $data = $request->validate([
             'title' => ['required', 'string', 'max:100'],
-            'area' => ['required', 'string', 'max:100'],
-            'details' => ['required', 'string', 'max:255'],
+            'country' => ['required', Rule::in(\App\Support\Shop::countries()->pluck('code'))],
+            'city' => ['required', 'string', 'max:100'],
+            'block' => ['required', 'string', 'max:50'],
+            'street' => ['required', 'string', 'max:150'],
+            'avenue' => ['nullable', 'string', 'max:100'],
+            'property_type' => ['required', Rule::in(array_keys(Address::TYPES))],
+            'apartment' => ['required', 'string', 'max:100'],
+            'floor' => ['nullable', 'string', 'max:100'],
         ]);
-        $user = $request->user();
-        $user->addresses()->create($data + ['is_default' => ! $user->addresses()->exists()]);
+        \App\Http\Controllers\CheckoutController::saveAddress($request->user(), $data);
 
         return redirect()->route('account.tab', 'addresses')->with('toast', tt('تم إضافة العنوان بنجاح 📍', 'Address added 📍'));
     }

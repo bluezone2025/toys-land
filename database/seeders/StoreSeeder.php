@@ -61,7 +61,7 @@ class StoreSeeder extends Seeder
         ];
         foreach ($countries as $i => [$code, $flag, $ar, $en, $sar, $sen, $rate, $fee, $dar, $den]) {
             Country::updateOrCreate(['code' => $code], [
-                'flag' => $flag, 'name_ar' => $ar, 'name_en' => $en, 'symbol_ar' => $sar, 'symbol_en' => $sen,
+                'flag' => $flag, 'dial_code' => ['KW' => '965', 'SA' => '966', 'AE' => '971', 'QA' => '974', 'BH' => '973', 'OM' => '968'][$code] ?? null, 'name_ar' => $ar, 'name_en' => $en, 'symbol_ar' => $sar, 'symbol_en' => $sen,
                 'rate' => $rate, 'shipping_fee' => $fee, 'delivery_ar' => $dar, 'delivery_en' => $den, 'sort' => $i,
             ]);
         }

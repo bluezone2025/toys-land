@@ -1,8 +1,8 @@
-<a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener" title="WhatsApp" class="no-print fixed bottom-6 {{ $rtl ? 'left-6' : 'right-6' }} bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-lg hover:bg-green-600 hover:scale-105 transition z-40">
+<a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener" title="WhatsApp" class="no-print fixed {{ ($floatingBar ?? false) ? 'bottom-24 lg:bottom-6' : 'bottom-6' }} {{ $rtl ? 'left-6' : 'right-6' }} bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-lg hover:bg-green-600 hover:scale-105 transition z-40">
     <i class="fa-brands fa-whatsapp"></i>
 </a>
 
-<div id="toast" class="no-print fixed bottom-6 {{ $rtl ? 'right-6' : 'left-6' }} bg-slate-900 text-white px-6 py-3.5 rounded-2xl shadow-xl transform translate-y-24 opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
+<div id="toast" class="no-print fixed {{ ($floatingBar ?? false) ? 'bottom-24 lg:bottom-6' : 'bottom-6' }} {{ $rtl ? 'right-6' : 'left-6' }} bg-slate-900 text-white px-6 py-3.5 rounded-2xl shadow-xl transform translate-y-24 opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
     <i class="fa-solid fa-face-smile-wink text-yellow-300 text-xl"></i>
     <span id="toast-message" class="font-bold text-sm"></span>
 </div>
@@ -32,28 +32,28 @@
             <div class="flex gap-3 mt-4 text-lg text-slate-400">
                 @foreach (['instagram' => 'fa-instagram', 'tiktok' => 'fa-tiktok', 'snapchat' => 'fa-snapchat', 'x' => 'fa-x-twitter', 'facebook' => 'fa-facebook', 'youtube' => 'fa-youtube', 'linkedin' => 'fa-linkedin'] as $key => $icon)
                     @if (setting("social_{$key}"))
-                        <a href="{{ setting("social_{$key}") }}" target="_blank" rel="noopener me" aria-label="{{ ucfirst($key) }}" class="hover:text-white transition"><i class="fa-brands {{ $icon }}"></i></a>
+                        <a href="{{ setting("social_{$key}") }}" target="_blank" rel="noopener me" aria-label="{{ ucfirst($key) }}" class="inline-block py-1.5 hover:text-white transition"><i class="fa-brands {{ $icon }}"></i></a>
                     @endif
                 @endforeach
             </div>
         </div>
         <div>
             <h2 class="font-bold mb-3 text-sky-400 text-sm">{{ __('store.quickLinks') }}</h2>
-            <ul class="space-y-2 text-slate-300 text-xs">
-                <li><a href="{{ route('home') }}" class="hover:text-white transition">{{ __('store.home') }}</a></li>
-                <li><a href="{{ route('products.index') }}" class="hover:text-white transition">{{ __('store.allToys') }}</a></li>
-                <li><a href="{{ route('pages.about') }}" class="hover:text-white transition">{{ __('store.about') }}</a></li>
-                <li><a href="{{ route('faq') }}" class="hover:text-white transition">{{ __('store.faq') }}</a></li>
-                <li><a href="{{ route('contact') }}" class="hover:text-white transition">{{ __('store.contact') }}</a></li>
+            <ul class="space-y-1 text-slate-300 text-xs">
+                <li><a href="{{ route('home') }}" class="inline-block py-1.5 hover:text-white transition">{{ __('store.home') }}</a></li>
+                <li><a href="{{ route('products.index') }}" class="inline-block py-1.5 hover:text-white transition">{{ __('store.allToys') }}</a></li>
+                <li><a href="{{ route('pages.about') }}" class="inline-block py-1.5 hover:text-white transition">{{ __('store.about') }}</a></li>
+                <li><a href="{{ route('faq') }}" class="inline-block py-1.5 hover:text-white transition">{{ __('store.faq') }}</a></li>
+                <li><a href="{{ route('contact') }}" class="inline-block py-1.5 hover:text-white transition">{{ __('store.contact') }}</a></li>
             </ul>
         </div>
         <div>
             <h2 class="font-bold mb-3 text-sky-400 text-sm">{{ __('store.custService') }}</h2>
-            <ul class="space-y-2 text-slate-300 text-xs">
-                <li><a href="{{ route('pages.terms') }}" class="hover:text-white transition">{{ __('store.terms') }}</a></li>
-                <li><a href="{{ route('pages.privacy') }}" class="hover:text-white transition">{{ __('store.privacy') }}</a></li>
-                <li><a href="{{ route('pages.shipping') }}" class="hover:text-white transition">{{ __('store.shipping') }}</a></li>
-                <li><a href="{{ route('tracking') }}" class="hover:text-white transition">{{ __('store.liveTracking') }}</a></li>
+            <ul class="space-y-1 text-slate-300 text-xs">
+                <li><a href="{{ route('pages.terms') }}" class="inline-block py-1.5 hover:text-white transition">{{ __('store.terms') }}</a></li>
+                <li><a href="{{ route('pages.privacy') }}" class="inline-block py-1.5 hover:text-white transition">{{ __('store.privacy') }}</a></li>
+                <li><a href="{{ route('pages.shipping') }}" class="inline-block py-1.5 hover:text-white transition">{{ __('store.shipping') }}</a></li>
+                <li><a href="{{ route('tracking') }}" class="inline-block py-1.5 hover:text-white transition">{{ __('store.liveTracking') }}</a></li>
             </ul>
         </div>
         <div>

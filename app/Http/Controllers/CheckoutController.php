@@ -6,6 +6,7 @@ use App\Mail\NewOrderAdmin;
 use App\Mail\OrderPlaced;
 use App\Models\GuestCustomer;
 use App\Models\AnalyticsEvent;
+use App\Models\Address;
 use App\Models\Country;
 use App\Models\Coupon;
 use App\Models\Order;
@@ -23,6 +24,41 @@ use Throwable;
 
 class CheckoutController extends Controller
 {
+    /** "+965 99999999" from the selected country's dial code and the typed local number. */
+    public static function fullPhone(?Country $country, string $number): string
+    {
+        $digits = ltrim(preg_replace('/\D/', '', $number), '0');
+        $dial = (string) ($country?->dial_code ?? '');
+        if ($dial !== '' && str_starts_with($digits, $dial) && strlen($digits) > strlen($dial) + 6) {
+            $digits = substr($digits, strlen($dial));
+        }
+
+        return ($dial !== '' ? '+'.$dial.' ' : '').$digits;
+    }
+
+    /** Local part of a stored phone ("+965 9999 9999" -> "9999 9999") to prefill the form. */
+    public static function localNumber(?string $phone): string
+    {
+        return trim((string) preg_replace('/^\+\d{1,4}\s+/', '', (string) $phone));
+    }
+
+    /** Keep the address on the account (once) and make the first one the default. */
+    public static function saveAddress(\App\Models\User $user, array $data): void
+    {
+        $values = [
+            'country_code' => $data['country'], 'area' => $data['city'], 'block' => $data['block'], 'street' => $data['street'],
+            'avenue' => $data['avenue'] ?? null, 'property_type' => $data['property_type'], 'building' => $data['apartment'], 'floor' => $data['floor'] ?? null,
+        ];
+        $exists = $user->addresses()->where('area', $values['area'])->where('block', $values['block'])
+            ->where('street', $values['street'])->where('building', $values['building'])->exists();
+        if (! $exists) {
+            $user->addresses()->create($values + [
+                'title' => $data['title'] ?? ($data['city'].' - '.tt('قطعة ', 'Block ').$data['block']),
+                'is_default' => ! $user->addresses()->exists(),
+            ]);
+        }
+    }
+
     public static function shippingFor(Country $country, float $subtotal): float
     {
         $threshold = (float) Setting::get('free_shipping_threshold', 15);
@@ -93,13 +129,17 @@ class CheckoutController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
-            'phone' => ['required', 'string', 'max:20', 'regex:/^[\d\s+\-()]{7,20}$/'],
+            'phone' => ['required', 'string', 'max:20', 'regex:/^[\d\s\-()]{6,15}$/'],
             'email' => ['required', 'email', 'max:150'],
             'country' => ['required', Rule::in(Shop::countries()->pluck('code'))],
             'city' => ['required', 'string', 'max:100'],
             'block' => ['required', 'string', 'max:50'],
-            'property_type' => ['required', Rule::in(['house', 'apartment', 'office'])],
+            'street' => ['required', 'string', 'max:150'],
+            'avenue' => ['nullable', 'string', 'max:100'],
+            'property_type' => ['required', Rule::in(array_keys(Address::TYPES))],
             'apartment' => ['required', 'string', 'max:100'],
+            'floor' => ['nullable', 'string', 'max:100'],
+            'save_address' => ['nullable', 'boolean'],
             'notes' => ['nullable', 'string', 'max:1000'],
             'payment_method' => ['required', Rule::in(static::enabledMethods())],
             'coupon' => ['nullable', 'string', 'max:50'],
@@ -111,6 +151,11 @@ class CheckoutController extends Controller
         }
 
         $country = Shop::countries()->firstWhere('code', $data['country']);
+        $data['phone'] = static::fullPhone($country, $data['phone']);
+
+        if (auth()->check() && $request->boolean('save_address')) {
+            static::saveAddress($request->user(), $data);
+        }
         $displayCountry = Shop::country();
         $t = $this->totals($country, $data['coupon'] ?? null);
         $online = $data['payment_method'] !== 'cod';
@@ -137,8 +182,11 @@ class CheckoutController extends Controller
                 'country_code' => $data['country'],
                 'city' => $data['city'],
                 'block' => $data['block'],
+                'street' => $data['street'],
+                'avenue' => $data['avenue'] ?? null,
                 'property_type' => $data['property_type'],
                 'apartment' => $data['apartment'],
+                'floor' => $data['floor'] ?? null,
                 'notes' => $data['notes'] ?? null,
                 'payment_method' => $data['payment_method'],
                 'subtotal' => $t['subtotal'],

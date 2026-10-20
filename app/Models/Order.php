@@ -23,6 +23,11 @@ class Order extends Model
 
     public const PAYMENT_METHODS = ['knet', 'card', 'applepay', 'cod'];
 
+    public function addressLine(): string
+    {
+        return Address::format($this->only(['city', 'block', 'street', 'avenue', 'property_type', 'apartment', 'floor']));
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

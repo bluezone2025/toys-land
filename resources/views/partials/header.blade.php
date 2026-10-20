@@ -68,7 +68,7 @@
 
 <!-- القائمة الجانبية للموبايل -->
 <div id="drawer-overlay" onclick="closeMobileDrawer()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden"></div>
-<aside id="mobile-drawer" class="fixed top-0 {{ $rtl ? 'right-0 translate-x-full' : 'left-0 -translate-x-full' }} w-80 max-w-[85vw] h-full bg-white z-50 shadow-2xl transition-transform duration-300 flex flex-col justify-between overflow-y-auto">
+<aside id="mobile-drawer" aria-hidden="true" class="invisible fixed top-0 {{ $rtl ? 'right-0 translate-x-full' : 'left-0 -translate-x-full' }} w-80 max-w-[85vw] h-full bg-white z-50 shadow-2xl transition-[transform,visibility] duration-300 flex flex-col justify-between overflow-y-auto">
     <div>
         <div class="p-5 bg-gradient-to-r from-sky-500 to-indigo-600 text-white">
             <div class="flex items-center justify-between mb-4">

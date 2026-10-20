@@ -30,7 +30,7 @@ class AdminPanelTest extends TestCase
         $product = Product::first();
         $this->postJson('/cart', ['product_id' => $product->id]);
         $this->post('/checkout', [
-            'name' => 'Visitor', 'email' => 'visitor@example.com', 'phone' => '96512345678', 'country' => 'KW', 'city' => 'Hawally',
+            'name' => 'Visitor', 'email' => 'visitor@example.com', 'phone' => '12345678', 'country' => 'KW', 'city' => 'Hawally', 'street' => '3',
             'block' => '1', 'property_type' => 'house', 'apartment' => '5', 'payment_method' => 'cod',
         ]);
     }
