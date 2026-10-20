@@ -14,7 +14,16 @@
     @isset($preloadImage)
         <link rel="preload" as="image" href="{{ \App\Support\Img::url($preloadImage, 960) }}" imagesrcset="{{ \App\Support\Img::srcset($preloadImage, [640, 960, 1600]) }}" imagesizes="100vw" fetchpriority="high">
     @endisset
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @if (\Illuminate\Support\Facades\Vite::isRunningHot())
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @else
+        {{-- Styles are inlined so the first paint never waits on a stylesheet request. --}}
+        @foreach ($rtl ? ['tajawal/files/tajawal-arabic-700', 'tajawal/files/tajawal-arabic-900', 'tajawal/files/tajawal-arabic-400'] : ['plus-jakarta-sans/files/plus-jakarta-sans-latin-700', 'plus-jakarta-sans/files/plus-jakarta-sans-latin-800', 'plus-jakarta-sans/files/plus-jakarta-sans-latin-400'] as $font)
+            <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ \Illuminate\Support\Facades\Vite::asset("node_modules/@fontsource/{$font}-normal.woff2") }}">
+        @endforeach
+        <style>{!! \Illuminate\Support\Facades\Vite::content('resources/css/app.css') !!}</style>
+        @vite(['resources/js/app.js'])
+    @endif
     <script>
         window.storeRoutes = { favorite: @json(route('favorites.toggle')), cartAdd: @json(route('cart.add')) };
     </script>
@@ -48,7 +57,7 @@
                 </div>
                 <div class="p-5 text-center bg-sky-50/50">
                     <p class="text-slate-600 text-xs sm:text-sm font-medium mb-4">{{ setting_tr('welcome_desc', __('store.welcomeDesc')) }}</p>
-                    <button aria-label="{{ tt('إغلاق', 'Close') }}" onclick="closeWelcomeModal()" class="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 rounded-xl font-black text-sm shadow-md transition cursor-pointer">{{ setting_tr('welcome_btn', __('store.welcomeBtn')) }}</button>
+                    <button onclick="closeWelcomeModal()" class="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 rounded-xl font-black text-sm shadow-md transition cursor-pointer">{{ setting_tr('welcome_btn', __('store.welcomeBtn')) }}</button>
                 </div>
             </div>
         </div>

@@ -36,13 +36,13 @@
                         <span class="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center font-black text-sm shadow-sm">1</span>
                         <div>
                             <h2 class="text-base sm:text-lg font-black text-slate-800">{{ tt('بيانات العميل', 'Customer Details') }}</h2>
-                            <p class="text-[11px] text-slate-400">{{ tt('نرسل الفاتورة على بريدك ونتواصل معك على رقمك لتأكيد التوصيل', 'We email your invoice and call this number to arrange delivery') }}</p>
+                            <p class="text-[11px] text-slate-500">{{ tt('نرسل الفاتورة على بريدك ونتواصل معك على رقمك لتأكيد التوصيل', 'We email your invoice and call this number to arrange delivery') }}</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('الاسم الكامل *', 'Full Name *') }}</label><input type="text" name="name" value="{{ old('name', $user?->name) }}" required maxlength="120" autocomplete="name" class="{{ $input }}" placeholder="{{ tt('الاسم الكريم', 'Enter full name') }}"></div>
+                        <div><label for="f-name" class="block font-bold text-slate-700 mb-1.5">{{ tt('الاسم الكامل *', 'Full Name *') }}</label><input id="f-name" type="text" name="name" value="{{ old('name', $user?->name) }}" required maxlength="120" autocomplete="name" class="{{ $input }}" placeholder="{{ tt('الاسم الكريم', 'Enter full name') }}"></div>
                         <div>@include('partials.phone-field', ['value' => $phoneNumber])</div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('البريد الإلكتروني *', 'Email Address *') }}</label><input type="email" name="email" value="{{ old('email', $user?->email) }}" required maxlength="150" autocomplete="email" class="{{ $input }} dir-ltr" placeholder="name@example.com"></div>
+                        <div><label for="f-email" class="block font-bold text-slate-700 mb-1.5">{{ tt('البريد الإلكتروني *', 'Email Address *') }}</label><input id="f-email" type="email" name="email" value="{{ old('email', $user?->email) }}" required maxlength="150" autocomplete="email" class="{{ $input }} dir-ltr" placeholder="name@example.com"></div>
                     </div>
                 </div>
 
@@ -52,7 +52,7 @@
                         <span class="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center font-black text-sm shadow-sm">2</span>
                         <div>
                             <h2 class="text-base sm:text-lg font-black text-slate-800">{{ tt('عنوان التوصيل', 'Delivery Address') }}</h2>
-                            <p class="text-[11px] text-slate-400">{{ tt('يرجى تعبئة العنوان بدقة لضمان سرعة وصول المندوب', 'Please fill in your address accurately for fast delivery') }}</p>
+                            <p class="text-[11px] text-slate-500">{{ tt('يرجى تعبئة العنوان بدقة لضمان سرعة وصول المندوب', 'Please fill in your address accurately for fast delivery') }}</p>
                         </div>
                     </div>
 
@@ -67,7 +67,7 @@
                                 </button>
                             @endforeach
                         </div>
-                        <p class="text-[11px] text-slate-400 mt-3 mb-1">{{ tt('أو اكتب عنوان جديد:', 'Or enter a new address:') }}</p>
+                        <p class="text-[11px] text-slate-500 mt-3 mb-1">{{ tt('أو اكتب عنوان جديد:', 'Or enter a new address:') }}</p>
                     </div>
 
                     @include('partials.address-fields', ['values' => $addressValues])
@@ -78,7 +78,7 @@
                             {{ tt('احفظ هذا العنوان في حسابي', 'Save this address to my account') }}
                         </label>
                     @endauth
-                    <div class="text-xs"><label class="block font-bold text-slate-700 mb-1.5">{{ tt('ملاحظات الطلب أو التغليف (اختياري)', 'Delivery or Gift Notes (Optional)') }}</label><textarea name="notes" rows="2" maxlength="1000" class="{{ $input }}" placeholder="{{ tt('اكتب أي ملاحظة للمندوب أو عبارة على كرت الهدية...', 'Any special instructions or gift card message...') }}">{{ old('notes') }}</textarea></div>
+                    <div class="text-xs"><label for="f-notes" class="block font-bold text-slate-700 mb-1.5">{{ tt('ملاحظات الطلب أو التغليف (اختياري)', 'Delivery or Gift Notes (Optional)') }}</label><textarea id="f-notes" name="notes" rows="2" maxlength="1000" class="{{ $input }}" placeholder="{{ tt('اكتب أي ملاحظة للمندوب أو عبارة على كرت الهدية...', 'Any special instructions or gift card message...') }}">{{ old('notes') }}</textarea></div>
                 </div>
 
                 <!-- الخطوة 2: طرق الدفع -->
@@ -88,7 +88,7 @@
                             <span class="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center font-black text-sm shadow-sm">3</span>
                             <div>
                                 <h2 class="text-base sm:text-lg font-black text-slate-800">{{ tt('نقي طريقة الدفع الآمنة (MyFatoorah)', 'Select Secure Payment Method (MyFatoorah)') }}</h2>
-                                <p class="text-[11px] text-slate-400">{{ tt('جميع المعاملات مشفرة ومحمية بنسبة 100%', 'All transactions are 100% encrypted and secure') }}</p>
+                                <p class="text-[11px] text-slate-500">{{ tt('جميع المعاملات مشفرة ومحمية بنسبة 100%', 'All transactions are 100% encrypted and secure') }}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-[11px] font-bold">
@@ -124,7 +124,7 @@
                             <i class="fa-solid fa-lock text-sky-500"></i>
                             {{ tt('بوابة دفع إلكترونية معتمدة رسمياً عبر نظام MyFatoorah الكويت والخليج', 'Official Payment Gateway powered by MyFatoorah GCC') }}
                         </span>
-                        <div class="flex items-center gap-2 text-lg text-slate-400">
+                        <div class="flex items-center gap-2 text-lg text-slate-500">
                             <i class="fa-brands fa-cc-visa"></i>
                             <i class="fa-brands fa-cc-mastercard"></i>
                             <i class="fa-brands fa-cc-apple-pay"></i>
@@ -146,7 +146,7 @@
                     @endforeach
                 </div>
                 <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1.5">{{ tt('عندك كود خصم؟', 'Have a promo code?') }}@if (setting('promo_hint_code')) ({{ tt('جرب:', 'Try:') }} {{ setting('promo_hint_code') }})@endif</label>
+                    <label for="coupon-input" class="block text-[11px] font-bold text-slate-600 mb-1.5">{{ tt('عندك كود خصم؟', 'Have a promo code?') }}@if (setting('promo_hint_code')) ({{ tt('جرب:', 'Try:') }} {{ setting('promo_hint_code') }})@endif</label>
                     <div class="flex gap-2">
                         <input type="text" name="coupon" id="coupon-input" value="{{ old('coupon', session('coupon')) }}" class="flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold uppercase bg-white">
                         <button type="button" onclick="refreshSummary(true)" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer">{{ tt('تطبيق', 'Apply') }}</button>

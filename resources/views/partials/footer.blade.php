@@ -17,13 +17,13 @@
                 <span class="text-xl font-black text-white">{{ $brand }} 🧸</span>
             </a>
             <p class="text-slate-400 text-xs leading-relaxed">{{ setting_tr('footer_about', __('store.footerAbout')) }}</p>
-            <address class="not-italic text-slate-300 text-xs mt-4 space-y-1.5">
+            <address class="not-italic text-slate-300 text-xs mt-4 space-y-0.5">
                 @if (setting('phone'))
-                    <a href="tel:{{ preg_replace('/[^\d+]/', '', (string) setting('phone')) }}" class="flex items-center gap-2 hover:text-white"><i class="fa-solid fa-phone text-sky-400 w-4"></i> <span class="dir-ltr">{{ setting('phone') }}</span></a>
+                    <a href="tel:{{ preg_replace('/[^\d+]/', '', (string) setting('phone')) }}" class="flex items-center gap-2 py-1 hover:text-white"><i class="fa-solid fa-phone text-sky-400 w-4"></i> <span class="dir-ltr">{{ setting('phone') }}</span></a>
                 @endif
-                <a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-white"><i class="fa-brands fa-whatsapp text-emerald-400 w-4"></i> <span class="dir-ltr">+{{ $whatsapp }}</span></a>
+                <a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener" class="flex items-center gap-2 py-1 hover:text-white"><i class="fa-brands fa-whatsapp text-emerald-400 w-4"></i> <span class="dir-ltr">+{{ $whatsapp }}</span></a>
                 @if (setting('admin_email'))
-                    <a href="mailto:{{ setting('admin_email') }}" class="flex items-center gap-2 hover:text-white"><i class="fa-solid fa-envelope text-sky-400 w-4"></i> {{ setting('admin_email') }}</a>
+                    <a href="mailto:{{ setting('admin_email') }}" class="flex items-center gap-2 py-1 hover:text-white"><i class="fa-solid fa-envelope text-sky-400 w-4"></i> {{ setting('admin_email') }}</a>
                 @endif
                 @if (setting_tr('address'))
                     <span class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-pink-400 w-4"></i> {{ setting_tr('address') }}</span>
@@ -67,7 +67,7 @@
             </div>
         </div>
     </div>
-    <div class="border-t border-slate-800 text-center pt-4 text-slate-500 text-xs">
+    <div class="border-t border-slate-800 text-center pt-4 text-slate-400 text-xs">
         {{ setting_tr('rights', __('store.rights')) }}
     </div>
 </footer>

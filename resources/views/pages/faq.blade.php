@@ -41,7 +41,7 @@
                 <p class="text-sky-100 text-xs mb-5">{{ tt('فريق خدمة العملاء جاهز للرد عليك فوراً عبر الواتساب أو صفحة التواصل', 'Our customer care team is ready to assist you via WhatsApp or Contact page') }}</p>
                 <div class="flex justify-center gap-3 flex-wrap">
                     <a href="{{ route('contact') }}" class="bg-white text-sky-700 px-6 py-2.5 rounded-xl font-black text-xs hover:bg-sky-50 transition">{{ __('store.contact') }}</a>
-                    <a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener" class="bg-emerald-500 text-white px-6 py-2.5 rounded-xl font-black text-xs hover:bg-emerald-600 transition flex items-center gap-1.5"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                    <a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener" class="bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-black text-xs hover:bg-emerald-700 transition flex items-center gap-1.5"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
                 </div>
             </div>
         </div>

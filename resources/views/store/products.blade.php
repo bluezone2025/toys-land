@@ -11,14 +11,14 @@
             </div>
             <form method="GET" action="{{ route('products.index') }}" class="flex gap-2 w-full md:w-auto">
                 @if ($selected !== 'all')<input type="hidden" name="category" value="{{ $selected }}">@endif
-                <input type="text" name="search" value="{{ $search }}" placeholder="{{ __('store.searchPlaceholder') }}" class="flex-1 md:w-72 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-sky-500 bg-white">
-                <select name="sort" onchange="this.form.submit()" class="border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold bg-white">
+                <input type="text" name="search" aria-label="{{ __('store.searchPlaceholder') }}" value="{{ $search }}" placeholder="{{ __('store.searchPlaceholder') }}" class="flex-1 md:w-72 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-sky-500 bg-white">
+                <select name="sort" aria-label="{{ tt('ترتيب حسب', 'Sort by') }}" onchange="this.form.submit()" class="border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold bg-white">
                     <option value="default">{{ tt('الترتيب الافتراضي', 'Default Sort') }}</option>
                     <option value="price-low" @selected($sort === 'price-low')>{{ tt('الأرخص أولاً', 'Price: Low to High') }}</option>
                     <option value="price-high" @selected($sort === 'price-high')>{{ tt('الأغلى أولاً', 'Price: High to Low') }}</option>
                     <option value="newest" @selected($sort === 'newest')>{{ tt('الأحدث', 'Newest') }}</option>
                 </select>
-                <button class="bg-sky-500 hover:bg-sky-600 text-white px-4 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <button aria-label="{{ tt('بحث', 'Search') }}" class="bg-sky-500 hover:bg-sky-600 text-white px-4 rounded-xl text-xs font-bold cursor-pointer"><i class="fa-solid fa-magnifying-glass"></i></button>
             </form>
         </div>
 
@@ -27,7 +27,7 @@
                 <img src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=600&q=80" class="w-11 h-11 rounded-xl object-cover shrink-0" alt="{{ tt('كل الألعاب', 'All Toys') }}">
                 <div class="overflow-hidden">
                     <span class="font-black text-xs text-slate-800 block truncate">{{ tt('كل الألعاب', 'All Toys') }}</span>
-                    <span class="text-[10px] text-slate-500 block truncate">{{ tt('جميع أقسام المتجر', 'Full store catalog') }}</span>
+                    <span class="text-[10px] text-slate-600 block truncate">{{ tt('جميع أقسام المتجر', 'Full store catalog') }}</span>
                 </div>
             </a>
             @foreach ($navCategories as $c)
@@ -35,7 +35,7 @@
                     <img src="{{ \App\Support\Img::url($c->image, 96) }}" width="48" height="48" loading="lazy" class="w-11 h-11 rounded-xl object-cover shrink-0" alt="{{ $c->tr('title') }}">
                     <div class="overflow-hidden">
                         <span class="font-black text-xs text-slate-800 block truncate">{{ $c->tr('title') }}</span>
-                        <span class="text-[10px] text-slate-500 block truncate">{{ $c->tr('desc') }}</span>
+                        <span class="text-[10px] text-slate-600 block truncate">{{ $c->tr('desc') }}</span>
                     </div>
                 </a>
             @endforeach

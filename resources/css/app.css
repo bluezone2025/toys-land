@@ -60,7 +60,7 @@ html[dir="ltr"] body { font-family: 'Plus Jakarta Sans', 'Tajawal', sans-serif; 
     color: #ffffff !important;
 }
 
-.option-radio:checked + span, .option-check:checked + span { color: #0284c7; }
+.option-radio:checked + span, .option-check:checked + span { color: #0369a1; }
 label:has(> .option-radio:checked), label:has(> .option-check:checked) { border-color: #0ea5e9; background-color: #f0f9ff; }
 
 #welcome-modal { transition: opacity 0.3s ease, visibility 0.3s ease; }
@@ -72,7 +72,7 @@ label:has(> .option-radio:checked), label:has(> .option-check:checked) { border-
 .page-body p { margin-bottom: 0.75rem; }
 .page-body ul { list-style: disc; padding-inline-start: 1.25rem; margin-bottom: 0.75rem; }
 .page-body ol { list-style: decimal; padding-inline-start: 1.25rem; margin-bottom: 0.75rem; }
-.page-body a { color: #0284c7; text-decoration: underline; }
+.page-body a { color: #0369a1; text-decoration: underline; }
 
 @media (max-width: 768px) {
     .content-90 { width: 94% !important; }

@@ -54,7 +54,7 @@
                     <div>
                         <h1 class="text-2xl sm:text-3xl font-black tracking-tight">{{ $brand }} 🧸</h1>
                         <p class="text-sky-300 text-xs font-semibold mt-0.5">{{ setting_tr('store_tagline', __('store.brandSub')) }}</p>
-                        <p class="text-slate-400 text-[11px] mt-1">{{ setting_tr('address', tt('الكويت - الري - الأفنيوز مول', 'Kuwait - Al-Rai - The Avenues Mall')) }} | {{ tt('هاتف:', 'Tel:') }} <span class="dir-ltr">{{ setting('phone', '+965 22225555') }}</span></p>
+                        <p class="text-slate-500 text-[11px] mt-1">{{ setting_tr('address', tt('الكويت - الري - الأفنيوز مول', 'Kuwait - Al-Rai - The Avenues Mall')) }} | {{ tt('هاتف:', 'Tel:') }} <span class="dir-ltr">{{ setting('phone', '+965 22225555') }}</span></p>
                     </div>
                 </div>
                 <div class="{{ $alignEnd }} bg-white/10 backdrop-blur px-5 py-3.5 rounded-2xl border border-white/15">
@@ -113,7 +113,7 @@
                             <tbody class="divide-y divide-slate-100">
                                 @foreach ($order->items as $i => $item)
                                     <tr class="hover:bg-slate-50/80">
-                                        <td class="p-3.5 font-bold text-slate-400">{{ $i + 1 }}</td>
+                                        <td class="p-3.5 font-bold text-slate-500">{{ $i + 1 }}</td>
                                         <td class="p-3.5">
                                             <div class="font-black text-slate-800 text-sm">{{ $item->tr('name') }}</div>
                                             <div class="text-[11px] text-slate-500 mt-0.5">{{ $item->tr('options') }}</div>
@@ -131,7 +131,7 @@
                     <div class="md:col-span-6 text-xs text-slate-500 space-y-2 bg-slate-50 p-5 rounded-2xl border border-slate-200/70">
                         <p class="font-bold text-slate-700">📌 {{ tt('سياسة الضمان والاستبدال:', 'Warranty & Return Policy:') }}</p>
                         <p class="leading-relaxed">{{ setting_tr('invoice_policy', tt('تعتبر هذه الفاتورة سند ضمان رسمي لمنتجاتكم لمدة 14 يوماً للاستبدال أو الاسترجاع.', 'This invoice serves as an official 14-day warranty and return receipt.')) }}</p>
-                        <div class="pt-2 flex items-center gap-3 text-slate-400">
+                        <div class="pt-2 flex items-center gap-3 text-slate-500">
                             <i class="fa-solid fa-barcode text-3xl text-slate-700"></i>
                             <span class="font-mono text-[11px]">{{ $order->payment_id ? 'MF-'.$order->payment_id : 'REF-'.$order->number }}</span>
                         </div>

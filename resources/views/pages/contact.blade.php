@@ -33,7 +33,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-white p-6 lg:p-8 rounded-3xl shadow-sm border border-slate-100">
             <div class="lg:col-span-6">
                 <h3 class="text-lg font-black text-slate-800 mb-2">{{ tt('دز لنا رسالة أو استفسار مباشر', 'Send Us a Direct Message') }}</h3>
-                <p class="text-xs text-slate-400 mb-5">{{ tt('عب البيانات تحت وراح يتواصل معاك فريقنا بأقرب وقت', 'Fill out the form below and our team will get back to you shortly') }}</p>
+                <p class="text-xs text-slate-500 mb-5">{{ tt('عب البيانات تحت وراح يتواصل معاك فريقنا بأقرب وقت', 'Fill out the form below and our team will get back to you shortly') }}</p>
                 @if ($errors->any())
                     <div class="bg-red-50 text-red-600 rounded-xl p-3 mb-4 text-xs font-bold">@foreach ($errors->all() as $e)<p>• {{ $e }}</p>@endforeach</div>
                 @endif
@@ -41,28 +41,28 @@
                     @csrf
                     <div class="hidden"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                        <div><label class="block font-bold text-slate-700 mb-1">{{ tt('الاسم الكامل *', 'Full Name *') }}</label><input type="text" name="name" value="{{ old('name', auth()->user()?->name) }}" required maxlength="120" class="{{ $input }}"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1">{{ tt('رقم الهاتف *', 'Phone Number *') }}</label><input type="tel" name="phone" value="{{ old('phone', auth()->user()?->phone) }}" required maxlength="20" class="{{ $input }}"></div>
+                        <div><label for="f-name" class="block font-bold text-slate-700 mb-1">{{ tt('الاسم الكامل *', 'Full Name *') }}</label><input id="f-name" type="text" name="name" value="{{ old('name', auth()->user()?->name) }}" required maxlength="120" class="{{ $input }}"></div>
+                        <div><label for="f-phone" class="block font-bold text-slate-700 mb-1">{{ tt('رقم الهاتف *', 'Phone Number *') }}</label><input id="f-phone" type="tel" name="phone" value="{{ old('phone', auth()->user()?->phone) }}" required maxlength="20" class="{{ $input }}"></div>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">{{ tt('موضوع الرسالة', 'Inquiry Type') }}</label>
-                        <select name="subject" class="{{ $input }} bg-white">
+                        <label for="f-subject" class="block font-bold text-slate-700 mb-1">{{ tt('موضوع الرسالة', 'Inquiry Type') }}</label>
+                        <select id="f-subject" name="subject" class="{{ $input }} bg-white">
                             <option>{{ tt('استفسار عن طلب قائم', 'Order Inquiry') }}</option>
                             <option>{{ tt('طلب تجهيز هدايا خاص أو كميات', 'Special Gift / Bulk Order') }}</option>
                             <option>{{ tt('مقترح أو ملاحظة', 'Suggestion or Feedback') }}</option>
                         </select>
                     </div>
-                    <div><label class="block font-bold text-slate-700 mb-1">{{ tt('تفاصيل الرسالة *', 'Message *') }}</label><textarea name="message" rows="4" required maxlength="3000" class="{{ $input }}">{{ old('message') }}</textarea></div>
+                    <div><label for="f-message" class="block font-bold text-slate-700 mb-1">{{ tt('تفاصيل الرسالة *', 'Message *') }}</label><textarea id="f-message" name="message" rows="4" required maxlength="3000" class="{{ $input }}">{{ old('message') }}</textarea></div>
                     <button type="submit" class="w-full bg-sky-500 hover:bg-sky-600 text-white px-6 py-3.5 rounded-xl font-black cursor-pointer shadow-sm transition">{{ tt('إرسال الرسالة الآن 🚀', 'Send Message 🚀') }}</button>
                 </form>
             </div>
             <div class="lg:col-span-6 flex flex-col justify-between">
                 <div>
                     <h3 class="text-lg font-black text-slate-800 mb-2">{{ tt('لوكيشن المعرض على الخريطة', 'Showroom Map Location') }}</h3>
-                    <p class="text-xs text-slate-400 mb-4">{{ setting_tr('map_note', tt('حياكم بمعرضنا في الأفنيوز مول - المرحلة الرابعة - قسم الأطفال', 'Visit us at The Avenues Mall - Phase 4 - Kids Zone')) }}</p>
+                    <p class="text-xs text-slate-500 mb-4">{{ setting_tr('map_note', tt('حياكم بمعرضنا في الأفنيوز مول - المرحلة الرابعة - قسم الأطفال', 'Visit us at The Avenues Mall - Phase 4 - Kids Zone')) }}</p>
                 </div>
                 <div class="rounded-2xl overflow-hidden border border-slate-200 h-80 lg:h-full min-h-[280px] shadow-inner">
-                    <iframe width="100%" height="100%" frameborder="0" loading="lazy" src="https://maps.google.com/maps?q={{ urlencode(setting('map_query', 'The Avenues Kuwait')) }}&t=&z=14&ie=UTF8&iwloc=&output=embed"></iframe>
+                    <iframe title="{{ tt('موقعنا على الخريطة', 'Our location on the map') }}" width="100%" height="100%" frameborder="0" loading="lazy" src="https://maps.google.com/maps?q={{ urlencode(setting('map_query', 'The Avenues Kuwait')) }}&t=&z=14&ie=UTF8&iwloc=&output=embed"></iframe>
                 </div>
             </div>
         </div>

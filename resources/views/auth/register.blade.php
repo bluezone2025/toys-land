@@ -9,11 +9,11 @@
             @endif
             <form method="POST" action="{{ route('register') }}" class="space-y-3.5 text-xs">
                 @csrf
-                <div><label class="block font-bold mb-1">{{ tt('الاسم الكامل', 'Full Name') }}</label><input name="name" type="text" value="{{ old('name') }}" required class="w-full border border-slate-200 rounded-xl p-2.5"></div>
-                <div><label class="block font-bold mb-1">{{ tt('البريد الإلكتروني', 'Email') }}</label><input name="email" type="email" value="{{ old('email') }}" required class="w-full border border-slate-200 rounded-xl p-2.5"></div>
-                <div><label class="block font-bold mb-1">{{ tt('رقم الهاتف', 'Phone Number') }}</label><input name="phone" type="tel" value="{{ old('phone') }}" class="w-full border border-slate-200 rounded-xl p-2.5"></div>
-                <div><label class="block font-bold mb-1">{{ tt('كلمة المرور', 'Password') }}</label><input name="password" type="password" required class="w-full border border-slate-200 rounded-xl p-2.5"></div>
-                <div><label class="block font-bold mb-1">{{ tt('تأكيد كلمة المرور', 'Confirm Password') }}</label><input name="password_confirmation" type="password" required class="w-full border border-slate-200 rounded-xl p-2.5"></div>
+                <div><label for="f-name" class="block font-bold mb-1">{{ tt('الاسم الكامل', 'Full Name') }}</label><input id="f-name" name="name" type="text" value="{{ old('name') }}" required class="w-full border border-slate-200 rounded-xl p-2.5"></div>
+                <div><label for="f-email" class="block font-bold mb-1">{{ tt('البريد الإلكتروني', 'Email') }}</label><input id="f-email" name="email" type="email" value="{{ old('email') }}" required class="w-full border border-slate-200 rounded-xl p-2.5"></div>
+                <div><label for="f-phone" class="block font-bold mb-1">{{ tt('رقم الهاتف', 'Phone Number') }}</label><input id="f-phone" name="phone" type="tel" value="{{ old('phone') }}" class="w-full border border-slate-200 rounded-xl p-2.5"></div>
+                <div><label for="f-password" class="block font-bold mb-1">{{ tt('كلمة المرور', 'Password') }}</label><input id="f-password" name="password" type="password" required class="w-full border border-slate-200 rounded-xl p-2.5"></div>
+                <div><label for="f-password-confirmation" class="block font-bold mb-1">{{ tt('تأكيد كلمة المرور', 'Confirm Password') }}</label><input id="f-password-confirmation" name="password_confirmation" type="password" required class="w-full border border-slate-200 rounded-xl p-2.5"></div>
                 <button class="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 rounded-xl font-bold cursor-pointer">{{ __('store.register') }}</button>
             </form>
             <p class="text-center mt-5 text-[11px]">{{ tt('عندك حساب؟', 'Already have an account?') }} <a href="{{ route('login') }}" class="text-sky-600 font-bold underline">{{ __('store.login') }}</a></p>

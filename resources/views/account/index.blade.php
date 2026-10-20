@@ -93,7 +93,7 @@
                     <div class="text-center py-12">
                         <div class="text-5xl text-slate-300 mb-3"><i class="fa-regular fa-heart"></i></div>
                         <h4 class="text-base font-bold text-slate-700 mb-1">{{ tt('قائمة المفضلة فاضية الحين', 'Your wishlist is empty') }}</h4>
-                        <p class="text-slate-400 text-xs mb-6">{{ tt('اضغط على علامة القلب ❤️ فوق أي لعبة عشان تضيفها هني وترجع لها بأي وقت.', 'Click the heart icon ❤️ on any toy to save it here.') }}</p>
+                        <p class="text-slate-500 text-xs mb-6">{{ tt('اضغط على علامة القلب ❤️ فوق أي لعبة عشان تضيفها هني وترجع لها بأي وقت.', 'Click the heart icon ❤️ on any toy to save it here.') }}</p>
                         <a href="{{ route('products.index') }}" class="bg-sky-500 text-white px-6 py-3 rounded-xl font-bold text-xs inline-block shadow-sm">{{ __('store.browseToys') }}</a>
                     </div>
                 @else
@@ -120,7 +120,7 @@
                             @endif
                             <h4 class="font-black text-slate-800 text-sm mb-1.5">{{ $addr->title }}</h4>
                             <p class="text-slate-600 font-medium">{{ $addr->summary() }}</p>
-                            <p class="text-slate-400 text-[11px] mt-1.5">{{ \App\Support\Shop::countries()->firstWhere('code', $addr->country_code)?->tr('name') }}</p>
+                            <p class="text-slate-500 text-[11px] mt-1.5">{{ \App\Support\Shop::countries()->firstWhere('code', $addr->country_code)?->tr('name') }}</p>
                             <div class="flex gap-4 mt-3">
                                 @unless ($addr->is_default)
                                     <form method="POST" action="{{ route('addresses.default', $addr) }}">@csrf @method('PATCH')<button class="text-sky-600 hover:underline text-[11px] font-bold cursor-pointer">{{ tt('اجعله الأساسي', 'Make Default') }}</button></form>
@@ -149,9 +149,9 @@
                     @endif
                     <form method="POST" action="{{ route('account.update') }}" class="space-y-4">
                         @csrf @method('PUT')
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('الاسم الكامل', 'Full Name') }}</label><input type="text" name="name" value="{{ old('name', $user->name) }}" required class="w-full border border-slate-200 rounded-xl p-3"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('البريد الإلكتروني', 'Email Address') }}</label><input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full border border-slate-200 rounded-xl p-3"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم الهاتف', 'Phone Number') }}</label><input type="tel" name="phone" value="{{ old('phone', $user->phone) }}" class="w-full border border-slate-200 rounded-xl p-3"></div>
+                        <div><label for="f-name" class="block font-bold text-slate-700 mb-1.5">{{ tt('الاسم الكامل', 'Full Name') }}</label><input id="f-name" type="text" name="name" value="{{ old('name', $user->name) }}" required class="w-full border border-slate-200 rounded-xl p-3"></div>
+                        <div><label for="f-email" class="block font-bold text-slate-700 mb-1.5">{{ tt('البريد الإلكتروني', 'Email Address') }}</label><input id="f-email" type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full border border-slate-200 rounded-xl p-3"></div>
+                        <div><label for="f-phone" class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم الهاتف', 'Phone Number') }}</label><input id="f-phone" type="tel" name="phone" value="{{ old('phone', $user->phone) }}" class="w-full border border-slate-200 rounded-xl p-3"></div>
                         <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-xl font-bold transition cursor-pointer shadow-sm">{{ tt('حفظ التعديلات ✅', 'Save Changes ✅') }}</button>
                     </form>
                 </div>
@@ -162,9 +162,9 @@
                     @endif
                     <form method="POST" action="{{ route('account.password') }}" class="space-y-4">
                         @csrf @method('PUT')
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('كلمة المرور الحالية', 'Current Password') }}</label><input type="password" name="current_password" required class="w-full border border-slate-200 rounded-xl p-3"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('كلمة المرور الجديدة', 'New Password') }}</label><input type="password" name="password" required class="w-full border border-slate-200 rounded-xl p-3"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('تأكيد كلمة المرور', 'Confirm Password') }}</label><input type="password" name="password_confirmation" required class="w-full border border-slate-200 rounded-xl p-3"></div>
+                        <div><label for="f-current-password" class="block font-bold text-slate-700 mb-1.5">{{ tt('كلمة المرور الحالية', 'Current Password') }}</label><input id="f-current-password" type="password" name="current_password" required class="w-full border border-slate-200 rounded-xl p-3"></div>
+                        <div><label for="f-password" class="block font-bold text-slate-700 mb-1.5">{{ tt('كلمة المرور الجديدة', 'New Password') }}</label><input id="f-password" type="password" name="password" required class="w-full border border-slate-200 rounded-xl p-3"></div>
+                        <div><label for="f-password-confirmation" class="block font-bold text-slate-700 mb-1.5">{{ tt('تأكيد كلمة المرور', 'Confirm Password') }}</label><input id="f-password-confirmation" type="password" name="password_confirmation" required class="w-full border border-slate-200 rounded-xl p-3"></div>
                         <button type="submit" class="bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-xl font-bold transition cursor-pointer shadow-sm">{{ tt('تحديث كلمة المرور 🔒', 'Update Password 🔒') }}</button>
                     </form>
                 </div>

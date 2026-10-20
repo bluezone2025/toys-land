@@ -138,19 +138,26 @@ window.closeWelcomeModal = function () {
     try { localStorage.setItem('kids_welcomed', document.body.dataset.welcomeVersion || 'true'); } catch (e) {}
 };
 
+// Runs once, on the visitor's first scroll, tap, mouse move or key press.
+function onFirstInteraction(callback) {
+    const events = ['scroll', 'pointerdown', 'pointermove', 'touchstart', 'keydown'];
+    const run = () => { events.forEach(e => window.removeEventListener(e, run)); callback(); };
+    events.forEach(e => window.addEventListener(e, run, { passive: true }));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('welcome-modal');
     if (modal) {
         let seen = null;
         try { seen = localStorage.getItem('kids_welcomed'); } catch (e) {}
         if (seen === (document.body.dataset.welcomeVersion || 'true')) modal.remove();
-        else setTimeout(() => {
-            // Shown a moment after load so it never delays the page's first paint.
+        // Shown shortly after the visitor starts browsing so the first view loads undisturbed.
+        else onFirstInteraction(() => setTimeout(() => {
             modal.classList.remove('hidden');
             const video = modal.querySelector('video');
             const source = video?.querySelector('source[data-src]');
             if (source) { source.src = source.dataset.src; video.load(); video.play().catch(() => {}); }
-        }, 3000);
+        }, 1500));
     }
 
     // Hero slider
@@ -162,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
             current = (current + step + slides.length) % slides.length;
             slides[current].classList.replace('slide-hidden', 'slide-active');
         };
-        setInterval(() => window.changeHeroSlide(1), 5000);
+        onFirstInteraction(() => setInterval(() => window.changeHeroSlide(1), 5000));
     } else {
         window.changeHeroSlide = () => {};
     }

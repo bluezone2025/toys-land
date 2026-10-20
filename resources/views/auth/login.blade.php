@@ -9,8 +9,8 @@
             @endif
             <form method="POST" action="{{ route('login') }}" class="space-y-3.5 text-xs">
                 @csrf
-                <div><label class="block font-bold mb-1">{{ tt('البريد الإلكتروني', 'Email') }}</label><input name="email" type="email" value="{{ old('email') }}" required autofocus class="w-full border border-slate-200 rounded-xl p-2.5"></div>
-                <div><label class="block font-bold mb-1">{{ tt('كلمة المرور', 'Password') }}</label><input name="password" type="password" required class="w-full border border-slate-200 rounded-xl p-2.5"></div>
+                <div><label for="f-email" class="block font-bold mb-1">{{ tt('البريد الإلكتروني', 'Email') }}</label><input id="f-email" name="email" type="email" value="{{ old('email') }}" required autofocus class="w-full border border-slate-200 rounded-xl p-2.5"></div>
+                <div><label for="f-password" class="block font-bold mb-1">{{ tt('كلمة المرور', 'Password') }}</label><input id="f-password" name="password" type="password" required class="w-full border border-slate-200 rounded-xl p-2.5"></div>
                 <label class="flex items-center gap-2 text-slate-600"><input type="checkbox" name="remember" value="1"> {{ tt('تذكرني', 'Remember me') }}</label>
                 <button class="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 rounded-xl font-bold cursor-pointer">{{ __('store.login') }}</button>
             </form>

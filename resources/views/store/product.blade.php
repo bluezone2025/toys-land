@@ -62,7 +62,7 @@
                         <span class="absolute top-3 {{ $rtl ? 'right-3' : 'left-3' }} bg-white/95 text-sky-700 font-bold text-xs px-3 py-1 rounded-full shadow-sm z-10">{{ $product->tr('badge') }}</span>
                     @endif
                     <button type="button" aria-label="{{ __('store.favorites') }}" onclick="toggleFavorite({{ $product->id }}, event)" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-9 h-9 bg-white/95 rounded-full flex items-center justify-center shadow-sm z-10 hover:scale-110 transition cursor-pointer">
-                        <i class="fav-icon-{{ $product->id }} {{ \App\Support\Favorites::has($product->id) ? 'fa-solid text-pink-500' : 'fa-regular text-slate-400' }} fa-heart text-sm"></i>
+                        <i class="fav-icon-{{ $product->id }} {{ \App\Support\Favorites::has($product->id) ? 'fa-solid text-pink-500' : 'fa-regular text-slate-500' }} fa-heart text-sm"></i>
                     </button>
                     <button type="button" onclick="openLightbox(window.currentImage || 0)" class="block w-full cursor-zoom-in group relative" title="{{ tt('تكبير الصورة', 'Zoom image') }}">
                         <img id="main-image" fetchpriority="high" src="{{ $mainImages[0] ?? $product->image_url }}" width="800" height="380" class="w-full h-[300px] sm:h-[380px] object-cover rounded-2xl bg-slate-50" alt="{{ $product->tr('name') }}">
@@ -118,10 +118,10 @@
 
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div>
-                            <span class="text-slate-400 text-xs block">{{ tt('السعر مع الإضافات:', 'Total Price:') }}</span>
+                            <span class="text-slate-500 text-xs block">{{ tt('السعر مع الإضافات:', 'Total Price:') }}</span>
                             <span id="dynamic-price" class="text-2xl lg:text-3xl font-black text-pink-600">{{ money($product->price) }}</span>
                             @if ($product->compare_price > $product->price)
-                                <span class="text-slate-400 line-through text-sm {{ $rtl ? 'mr-2' : 'ml-2' }}">{{ money($product->compare_price) }}</span>
+                                <span class="text-slate-500 line-through text-sm {{ $rtl ? 'mr-2' : 'ml-2' }}">{{ money($product->compare_price) }}</span>
                             @endif
                         </div>
                         @if ($product->inStock())

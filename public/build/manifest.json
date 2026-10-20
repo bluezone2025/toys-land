@@ -208,7 +208,7 @@
     "src": "node_modules/@fontsource/tajawal/files/tajawal-latin-900-normal.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-DCDENnSg.css",
+    "file": "assets/app-mbqTWQ3_.css",
     "name": "app",
     "names": [
       "app.css"
@@ -286,7 +286,7 @@
     "src": "resources/fonts/fa-solid.woff2"
   },
   "resources/js/app.js": {
-    "file": "assets/app-JplpzFVU.js",
+    "file": "assets/app-Dfk7TUTR.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true

@@ -12,8 +12,8 @@
                     <p class="bg-red-50 text-red-600 text-xs font-bold rounded-xl p-3 mb-4">{{ tt('ما لقينا طلب بهالبيانات، تأكد من الرقم وحاول مرة ثانية.', 'No order matches these details. Please check and try again.') }}</p>
                 @endif
                 <form method="GET" class="space-y-3.5 text-xs">
-                    <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم الطلب', 'Order Number') }}</label><input name="order" value="{{ request('order') }}" required placeholder="TOY-123456" class="w-full border border-slate-200 rounded-xl p-3 uppercase focus:outline-none focus:border-sky-500"></div>
-                    <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم الهاتف', 'Phone Number') }}</label><input name="phone" value="{{ request('phone') }}" required class="w-full border border-slate-200 rounded-xl p-3 focus:outline-none focus:border-sky-500"></div>
+                    <div><label for="f-order" class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم الطلب', 'Order Number') }}</label><input id="f-order" name="order" value="{{ request('order') }}" required placeholder="TOY-123456" class="w-full border border-slate-200 rounded-xl p-3 uppercase focus:outline-none focus:border-sky-500"></div>
+                    <div><label for="f-phone" class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم الهاتف', 'Phone Number') }}</label><input id="f-phone" name="phone" value="{{ request('phone') }}" required class="w-full border border-slate-200 rounded-xl p-3 focus:outline-none focus:border-sky-500"></div>
                     <button class="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 rounded-xl font-bold cursor-pointer">{{ tt('تتبع الطلب', 'Track Order') }}</button>
                 </form>
             </div>
@@ -54,7 +54,7 @@
                                 @if ($isDone)
                                     <span class="inline-block bg-emerald-600 text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold">{{ tt('مكتمل ✓', 'Completed ✓') }}</span>
                                 @else
-                                    <span class="text-[10px] text-slate-400 font-bold">{{ tt('بالانتظار', 'Pending') }}</span>
+                                    <span class="text-[10px] text-slate-500 font-bold">{{ tt('بالانتظار', 'Pending') }}</span>
                                 @endif
                             </div>
                         @endforeach

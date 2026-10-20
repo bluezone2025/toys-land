@@ -10,12 +10,12 @@
             </div>
         </div>
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-            <h3 class="text-lg font-black text-slate-800 mb-6">{{ tt('الألعاب المفضلة لدي (', 'My Saved Wishlist (') }}{{ $favorites->count() }})</h3>
+            <h1 class="text-lg font-black text-slate-800 mb-6">{{ tt('الألعاب المفضلة لدي (', 'My Saved Wishlist (') }}{{ $favorites->count() }})</h1>
             @if ($favorites->isEmpty())
                 <div class="text-center py-12">
                     <div class="text-5xl text-slate-300 mb-3"><i class="fa-regular fa-heart"></i></div>
                     <h4 class="text-base font-bold text-slate-700 mb-1">{{ tt('قائمة المفضلة فاضية الحين', 'Your wishlist is empty') }}</h4>
-                    <p class="text-slate-400 text-xs mb-6">{{ tt('اضغط على علامة القلب ❤️ فوق أي لعبة عشان تضيفها هني وترجع لها بأي وقت.', 'Click the heart icon ❤️ on any toy to save it here.') }}</p>
+                    <p class="text-slate-500 text-xs mb-6">{{ tt('اضغط على علامة القلب ❤️ فوق أي لعبة عشان تضيفها هني وترجع لها بأي وقت.', 'Click the heart icon ❤️ on any toy to save it here.') }}</p>
                     <a href="{{ route('products.index') }}" class="bg-sky-500 text-white px-6 py-3 rounded-xl font-bold text-xs inline-block shadow-sm">{{ __('store.browseToys') }}</a>
                 </div>
             @else

@@ -10,7 +10,7 @@
             @endif
 
             <button aria-label="{{ __('store.favorites') }}" onclick="toggleFavorite({{ $p->id }}, event)" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-8 h-8 bg-white/95 backdrop-blur rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 transition cursor-pointer" title="{{ __('store.favorites') }}">
-                <i class="fav-icon-{{ $p->id }} {{ $fav ? 'fa-solid text-pink-500' : 'fa-regular text-slate-400' }} fa-heart text-sm"></i>
+                <i class="fav-icon-{{ $p->id }} {{ $fav ? 'fa-solid text-pink-500' : 'fa-regular text-slate-500' }} fa-heart text-sm"></i>
             </button>
 
             <a href="{{ route('products.show', $p) }}" class="block">
@@ -24,7 +24,7 @@
                 <div>
                     <span class="text-pink-600 font-black text-lg">{{ money($p->price) }}</span>
                     @if ($p->compare_price > $p->price)
-                        <span class="text-slate-400 line-through text-[11px] block">{{ money($p->compare_price) }}</span>
+                        <span class="text-slate-500 line-through text-[11px] block">{{ money($p->compare_price) }}</span>
                     @endif
                 </div>
                 @if ($p->inStock())
@@ -40,7 +40,7 @@
         @if ($p->inStock())
             <button onclick="quickAddToCart({{ $p->id }}, this)" class="flex-1 bg-sky-500 text-white py-2 rounded-xl font-bold hover:bg-sky-600 transition text-xs cursor-pointer">{{ __('store.addToCart') }}</button>
         @else
-            <button disabled class="flex-1 bg-slate-200 text-slate-400 py-2 rounded-xl font-bold text-xs cursor-not-allowed">{{ __('store.addToCart') }}</button>
+            <button disabled class="flex-1 bg-slate-200 text-slate-500 py-2 rounded-xl font-bold text-xs cursor-not-allowed">{{ __('store.addToCart') }}</button>
         @endif
     </div>
 </div>

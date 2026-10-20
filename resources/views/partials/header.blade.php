@@ -122,7 +122,7 @@
         </div>
 
         <div class="p-4 border-b border-slate-100 space-y-1 text-xs font-bold text-slate-700">
-            <p class="text-[11px] text-slate-400 mb-2 px-2">{{ __('store.myAccountPages') }}</p>
+            <p class="text-[11px] text-slate-500 mb-2 px-2">{{ __('store.myAccountPages') }}</p>
             <a href="{{ route('home') }}" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-sky-50 hover:text-sky-600"><i class="fa-solid fa-house w-5 text-sky-500 text-center"></i> {{ __('store.home') }}</a>
             <a href="{{ route('account') }}" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-sky-50 hover:text-sky-600"><i class="fa-solid fa-user-gear w-5 text-indigo-500 text-center"></i> {{ __('store.profileOrders') }}</a>
             <a href="{{ route('account.tab', 'favorites') }}" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-sky-50 hover:text-sky-600">
@@ -141,7 +141,7 @@
         </div>
 
         <div class="p-4 space-y-2 text-xs font-bold text-slate-700">
-            <p class="text-[11px] text-slate-400 mb-2 px-2">{{ __('store.toyCategories') }}</p>
+            <p class="text-[11px] text-slate-500 mb-2 px-2">{{ __('store.toyCategories') }}</p>
             <a href="{{ route('products.index') }}" class="flex items-center gap-3 p-2 rounded-xl hover:bg-sky-50">🌈 {{ __('store.catAll') }}</a>
             @foreach ($navCategories as $c)
                 <a href="{{ route('category.show', $c) }}" class="flex items-center gap-3 p-2 rounded-xl hover:bg-sky-50">
@@ -152,7 +152,7 @@
         </div>
     </div>
 
-    <div class="p-4 border-t border-slate-100 bg-slate-50 text-center text-xs text-slate-400">
+    <div class="p-4 border-t border-slate-100 bg-slate-50 text-center text-xs text-slate-500">
         @if ($user)
             <form method="POST" action="{{ route('logout') }}">
                 @csrf

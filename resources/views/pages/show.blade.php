@@ -65,7 +65,7 @@
                 <div class="border-b border-slate-100 pb-6 mb-6">
                     @if ($page->tr('badge'))<span class="{{ $badgeColors[$page->slug] ?? 'bg-sky-100 text-sky-800' }} px-3 py-1 rounded-full text-xs font-black inline-block mb-2">{{ $page->tr('badge') }}</span>@endif
                     <h1 class="text-2xl sm:text-3xl font-black text-slate-800">{{ $page->tr('title') }}</h1>
-                    @if ($page->tr('subtitle'))<p class="text-slate-400 text-xs mt-2">{{ $page->tr('subtitle') }}</p>@endif
+                    @if ($page->tr('subtitle'))<p class="text-slate-500 text-xs mt-2">{{ $page->tr('subtitle') }}</p>@endif
                 </div>
 
                 @if ($page->slug === 'shipping')
