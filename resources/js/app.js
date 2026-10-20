@@ -41,7 +41,11 @@ window.closeMobileDrawer = function () {
 
 window.scrollSlider = function (sliderId, direction) {
     const container = document.getElementById(sliderId);
-    if (container) container.scrollBy({ left: (isRTL ? direction : -direction) * 320, behavior: 'smooth' });
+    if (!container) return;
+    // Move by one card so cards always land fully in view.
+    const card = container.firstElementChild;
+    const step = card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(container).columnGap || 0) : 320;
+    container.scrollBy({ left: (isRTL ? direction : -direction) * step, behavior: 'smooth' });
 };
 
 window.toggleFavorite = async function (id, event) {

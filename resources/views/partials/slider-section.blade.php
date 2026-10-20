@@ -14,9 +14,9 @@
             @endif
         </div>
     </div>
-    <div id="{{ $id }}" class="flex gap-5 overflow-x-auto no-scrollbar pb-3 snap-x">
+    <div id="{{ $id }}" class="flex gap-5 overflow-x-auto no-scrollbar pb-3 snap-x snap-mandatory scroll-smooth">
         @foreach ($products as $p)
-            <div class="min-w-[260px] sm:min-w-[280px] max-w-[300px] snap-center">@include('partials.product-card', ['p' => $p])</div>
+            <div class="shrink-0 w-full sm:w-[calc((100%-1.25rem)/2)] md:w-[calc((100%-2.5rem)/3)] lg:w-[calc((100%-3.75rem)/4)] xl:w-[calc((100%-5rem)/5)] snap-start">@include('partials.product-card', ['p' => $p])</div>
         @endforeach
     </div>
 </section>

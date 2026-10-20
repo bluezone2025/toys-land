@@ -99,6 +99,19 @@ class StoreFlowTest extends TestCase
         \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\CartReminder::class, 1);
     }
 
+    public function test_validation_messages_follow_the_site_language(): void
+    {
+        \App\Models\User::factory()->create(['email' => 'taken@example.com']);
+        $form = ['name' => 'A', 'email' => 'taken@example.com', 'password' => 'secret123', 'password_confirmation' => 'nope'];
+
+        $this->from('/register')->post('/register', $form);
+        $this->get('/register')->assertSee('مسجل عندنا من قبل')->assertSee('تأكيد كلمة المرور غير متطابق');
+
+        $this->get('/lang/en');
+        $this->from('/register')->post('/register', $form);
+        $this->get('/register')->assertSee('The email has already been taken');
+    }
+
     public function test_shipping_fee_applies_below_threshold(): void
     {
         $product = Product::where('price', '<', 5)->first();

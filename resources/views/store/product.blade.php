@@ -49,7 +49,7 @@
                                         @foreach ($editions as $i => $o)
                                             <label class="border border-slate-200 rounded-xl p-3 flex items-center gap-2 cursor-pointer transition">
                                                 <input type="radio" name="edition" value="{{ $o->id }}" data-extra="{{ $o->price }}" class="option-radio" @checked($i === 0) onchange="calcCustomPrice()">
-                                                <span class="font-bold">{{ $o->tr('name') }}@if ($o->price > 0) (+{{ rtrim(rtrim(number_format($o->price * \App\Support\Shop::country()->rate, 2, '.', ''), '0'), '.') }})@endif</span>
+                                                <span class="font-bold">{{ $o->tr('name') }}@if ($o->price > 0) (+{{ money($o->price) }})@endif</span>
                                             </label>
                                         @endforeach
                                     </div>
@@ -62,7 +62,7 @@
                                         @foreach ($addons as $o)
                                             <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-xl border border-slate-200 transition">
                                                 <input type="checkbox" name="addons[]" value="{{ $o->id }}" data-extra="{{ $o->price }}" class="option-check" onchange="calcCustomPrice()">
-                                                <span>{{ $o->icon }} {{ $o->tr('name') }} (+{{ number_format($o->price * \App\Support\Shop::country()->rate, 2, '.', '') }})</span>
+                                                <span>{{ $o->icon }} {{ $o->tr('name') }} (+{{ money($o->price) }})</span>
                                             </label>
                                         @endforeach
                                     </div>
