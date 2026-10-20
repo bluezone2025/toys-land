@@ -1,3 +1,8 @@
+# Never serve server logs or dotfiles (e.g. the PHP error_log some hosts write here).
+<FilesMatch "(^\.|error_log$|\.log$)">
+    Require all denied
+</FilesMatch>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
