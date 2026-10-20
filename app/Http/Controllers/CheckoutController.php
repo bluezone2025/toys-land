@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewOrderAdmin;
 use App\Mail\OrderPlaced;
+use App\Models\GuestCustomer;
 use App\Models\AnalyticsEvent;
 use App\Models\Country;
 use App\Models\Coupon;
@@ -92,7 +94,7 @@ class CheckoutController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'phone' => ['required', 'string', 'max:20', 'regex:/^[\d\s+\-()]{7,20}$/'],
-            'email' => ['nullable', 'email', 'max:150'],
+            'email' => ['required', 'email', 'max:150'],
             'country' => ['required', Rule::in(Shop::countries()->pluck('code'))],
             'city' => ['required', 'string', 'max:100'],
             'block' => ['required', 'string', 'max:50'],
@@ -238,13 +240,15 @@ class CheckoutController extends Controller
         session()->forget('coupon');
         AnalyticsEvent::record('purchase', ['order_id' => $order->id, 'value' => $order->total]);
 
+        GuestCustomer::recordOrder($order);
+
+        // Queued: the scheduler's queue worker sends them within a minute, so checkout stays fast.
         try {
-            $admin = Setting::get('admin_email');
-            if ($admin) {
-                Mail::to($admin)->send(new OrderPlaced($order, true));
-            }
             if ($order->email) {
-                Mail::to($order->email)->send(new OrderPlaced($order));
+                Mail::to($order->email)->queue(new OrderPlaced($order));
+            }
+            if ($admin = Setting::get('admin_email')) {
+                Mail::to($admin)->queue(new NewOrderAdmin($order));
             }
         } catch (Throwable $e) {
             report($e);

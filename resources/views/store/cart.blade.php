@@ -49,6 +49,7 @@
                             <span class="text-pink-600 text-2xl">{{ money($subtotal + $shipping) }}</span>
                         </div>
                     </div>
+                    @include('partials.promo-coupon', ['class' => 'mb-4'])
                     <a href="{{ route('checkout') }}" class="w-full block text-center bg-sky-500 hover:bg-sky-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-sm transition mb-3">{{ __('store.checkoutBtn') }}</a>
                     <a href="{{ route('products.index') }}" class="w-full block text-center bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-xs transition">{{ __('store.continueShopping') }}</a>
                 </div>

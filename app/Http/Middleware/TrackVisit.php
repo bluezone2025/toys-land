@@ -46,7 +46,7 @@ class TrackVisit
             ]);
 
             if ($user = auth()->user()) {
-                $user->forceFill(['last_seen_at' => now()])->saveQuietly();
+                $user->forceFill(['last_seen_at' => now(), 'locale' => app()->getLocale()])->saveQuietly();
             }
         } catch (Throwable $e) {
             report($e);

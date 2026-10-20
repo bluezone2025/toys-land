@@ -30,7 +30,7 @@ class AdminPanelTest extends TestCase
         $product = Product::first();
         $this->postJson('/cart', ['product_id' => $product->id]);
         $this->post('/checkout', [
-            'name' => 'Visitor', 'phone' => '96512345678', 'country' => 'KW', 'city' => 'Hawally',
+            'name' => 'Visitor', 'email' => 'visitor@example.com', 'phone' => '96512345678', 'country' => 'KW', 'city' => 'Hawally',
             'block' => '1', 'property_type' => 'house', 'apartment' => '5', 'payment_method' => 'cod',
         ]);
     }
@@ -44,7 +44,7 @@ class AdminPanelTest extends TestCase
             '/admin/products', '/admin/products/create', '/admin/products/'.Product::first()->slug.'/edit',
             '/admin/categories', '/admin/categories/create', '/admin/categories/educational/edit', '/admin/age-groups',
             '/admin/customers', '/admin/customers/create', "/admin/customers/{$this->admin->id}/edit", '/admin/coupons', '/admin/countries',
-            '/admin/hero-slides', '/admin/abandoned-carts', '/admin/faqs', '/admin/content-pages', '/admin/content-pages/1/edit', '/admin/contact-messages'];
+            '/admin/hero-slides', '/admin/abandoned-carts', '/admin/guest-buyers', '/admin/email-campaigns', '/admin/email-campaigns/create', '/admin/faqs', '/admin/content-pages', '/admin/content-pages/1/edit', '/admin/contact-messages'];
 
         foreach ($urls as $url) {
             $this->assertSame(200, $this->get($url)->status(), $url);

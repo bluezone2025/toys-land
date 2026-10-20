@@ -17,7 +17,8 @@ class OrderController extends Controller
 
     public function invoice(Order $order)
     {
-        abort_unless(static::canView($order), 403);
+        // Signed links (sent by email) open the invoice without a session.
+        abort_unless(static::canView($order) || request()->hasValidSignature(), 403);
 
         return view('store.invoice', ['order' => $order->load('items', 'country')]);
     }

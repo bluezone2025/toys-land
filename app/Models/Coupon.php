@@ -35,6 +35,41 @@ class Coupon extends Model
         return $coupon;
     }
 
+    /** The coupon configured for reminders / on-site promos, if it can still be used. */
+    public static function promo(): ?self
+    {
+        $id = Setting::get('promo_coupon_id');
+
+        return $id ? static::findValid(static::find($id)?->code, PHP_FLOAT_MAX) : null;
+    }
+
+    public function remainingUses(): ?int
+    {
+        return $this->max_uses ? max(0, $this->max_uses - $this->used_count) : null;
+    }
+
+    /** "باقي 2 استخدام فقط" / "Only 2 uses left" / expiry text, for urgency messages. */
+    public function urgencyText(?string $locale = null): ?string
+    {
+        $ar = ($locale ?? app()->getLocale()) !== 'en';
+        if (($left = $this->remainingUses()) !== null) {
+            return $ar ? "باقي {$left} استخدام فقط على الكود، لحّق قبل ما يخلص!" : "Only {$left} use(s) left on this code — hurry!";
+        }
+        if ($this->expires_at) {
+            return $ar ? 'الكود ينتهي '.$this->expires_at->locale('ar')->diffForHumans() : 'Code expires '.$this->expires_at->locale('en')->diffForHumans();
+        }
+
+        return null;
+    }
+
+    public function discountText(?string $locale = null): string
+    {
+        $ar = ($locale ?? app()->getLocale()) !== 'en';
+        $value = rtrim(rtrim(number_format((float) $this->value, 3, '.', ''), '0'), '.');
+
+        return $this->type === 'fixed' ? ($ar ? "خصم {$value} د.ك" : "{$value} KD off") : ($ar ? "خصم {$value}%" : "{$value}% off");
+    }
+
     public function discountFor(float $subtotal): float
     {
         $discount = $this->type === 'fixed' ? (float) $this->value : $subtotal * (float) $this->value / 100;

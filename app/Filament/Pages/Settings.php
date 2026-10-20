@@ -37,7 +37,7 @@ class Settings extends Page
     public ?array $data = [];
 
     /** Toggles are stored as '1' / '0' strings. */
-    protected const TOGGLES = ['cart_reminder_enabled', 'welcome_enabled', 'pay_knet_enabled', 'pay_card_enabled', 'pay_applepay_enabled', 'pay_cod_enabled'];
+    protected const TOGGLES = ['whatsapp_api_enabled', 'cart_reminder_enabled', 'welcome_enabled', 'pay_knet_enabled', 'pay_card_enabled', 'pay_applepay_enabled', 'pay_cod_enabled'];
 
     public function mount(): void
     {
@@ -95,6 +95,11 @@ class Settings extends Page
                     Section::make('تذكير السلة المتروكة')->columns(2)->columnSpanFull()->schema([
                         Toggle::make('cart_reminder_enabled')->label('إرسال إيميل تذكير للعملاء المسجلين اللي تركوا منتجات في السلة'),
                         TextInput::make('cart_reminder_hours')->label('يرسل التذكير بعد (ساعة)')->numeric()->minValue(1)->maxValue(72)->default(3),
+                        \Filament\Forms\Components\Select::make('promo_coupon_id')->label('كود الخصم في التذكيرات وإشعار الزوار')
+                            ->options(fn () => \App\Models\Coupon::where('is_active', true)->pluck('code', 'id'))->placeholder('بدون كود')
+                            ->helperText('يظهر في إيميل تذكير السلة وفي إشعار الموقع للزوار مع عدد مرات الاستخدام المتبقية'),
+                        Toggle::make('whatsapp_api_enabled')->label('إرسال تذكير السلة على واتساب (WhatsApp Business API)')
+                            ->helperText('يحتاج WHATSAPP_TOKEN و WHATSAPP_PHONE_ID في ملف .env وقالب رسالة معتمد من Meta'),
                     ]),
                 ]),
                 Tab::make('الصفحة الرئيسية')->icon(Heroicon::OutlinedHome)->columns(2)->schema([

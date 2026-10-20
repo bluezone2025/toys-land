@@ -40,7 +40,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2">
                         <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('الاسم الكامل *', 'Full Name *') }}</label><input type="text" name="name" value="{{ old('name', $user?->name) }}" required maxlength="120" class="{{ $input }}" placeholder="{{ tt('الاسم الكريم', 'Enter full name') }}"></div>
                         <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('رقم النقال *', 'Mobile Number *') }}</label><input type="tel" name="phone" value="{{ old('phone', $user?->phone) }}" required maxlength="20" class="{{ $input }} dir-ltr {{ $rtl ? 'text-right' : '' }}" placeholder="965xxxxxxxx"></div>
-                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('البريد الإلكتروني (اختياري)', 'Email Address (Optional)') }}</label><input type="email" name="email" value="{{ old('email', $user?->email) }}" class="{{ $input }}" placeholder="name@example.com"></div>
+                        <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('البريد الإلكتروني * (نرسل عليه الفاتورة)', 'Email Address * (we send your invoice here)') }}</label><input type="email" name="email" value="{{ old('email', $user?->email) }}" required maxlength="150" class="{{ $input }}" placeholder="name@example.com"></div>
                         <div><label class="block font-bold text-slate-700 mb-1.5">{{ tt('الدولة *', 'Country *') }}</label>
                             <select name="country" id="c-country" onchange="refreshSummary()" class="{{ $input }} bg-white">
                                 @foreach ($countries as $c)

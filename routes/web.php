@@ -42,6 +42,7 @@ Route::middleware('store')->group(function () {
     Route::post('/contact', [PageController::class, 'storeContact'])->middleware('throttle:5,1')->name('contact.store');
 
     Route::get('/lang/{locale}', [PageController::class, 'locale'])->name('locale.switch');
+    Route::get('/unsubscribe', [PageController::class, 'unsubscribe'])->name('unsubscribe');
     Route::post('/country', [PageController::class, 'country'])->name('country.switch');
 
     Route::get('/account', [AccountController::class, 'index'])->name('account');

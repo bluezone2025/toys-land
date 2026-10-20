@@ -35,6 +35,12 @@ return [
         ],
     ],
 
+    'whatsapp' => [
+        'token' => env('WHATSAPP_TOKEN'),
+        'phone_id' => env('WHATSAPP_PHONE_ID'),
+        'cart_template' => env('WHATSAPP_CART_TEMPLATE', 'cart_reminder'),
+    ],
+
     'myfatoorah' => [
         'key' => env('MYFATOORAH_API_KEY'),
         'base_url' => env('MYFATOORAH_BASE_URL', 'https://apitest.myfatoorah.com'),

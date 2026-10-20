@@ -14,7 +14,7 @@ class SavedCart extends Model
 
     protected $guarded = [];
 
-    protected $casts = ['items' => 'array', 'subtotal' => 'decimal:3', 'reminded_at' => 'datetime'];
+    protected $casts = ['items' => 'array', 'subtotal' => 'decimal:3', 'reminded_at' => 'datetime', 'whatsapp_sent_at' => 'datetime'];
 
     public function user(): BelongsTo
     {

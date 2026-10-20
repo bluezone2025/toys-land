@@ -45,6 +45,15 @@ class PageController extends Controller
         return back()->with('toast', tt('تم استلام رسالتك بنجاح! سنتواصل معك قريباً 💬', 'Message sent successfully! 💬'));
     }
 
+    public function unsubscribe(Request $request)
+    {
+        abort_unless($request->hasValidSignature(), 403);
+        $model = $request->query('type') === 'guest' ? \App\Models\GuestCustomer::class : \App\Models\User::class;
+        $model::whereKey($request->integer('id'))->update(['unsubscribed_at' => now()]);
+
+        return redirect()->route('home')->with('toast', tt('تم إلغاء اشتراكك في الرسائل الترويجية. ما راح نرسل لك عروض بعد اليوم.', 'You have been unsubscribed from promotional emails.'));
+    }
+
     public function locale(string $locale)
     {
         session(['locale' => in_array($locale, ['ar', 'en']) ? $locale : 'ar']);
