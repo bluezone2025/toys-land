@@ -111,6 +111,19 @@ class AdminPanelTest extends TestCase
         $this->get('/products/test-toy')->assertSee('شريطة')->assertDontSee('تغليف هدية كشخة');
     }
 
+    public function test_campaign_test_email_is_sent_immediately(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+        $this->actingAs($this->admin);
+        $campaign = \App\Models\EmailCampaign::create(['name' => 'T', 'subject_ar' => 'تجربة', 'body_ar' => '<p>هلا</p>']);
+
+        Livewire::test(\App\Filament\Resources\EmailCampaigns\Pages\EditEmailCampaign::class, ['record' => $campaign->id])
+            ->callAction('test');
+
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\CampaignMail::class, fn ($m) => $m->hasTo($this->admin->email));
+        \Illuminate\Support\Facades\Mail::assertNotQueued(\App\Mail\CampaignMail::class);
+    }
+
     public function test_settings_page_saves(): void
     {
         $this->actingAs($this->admin);

@@ -98,8 +98,8 @@ class Settings extends Page
                         \Filament\Forms\Components\Select::make('promo_coupon_id')->label('كود الخصم في التذكيرات وإشعار الزوار')
                             ->options(fn () => \App\Models\Coupon::where('is_active', true)->pluck('code', 'id'))->placeholder('بدون كود')
                             ->helperText('يظهر في إيميل تذكير السلة وفي إشعار الموقع للزوار مع عدد مرات الاستخدام المتبقية'),
-                        Toggle::make('whatsapp_api_enabled')->label('إرسال تذكير السلة على واتساب (WhatsApp Business API)')
-                            ->helperText('يحتاج WHATSAPP_TOKEN و WHATSAPP_PHONE_ID في ملف .env وقالب رسالة معتمد من Meta'),
+                        Toggle::make('whatsapp_api_enabled')->label('إرسال تذكير السلة على واتساب')
+                            ->helperText('تتطلب تفعيل خدمة واتساب للأعمال على حساب المتجر. تواصل مع الدعم الفني لتفعيلها.'),
                     ]),
                 ]),
                 Tab::make('الصفحة الرئيسية')->icon(Heroicon::OutlinedHome)->columns(2)->schema([

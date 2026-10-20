@@ -95,20 +95,29 @@ class EmailCampaignResource extends Resource
     {
         return Action::make('send_now')->label('إرسال للكل الآن')->icon(Heroicon::OutlinedPaperAirplane)->color('success')
             ->requiresConfirmation()
-            ->modalDescription(fn (EmailCampaign $r) => 'هتتبعت الرسالة لـ '.static::recipientsCount($r).' مستلم على دفعات صغيرة (حوالي 40 إيميل في الدقيقة) علشان السيرفر ما يتضغطش.')
+            ->modalHeading('تأكيد إرسال الحملة')
+            ->modalDescription(fn (EmailCampaign $r) => 'سيتم إرسال هذه الرسالة إلى '.static::recipientsCount($r).' مشترك. هل تريد المتابعة؟')
+            ->modalSubmitActionLabel('إرسال الحملة')
             ->action(function (EmailCampaign $record) {
                 $count = RunEmailCampaigns::dispatch($record);
-                Notification::make()->success()->title("تمت جدولة {$count} رسالة للإرسال")->send();
+                Notification::make()->success()->title('بدأ إرسال الحملة')->body("جاري إرسال الرسالة إلى {$count} مشترك.")->send();
             });
     }
 
     public static function testAction(): Action
     {
-        return Action::make('test')->label('تجربة على إيميلي')->icon(Heroicon::OutlinedBeaker)->color('gray')
+        return Action::make('test')->label('إرسال نسخة تجريبية لي')->icon(Heroicon::OutlinedBeaker)->color('gray')
             ->action(function (EmailCampaign $record) {
                 $admin = auth()->user();
-                Mail::to($admin->email)->send(new CampaignMail($record, $admin->name, 'user', $admin->id, 'ar'));
-                Notification::make()->success()->title('تم إرسال نسخة تجربة إلى '.$admin->email)->send();
+                try {
+                    Mail::to($admin->email)->sendNow(new CampaignMail($record, $admin->name, 'user', $admin->id, 'ar'));
+                } catch (\Throwable $e) {
+                    report($e);
+                    Notification::make()->danger()->title('تعذر إرسال الرسالة')->body('يرجى مراجعة إعدادات البريد الإلكتروني للمتجر.')->send();
+
+                    return;
+                }
+                Notification::make()->success()->title('تم إرسال نسخة تجريبية')->body('تم إرسال الرسالة إلى '.$admin->email)->send();
             });
     }
 
