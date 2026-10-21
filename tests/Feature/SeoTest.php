@@ -73,4 +73,15 @@ class SeoTest extends TestCase
         $internal = array_filter($m[1], fn ($u) => str_starts_with($u, url('/')) && ! str_contains($u, '/build/'));
         $this->assertSame([], array_values(array_filter($internal, fn ($u) => str_contains($u, '?'))));
     }
+
+    public function test_pages_send_security_headers_without_a_readable_csrf_cookie(): void
+    {
+        $response = $this->get('/');
+        foreach (['Content-Security-Policy', 'X-Content-Type-Options', 'X-Frame-Options', 'X-XSS-Protection', 'Referrer-Policy'] as $header) {
+            $response->assertHeader($header);
+        }
+        $response->assertCookieMissing('XSRF-TOKEN');
+
+        $this->get('/admin/login')->assertHeader('X-Frame-Options', 'SAMEORIGIN');
+    }
 }

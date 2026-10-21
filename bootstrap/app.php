@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\TrackVisit::class,
             \App\Http\Middleware\CompressResponse::class,
         ]);
+        $middleware->web(
+            append: [\App\Http\Middleware\SecurityHeaders::class],
+            replace: [\Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class => \App\Http\Middleware\PreventRequestForgery::class],
+        );
         $middleware->redirectUsersTo(fn () => route('account'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
