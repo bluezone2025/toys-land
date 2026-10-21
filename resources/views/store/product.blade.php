@@ -61,10 +61,10 @@
                     @if ($product->tr('badge'))
                         <span class="absolute top-3 {{ $rtl ? 'right-3' : 'left-3' }} bg-white/95 text-sky-700 font-bold text-xs px-3 py-1 rounded-full shadow-sm z-10">{{ $product->tr('badge') }}</span>
                     @endif
-                    <button type="button" aria-label="{{ __('store.favorites') }}" onclick="toggleFavorite({{ $product->id }}, event)" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-9 h-9 bg-white/95 rounded-full flex items-center justify-center shadow-sm z-10 hover:scale-110 transition cursor-pointer">
+                    <button type="button" aria-label="{{ __('store.favorites') }}" data-call="toggleFavorite" data-args="{{ json_encode([$product->id, '$event']) }}" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-9 h-9 bg-white/95 rounded-full flex items-center justify-center shadow-sm z-10 hover:scale-110 transition cursor-pointer">
                         <i class="fav-icon-{{ $product->id }} {{ \App\Support\Favorites::has($product->id) ? 'fa-solid text-pink-500' : 'fa-regular text-slate-500' }} fa-heart text-sm"></i>
                     </button>
-                    <button type="button" onclick="openLightbox(window.currentImage || 0)" class="block w-full cursor-zoom-in group relative" title="{{ tt('تكبير الصورة', 'Zoom image') }}">
+                    <button type="button" data-call="openCurrentImage" class="block w-full cursor-zoom-in group relative" title="{{ tt('تكبير الصورة', 'Zoom image') }}">
                         <img id="main-image" fetchpriority="high" src="{{ $mainImages[0] ?? $product->image_url }}" width="800" height="380" class="w-full h-[300px] sm:h-[380px] object-cover rounded-2xl bg-slate-50" alt="{{ $product->tr('name') }}">
                         <span class="absolute bottom-3 {{ $rtl ? 'left-3' : 'right-3' }} bg-white/90 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm opacity-90 group-hover:opacity-100 transition">
                             <i class="fa-solid fa-magnifying-glass-plus"></i> {{ count($gallery) > 1 ? tt('شوف كل الصور', 'View all photos').' ('.count($gallery).')' : tt('تكبير', 'Zoom') }}
@@ -73,7 +73,7 @@
                     @if (count($gallery) > 1)
                         <div class="flex gap-2 mt-3 overflow-x-auto no-scrollbar">
                             @foreach ($thumbs as $i => $img)
-                                <button type="button" onclick="document.getElementById('main-image').src='{{ $mainImages[$i] }}'; window.currentImage = {{ $i }};" class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:border-sky-500 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt="{{ $product->tr('name') }}"></button>
+                                <button type="button" data-call="showMainImage" data-args="{{ json_encode([$mainImages[$i], $i]) }}" class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:border-sky-500 cursor-pointer"><img src="{{ $img }}" class="w-full h-full object-cover" alt="{{ $product->tr('name') }}"></button>
                             @endforeach
                         </div>
                     @endif
@@ -93,7 +93,7 @@
                                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
                                         @foreach ($editions as $i => $o)
                                             <label class="border border-slate-200 rounded-xl p-3 flex items-center gap-2 cursor-pointer transition">
-                                                <input type="radio" name="edition" value="{{ $o->id }}" data-extra="{{ $o->price }}" class="option-radio" @checked($i === 0) onchange="calcCustomPrice()">
+                                                <input type="radio" name="edition" value="{{ $o->id }}" data-extra="{{ $o->price }}" class="option-radio" @checked($i === 0) data-change="calcCustomPrice">
                                                 <span class="font-bold">{{ $o->tr('name') }}@if ($o->price > 0) (+{{ money($o->price) }})@endif</span>
                                             </label>
                                         @endforeach
@@ -106,7 +106,7 @@
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                                         @foreach ($addons as $o)
                                             <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-xl border border-slate-200 transition">
-                                                <input type="checkbox" name="addons[]" value="{{ $o->id }}" data-extra="{{ $o->price }}" class="option-check" onchange="calcCustomPrice()">
+                                                <input type="checkbox" name="addons[]" value="{{ $o->id }}" data-extra="{{ $o->price }}" class="option-check" data-change="calcCustomPrice">
                                                 <span>{{ $o->icon }} {{ $o->tr('name') }} (+{{ money($o->price) }})</span>
                                             </label>
                                         @endforeach
@@ -127,9 +127,9 @@
                         @if ($product->inStock())
                             <div class="flex items-center gap-3 w-full sm:w-auto">
                                 <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50 shrink-0">
-                                    <button type="button" onclick="const q=document.getElementById('qty'); q.value=Math.max(1, +q.value-1)" class="px-3.5 py-3 hover:bg-slate-200 font-bold text-xs cursor-pointer">-</button>
+                                    <button type="button" data-call="stepQty" data-args="{{ json_encode([-1, $product->stock]) }}" class="px-3.5 py-3 hover:bg-slate-200 font-bold text-xs cursor-pointer">-</button>
                                     <input id="qty" name="qty" type="number" aria-label="{{ tt('الكمية', 'Quantity') }}" min="1" max="{{ $product->stock }}" value="1" class="w-10 text-center bg-transparent font-bold text-xs focus:outline-none">
-                                    <button type="button" onclick="const q=document.getElementById('qty'); q.value=Math.min({{ $product->stock }}, +q.value+1)" class="px-3.5 py-3 hover:bg-slate-200 font-bold text-xs cursor-pointer">+</button>
+                                    <button type="button" data-call="stepQty" data-args="{{ json_encode([1, $product->stock]) }}" class="px-3.5 py-3 hover:bg-slate-200 font-bold text-xs cursor-pointer">+</button>
                                 </div>
                                 <button type="submit" class="w-full sm:w-auto min-w-[220px] bg-sky-500 hover:bg-sky-600 text-white py-3.5 px-6 rounded-xl font-bold text-sm transition cursor-pointer">{{ __('store.addToCart') }} 🛒</button>
                             </div>
@@ -143,13 +143,13 @@
 
         <!-- معرض صور المنتج -->
         <div id="lightbox" data-images='@json($gallery)' class="hidden fixed inset-0 z-[60] bg-slate-950/90 backdrop-blur-sm items-center justify-center p-4 flex-col">
-            <button aria-label="{{ tt('إغلاق', 'Close') }}" type="button" onclick="closeLightbox()" class="absolute top-4 {{ $rtl ? 'left-4' : 'right-4' }} w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10" title="{{ tt('إغلاق', 'Close') }}">
+            <button aria-label="{{ tt('إغلاق', 'Close') }}" type="button" data-call="closeLightbox" class="absolute top-4 {{ $rtl ? 'left-4' : 'right-4' }} w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10" title="{{ tt('إغلاق', 'Close') }}">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
             <div class="relative w-full max-w-4xl flex items-center justify-center">
                 @if (count($gallery) > 1)
-                    <button aria-label="{{ $rtl ? tt('السابق', 'Previous') : tt('التالي', 'Next') }}" type="button" onclick="lightboxStep({{ $rtl ? -1 : 1 }})" class="absolute right-0 sm:-right-14 w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10"><i class="fa-solid fa-chevron-right"></i></button>
-                    <button aria-label="{{ $rtl ? tt('التالي', 'Next') : tt('السابق', 'Previous') }}" type="button" onclick="lightboxStep({{ $rtl ? 1 : -1 }})" class="absolute left-0 sm:-left-14 w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button aria-label="{{ $rtl ? tt('السابق', 'Previous') : tt('التالي', 'Next') }}" type="button" data-call="lightboxStep" data-args="[{{ $rtl ? -1 : 1 }}]" class="absolute right-0 sm:-right-14 w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10"><i class="fa-solid fa-chevron-right"></i></button>
+                    <button aria-label="{{ $rtl ? tt('التالي', 'Next') : tt('السابق', 'Previous') }}" type="button" data-call="lightboxStep" data-args="[{{ $rtl ? 1 : -1 }}]" class="absolute left-0 sm:-left-14 w-11 h-11 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center transition cursor-pointer z-10"><i class="fa-solid fa-chevron-left"></i></button>
                 @endif
                 <img id="lightbox-img" src="{{ $gallery[0] ?? '' }}" class="max-h-[75vh] max-w-full rounded-2xl shadow-2xl object-contain select-none" alt="{{ $product->tr('name') }}">
             </div>
@@ -176,7 +176,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
     const basePriceKD = {{ (float) $product->price }};
     const rate = {{ (float) \App\Support\Shop::country()->rate }};
     const symbol = @json(\App\Support\Shop::country()->tr('symbol'));

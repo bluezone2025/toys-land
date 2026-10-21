@@ -18,8 +18,8 @@
 @endphp
 
 @push('head')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}" src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 @endpush
 
 @section('content')
@@ -30,13 +30,13 @@
                 <span class="font-black text-sm text-slate-800">{{ tt('طلبك معتمد وجاهز! تقدر تحفظ الفاتورة الحين:', 'Your order is confirmed! Download your invoice:') }}</span>
             </div>
             <div class="flex flex-wrap items-center gap-2.5">
-                <button onclick="downloadInvoiceAsImage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-sm transition cursor-pointer">
+                <button data-call="downloadInvoiceAsImage" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-sm transition cursor-pointer">
                     <i class="fa-solid fa-image"></i> {{ tt('حفظ كصورة (PNG)', 'Save as Image (PNG)') }}
                 </button>
-                <button onclick="downloadInvoiceAsPDF()" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-sm transition cursor-pointer">
+                <button data-call="downloadInvoiceAsPDF" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-sm transition cursor-pointer">
                     <i class="fa-solid fa-file-pdf"></i> {{ tt('تحميل كملف (PDF)', 'Download PDF') }}
                 </button>
-                <button onclick="window.print()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition cursor-pointer">
+                <button data-call="print" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition cursor-pointer">
                     <i class="fa-solid fa-print"></i> {{ tt('طباعة', 'Print') }}
                 </button>
                 <a href="{{ route('tracking', ['order' => $order->number, 'phone' => $order->phone]) }}" class="bg-sky-500 hover:bg-sky-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-sm transition">
@@ -52,7 +52,7 @@
                         <i class="fa-solid fa-shapes text-yellow-300"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl sm:text-3xl font-black tracking-tight">{{ $brand }} 🧸</h1>
+                        <h1 class="text-2xl sm:text-3xl font-black">{{ $brand }} 🧸</h1>
                         <p class="text-sky-300 text-xs font-semibold mt-0.5">{{ setting_tr('store_tagline', __('store.brandSub')) }}</p>
                         <p class="text-slate-500 text-[11px] mt-1">{{ setting_tr('address', tt('الكويت - الري - الأفنيوز مول', 'Kuwait - Al-Rai - The Avenues Mall')) }} | {{ tt('هاتف:', 'Tel:') }} <span class="dir-ltr">{{ setting('phone', '+965 22225555') }}</span></p>
                     </div>
@@ -159,7 +159,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
     function downloadInvoiceAsImage() {
         showToast(@json(tt('جاري تجهيز وتحميل صورة الفاتورة... 📸', 'Generating PNG Invoice... 📸')));
         html2canvas(document.getElementById('printable-invoice'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {

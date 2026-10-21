@@ -101,7 +101,7 @@
                         @foreach ($favorites as $p)
                             <div class="relative">
                                 @include('partials.product-card', ['p' => $p])
-                                <button onclick="toggleFavorite({{ $p->id }}, event); this.parentElement.remove();" class="mt-2 w-full bg-red-50 hover:bg-red-100 text-red-600 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5">
+                                <button data-call="toggleFavorite" data-args="{{ json_encode([$p->id, '$event']) }}" data-remove-parent class="mt-2 w-full bg-red-50 hover:bg-red-100 text-red-600 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5">
                                     <i class="fa-solid fa-trash-can"></i> {{ tt('حذف من المفضلة', 'Remove from Wishlist') }}
                                 </button>
                             </div>

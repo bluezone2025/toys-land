@@ -149,7 +149,7 @@
                     <label for="coupon-input" class="block text-[11px] font-bold text-slate-600 mb-1.5">{{ tt('عندك كود خصم؟', 'Have a promo code?') }}@if (setting('promo_hint_code')) ({{ tt('جرب:', 'Try:') }} {{ setting('promo_hint_code') }})@endif</label>
                     <div class="flex gap-2">
                         <input type="text" name="coupon" id="coupon-input" value="{{ old('coupon', session('coupon')) }}" class="flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold uppercase bg-white">
-                        <button type="button" onclick="refreshSummary(true)" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer">{{ tt('تطبيق', 'Apply') }}</button>
+                        <button type="button" data-call="refreshSummary" data-args="[true]" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer">{{ tt('تطبيق', 'Apply') }}</button>
                     </div>
                     <p id="coupon-msg" class="text-[11px] font-bold mt-2 hidden"></p>
                 </div>
@@ -181,7 +181,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
     const form = document.getElementById('checkout-form');
     const countrySelect = form.querySelector('[data-country-select]');
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;

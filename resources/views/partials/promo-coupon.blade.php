@@ -8,7 +8,7 @@
                     <p class="text-[11px] font-black text-red-600 mt-0.5">⏳ {{ $promo->urgencyText() }}</p>
                 @endif
             </div>
-            <button type="button" onclick="navigator.clipboard?.writeText('{{ $promo->code }}'); showToast(@js(tt('تم نسخ الكود ✅', 'Code copied ✅')))" class="shrink-0 bg-white border border-amber-300 text-slate-900 font-black tracking-widest text-sm px-3 py-1.5 rounded-xl hover:bg-amber-100 cursor-pointer dir-ltr" title="{{ tt('انسخ الكود', 'Copy code') }}">
+            <button type="button" data-copy="{{ $promo->code }}" data-copy-message="{{ tt('تم نسخ الكود ✅', 'Code copied ✅') }}" class="shrink-0 bg-white border border-amber-300 text-slate-900 font-black tracking-widest text-sm px-3 py-1.5 rounded-xl hover:bg-amber-100 cursor-pointer dir-ltr" title="{{ tt('انسخ الكود', 'Copy code') }}">
                 {{ $promo->code }} <i class="fa-regular fa-copy text-xs text-amber-600"></i>
             </button>
         </div>

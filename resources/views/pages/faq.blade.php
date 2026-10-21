@@ -24,7 +24,7 @@
             <div class="space-y-3.5 mb-10">
                 @foreach ($faqs as $i => $f)
                     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                        <button onclick="toggleFaq({{ $i }})" class="w-full p-5 flex items-center justify-between gap-4 hover:bg-slate-50 transition cursor-pointer">
+                        <button data-call="toggleFaq" data-args="[{{ $i }}]" class="w-full p-5 flex items-center justify-between gap-4 hover:bg-slate-50 transition cursor-pointer">
                             <span class="font-black text-sm sm:text-base text-slate-800 {{ is_rtl() ? 'text-right' : 'text-left' }}">{{ $f->tr('q') }}</span>
                             <span id="faq-icon-{{ $i }}" class="w-8 h-8 rounded-xl {{ $i === 0 ? 'bg-sky-500 text-white' : 'bg-sky-50 text-sky-600' }} flex items-center justify-center shrink-0 transition-transform duration-200">
                                 <i class="fa-solid {{ $i === 0 ? 'fa-minus' : 'fa-plus' }} text-xs"></i>
@@ -49,7 +49,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
     function toggleFaq(idx) {
         const ans = document.getElementById('faq-ans-' + idx);
         const icon = document.getElementById('faq-icon-' + idx);

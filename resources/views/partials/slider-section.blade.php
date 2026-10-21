@@ -7,8 +7,8 @@
             @if ($sub)<p class="text-slate-600 text-xs">{{ $sub }}</p>@endif
         </div>
         <div class="flex items-center gap-2 shrink-0">
-            <button aria-label="{{ tt('السابق', 'Previous') }}" onclick="scrollSlider('{{ $id }}', 1)" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $rtl ? 'fa-chevron-right' : 'fa-chevron-left' }} text-xs"></i></button>
-            <button aria-label="{{ tt('التالي', 'Next') }}" onclick="scrollSlider('{{ $id }}', -1)" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $rtl ? 'fa-chevron-left' : 'fa-chevron-right' }} text-xs"></i></button>
+            <button aria-label="{{ tt('السابق', 'Previous') }}" data-call="scrollSlider" data-args="{{ json_encode([$id, 1]) }}" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $rtl ? 'fa-chevron-right' : 'fa-chevron-left' }} text-xs"></i></button>
+            <button aria-label="{{ tt('التالي', 'Next') }}" data-call="scrollSlider" data-args="{{ json_encode([$id, -1]) }}" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $rtl ? 'fa-chevron-left' : 'fa-chevron-right' }} text-xs"></i></button>
             @if ($viewAll ?? null)
                 <a href="{{ $viewAll }}" class="text-sky-600 font-bold text-xs hover:underline whitespace-nowrap">{{ __('store.viewAll') }}</a>
             @endif

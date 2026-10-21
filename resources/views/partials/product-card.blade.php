@@ -9,7 +9,7 @@
                 <span class="absolute bottom-2 {{ $rtl ? 'left-2' : 'right-2' }} bg-slate-900/75 text-white text-[10px] font-medium px-2 py-0.5 rounded-md z-10">{{ $p->ageLabel() }}</span>
             @endif
 
-            <button aria-label="{{ __('store.favorites') }}" onclick="toggleFavorite({{ $p->id }}, event)" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-8 h-8 bg-white/95 backdrop-blur rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 transition cursor-pointer" title="{{ __('store.favorites') }}">
+            <button aria-label="{{ __('store.favorites') }}" data-call="toggleFavorite" data-args="{{ json_encode([$p->id, '$event']) }}" class="absolute top-3 {{ $rtl ? 'left-3' : 'right-3' }} w-8 h-8 bg-white/95 backdrop-blur rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 transition cursor-pointer" title="{{ __('store.favorites') }}">
                 <i class="fav-icon-{{ $p->id }} {{ $fav ? 'fa-solid text-pink-500' : 'fa-regular text-slate-500' }} fa-heart text-sm"></i>
             </button>
 
@@ -38,7 +38,7 @@
     <div class="p-4 pt-0 flex gap-2">
         <a href="{{ route('products.show', $p) }}" class="flex-1 bg-slate-100 text-slate-700 py-2 rounded-xl font-bold hover:bg-slate-200 transition text-center text-xs">{{ __('store.details') }}</a>
         @if ($p->inStock())
-            <button onclick="quickAddToCart({{ $p->id }}, this)" class="flex-1 bg-sky-500 text-white py-2 rounded-xl font-bold hover:bg-sky-600 transition text-xs cursor-pointer">{{ __('store.addToCart') }}</button>
+            <button data-call="quickAddToCart" data-args="{{ json_encode([$p->id, '$el']) }}" class="flex-1 bg-sky-500 text-white py-2 rounded-xl font-bold hover:bg-sky-600 transition text-xs cursor-pointer">{{ __('store.addToCart') }}</button>
         @else
             <button disabled class="flex-1 bg-slate-200 text-slate-500 py-2 rounded-xl font-bold text-xs cursor-not-allowed">{{ __('store.addToCart') }}</button>
         @endif

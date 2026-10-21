@@ -12,7 +12,7 @@
             <form method="GET" action="{{ route('products.index') }}" class="flex gap-2 w-full md:w-auto">
                 @if ($selected !== 'all')<input type="hidden" name="category" value="{{ $selected }}">@endif
                 <input type="text" name="search" aria-label="{{ __('store.searchPlaceholder') }}" value="{{ $search }}" placeholder="{{ __('store.searchPlaceholder') }}" class="flex-1 md:w-72 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-sky-500 bg-white">
-                <select name="sort" aria-label="{{ tt('ترتيب حسب', 'Sort by') }}" onchange="this.form.submit()" class="border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold bg-white">
+                <select name="sort" aria-label="{{ tt('ترتيب حسب', 'Sort by') }}" data-submit-on-change class="border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold bg-white">
                     <option value="default">{{ tt('الترتيب الافتراضي', 'Default Sort') }}</option>
                     <option value="price-low" @selected($sort === 'price-low')>{{ tt('الأرخص أولاً', 'Price: Low to High') }}</option>
                     <option value="price-high" @selected($sort === 'price-high')>{{ tt('الأغلى أولاً', 'Price: High to Low') }}</option>

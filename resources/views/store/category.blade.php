@@ -46,7 +46,7 @@
                 @endforeach
             </div>
             <form method="GET">
-                <select name="sort" aria-label="{{ tt('ترتيب حسب', 'Sort by') }}" onchange="this.form.submit()" class="border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold bg-slate-50">
+                <select name="sort" aria-label="{{ tt('ترتيب حسب', 'Sort by') }}" data-submit-on-change class="border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold bg-slate-50">
                     <option value="default">{{ tt('الترتيب الافتراضي', 'Default Sort') }}</option>
                     <option value="price-low" @selected($sort === 'price-low')>{{ tt('الأرخص أولاً', 'Price: Low to High') }}</option>
                     <option value="price-high" @selected($sort === 'price-high')>{{ tt('الأغلى أولاً', 'Price: High to Low') }}</option>

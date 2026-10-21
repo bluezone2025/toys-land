@@ -7,7 +7,7 @@
     <div class="hidden md:flex items-center gap-3 shrink-0">
         <form method="POST" action="{{ route('country.switch') }}">
             @csrf
-            <select name="country" aria-label="{{ __('store.countryCurrency') }}" onchange="this.form.submit()" class="bg-white/20 text-white border border-white/40 rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none cursor-pointer">
+            <select name="country" aria-label="{{ __('store.countryCurrency') }}" data-submit-on-change class="bg-white/20 text-white border border-white/40 rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none cursor-pointer">
                 @foreach ($countries as $c)
                     <option value="{{ $c->code }}" @selected($country->code === $c->code) class="text-slate-800">{{ $c->tr('name') }} ({{ $c->tr('symbol') }})</option>
                 @endforeach
@@ -22,7 +22,7 @@
 <header class="w-full bg-white shadow-sm sticky top-0 z-40 border-b border-gray-100">
     <div class="w-full px-4 sm:px-10 h-20 flex items-center justify-between gap-2">
         <div class="flex items-center gap-2.5 sm:gap-3">
-            <button aria-label="{{ tt('القائمة', 'Menu') }}" onclick="openMobileDrawer()" class="md:hidden w-10 h-10 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center hover:bg-sky-50 hover:text-sky-600 transition cursor-pointer shrink-0" title="Menu">
+            <button aria-label="{{ tt('القائمة', 'Menu') }}" data-call="openMobileDrawer" class="md:hidden w-10 h-10 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center hover:bg-sky-50 hover:text-sky-600 transition cursor-pointer shrink-0" title="Menu">
                 <i class="fa-solid fa-bars text-lg"></i>
             </button>
 
@@ -67,13 +67,13 @@
 </header>
 
 <!-- القائمة الجانبية للموبايل -->
-<div id="drawer-overlay" onclick="closeMobileDrawer()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden"></div>
+<div id="drawer-overlay" data-call="closeMobileDrawer" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden"></div>
 <aside id="mobile-drawer" aria-hidden="true" class="invisible fixed top-0 {{ $rtl ? 'right-0 translate-x-full' : 'left-0 -translate-x-full' }} w-80 max-w-[85vw] h-full bg-white z-50 shadow-2xl transition-[transform,visibility] duration-300 flex flex-col justify-between overflow-y-auto">
     <div>
         <div class="p-5 bg-gradient-to-r from-sky-500 to-indigo-600 text-white">
             <div class="flex items-center justify-between mb-4">
                 <span class="font-black text-lg">{{ $brand }} 🧸</span>
-                <button aria-label="{{ tt('إغلاق القائمة', 'Close menu') }}" onclick="closeMobileDrawer()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
+                <button aria-label="{{ tt('إغلاق القائمة', 'Close menu') }}" data-call="closeMobileDrawer" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white cursor-pointer">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -106,7 +106,7 @@
                 <label class="block text-[11px] font-bold text-slate-500 mb-1">{{ __('store.countryCurrency') }}</label>
                 <form method="POST" action="{{ route('country.switch') }}">
                     @csrf
-                    <select name="country" aria-label="{{ __('store.countryCurrency') }}" onchange="this.form.submit()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 cursor-pointer">
+                    <select name="country" aria-label="{{ __('store.countryCurrency') }}" data-submit-on-change class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 cursor-pointer">
                         @foreach ($countries as $c)
                             <option value="{{ $c->code }}" @selected($country->code === $c->code)>{{ $c->tr('name') }} ({{ $c->tr('symbol') }})</option>
                         @endforeach

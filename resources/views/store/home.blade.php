@@ -67,8 +67,8 @@
                 @endforeach
             </div>
             @if ($slides->count() > 1)
-                <button aria-label="{{ tt('السابق', 'Previous') }}" onclick="changeHeroSlide(-1)" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/25 hover:bg-white text-white hover:text-slate-900 backdrop-blur flex items-center justify-center transition cursor-pointer"><i class="fa-solid fa-chevron-right text-sm"></i></button>
-                <button aria-label="{{ tt('التالي', 'Next') }}" onclick="changeHeroSlide(1)" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/25 hover:bg-white text-white hover:text-slate-900 backdrop-blur flex items-center justify-center transition cursor-pointer"><i class="fa-solid fa-chevron-left text-sm"></i></button>
+                <button aria-label="{{ tt('السابق', 'Previous') }}" data-call="changeHeroSlide" data-args="[-1]" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/25 hover:bg-white text-white hover:text-slate-900 backdrop-blur flex items-center justify-center transition cursor-pointer"><i class="fa-solid fa-chevron-right text-sm"></i></button>
+                <button aria-label="{{ tt('التالي', 'Next') }}" data-call="changeHeroSlide" data-args="[1]" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/25 hover:bg-white text-white hover:text-slate-900 backdrop-blur flex items-center justify-center transition cursor-pointer"><i class="fa-solid fa-chevron-left text-sm"></i></button>
             @endif
         </section>
     @endif
@@ -82,8 +82,8 @@
                         <p class="text-slate-500 text-xs">{{ setting_tr('home_age_sub', __('store.ageSecSub')) }}</p>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
-                        <button aria-label="{{ tt('السابق', 'Previous') }}" onclick="scrollSlider('age-slider', 1)" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $prevIcon }} text-xs"></i></button>
-                        <button aria-label="{{ tt('التالي', 'Next') }}" onclick="scrollSlider('age-slider', -1)" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $nextIcon }} text-xs"></i></button>
+                        <button aria-label="{{ tt('السابق', 'Previous') }}" data-call="scrollSlider" data-args="{{ json_encode(['age-slider', 1]) }}" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $prevIcon }} text-xs"></i></button>
+                        <button aria-label="{{ tt('التالي', 'Next') }}" data-call="scrollSlider" data-args="{{ json_encode(['age-slider', -1]) }}" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $nextIcon }} text-xs"></i></button>
                     </div>
                 </div>
                 <div id="age-slider" class="flex gap-4 overflow-x-auto no-scrollbar pb-2 snap-x">
@@ -108,8 +108,8 @@
                     <p class="text-slate-500 text-xs">{{ setting_tr('home_cats_sub', __('store.catsSecSub')) }}</p>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
-                    <button aria-label="{{ tt('السابق', 'Previous') }}" onclick="scrollSlider('cats-slider', 1)" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $prevIcon }} text-xs"></i></button>
-                    <button aria-label="{{ tt('التالي', 'Next') }}" onclick="scrollSlider('cats-slider', -1)" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $nextIcon }} text-xs"></i></button>
+                    <button aria-label="{{ tt('السابق', 'Previous') }}" data-call="scrollSlider" data-args="{{ json_encode(['cats-slider', 1]) }}" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $prevIcon }} text-xs"></i></button>
+                    <button aria-label="{{ tt('التالي', 'Next') }}" data-call="scrollSlider" data-args="{{ json_encode(['cats-slider', -1]) }}" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-sky-500 hover:text-white transition cursor-pointer"><i class="fa-solid {{ $nextIcon }} text-xs"></i></button>
                     <a href="{{ route('products.index') }}" class="text-sky-600 font-bold text-xs hover:underline whitespace-nowrap">{{ __('store.viewAll') }}</a>
                 </div>
             </div>

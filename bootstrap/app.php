@@ -17,8 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\TrackVisit::class,
             \App\Http\Middleware\CompressResponse::class,
         ]);
+        // Outermost, so it also sees the cookies added by the session and encryption layers.
+        $middleware->prepend(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->web(
-            append: [\App\Http\Middleware\SecurityHeaders::class],
             replace: [\Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class => \App\Http\Middleware\PreventRequestForgery::class],
         );
         $middleware->redirectUsersTo(fn () => route('account'));

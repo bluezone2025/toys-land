@@ -223,3 +223,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const flash = document.body.dataset.flash;
     if (flash) setTimeout(() => showToast(flash), 200);
 });
+
+// Markup declares its handlers as data attributes instead of inline onclick code,
+// so the Content Security Policy can forbid inline scripts:
+//   data-call="fn" data-args="[...]"   → window.fn(...args) on click ("$event"/"$el" stand for the event/element)
+//   data-change="fn"                   → the same on change
+//   data-submit-on-change              → submits the field's form
+//   data-copy="text"                   → copies text and shows data-copy-message
+function runCall(el, attr, event) {
+    const fn = window[el.getAttribute(attr)];
+    if (typeof fn !== 'function') return;
+    const args = JSON.parse(el.dataset.args || '[]').map(a => (a === '$event' ? event : a === '$el' ? el : a));
+    fn.apply(window, args);
+}
+
+document.addEventListener('click', event => {
+    const el = event.target.closest('[data-call]');
+    if (el) {
+        runCall(el, 'data-call', event);
+        if (el.hasAttribute('data-remove-parent')) el.parentElement.remove();
+    }
+    const copy = event.target.closest('[data-copy]');
+    if (copy) {
+        navigator.clipboard?.writeText(copy.dataset.copy);
+        if (copy.dataset.copyMessage) window.showToast(copy.dataset.copyMessage);
+    }
+});
+
+document.addEventListener('change', event => {
+    const el = event.target;
+    if (el.matches('[data-submit-on-change]')) el.form?.submit();
+    if (el.matches('[data-change]')) runCall(el, 'data-change', event);
+});
+
+window.stepQty = function (step, max) {
+    const qty = document.getElementById('qty');
+    if (!qty) return;
+    qty.value = Math.max(1, Math.min(max || Infinity, (+qty.value || 1) + step));
+};
+
+window.showMainImage = function (src, index) {
+    const main = document.getElementById('main-image');
+    if (main) { main.removeAttribute('srcset'); main.src = src; }
+    window.currentImage = index;
+};
+
+window.openCurrentImage = () => window.openLightbox?.(window.currentImage || 0);

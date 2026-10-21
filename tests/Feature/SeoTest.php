@@ -81,6 +81,11 @@ class SeoTest extends TestCase
             $response->assertHeader($header);
         }
         $response->assertCookieMissing('XSRF-TOKEN');
+        $policy = $response->headers->get('Content-Security-Policy');
+        $this->assertStringNotContainsString('unsafe-inline', $policy);
+        $this->assertStringNotContainsString('unsafe-eval', $policy);
+        $this->assertStringContainsString("default-src 'none'", $policy);
+        $this->assertStringContainsString('HttpOnly; SameSite=Lax', (string) $response->headers->getCookies()[0]);
 
         $this->get('/admin/login')->assertHeader('X-Frame-Options', 'SAMEORIGIN');
     }
