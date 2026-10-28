@@ -12,7 +12,15 @@ Artisan::command('inspire', function () {
 Schedule::call(function () {
     \App\Models\Visit::where('created_at', '<', now()->subMonths(6))->delete();
     \App\Models\AnalyticsEvent::where('created_at', '<', now()->subMonths(12))->delete();
+    // List impressions are the bulk of the rows and only matter for recent reports.
+    \App\Models\AnalyticsEvent::where('type', 'view_item_list')->where('created_at', '<', now()->subMonths(3))->delete();
+    \App\Models\VisitorProfile::where('last_seen_at', '<', now()->subMonths(12))->where('orders_count', 0)->delete();
 })->daily()->name('prune-analytics');
+
+// Server-side conversions (Meta / TikTok / Snapchat / GA4), batched every minute.
+Schedule::command('tracking:dispatch')->everyMinute()->withoutOverlapping(10);
+
+Schedule::command('checkout:recover')->everyTenMinutes()->withoutOverlapping();
 
 Schedule::command('cart:remind')->hourly();
 

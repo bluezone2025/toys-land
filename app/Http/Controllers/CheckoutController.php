@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Mail\NewOrderAdmin;
 use App\Mail\OrderPlaced;
+use App\Models\AbandonedCheckout;
 use App\Models\GuestCustomer;
-use App\Models\AnalyticsEvent;
 use App\Models\Address;
 use App\Models\Country;
 use App\Models\Coupon;
@@ -15,9 +15,11 @@ use App\Models\Setting;
 use App\Support\Cart;
 use App\Support\MyFatoorah;
 use App\Support\Shop;
+use App\Support\Tracking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -93,9 +95,21 @@ class CheckoutController extends Controller
         if (Cart::count() === 0) {
             return redirect()->route('cart');
         }
-        AnalyticsEvent::record('begin_checkout', ['value' => Cart::subtotal()]);
+        $subtotal = Cart::subtotal();
+        $cart = Tracking::cart();
+        // Once per cart content and session, so reloading the page does not inflate checkouts.
+        $fingerprint = md5(json_encode(Cart::raw()));
+        if (session('tl_checkout') !== $fingerprint) {
+            session(['tl_checkout' => $fingerprint]);
+            $threshold = (float) Setting::get('free_shipping_threshold', 15);
+            Tracking::push(Tracking::track('begin_checkout', $cart + [
+                'coupon' => session('coupon'),
+                'free_shipping_eligible' => $threshold > 0 && $subtotal >= $threshold,
+            ], ['value_kwd' => $subtotal, 'cart' => true]));
+        }
 
         return view('store.checkout', [
+            'trackingCart' => $cart,
             'items' => Cart::items(),
             'subtotal' => Cart::subtotal(),
             'countries' => Shop::countries(),
@@ -198,6 +212,10 @@ class CheckoutController extends Controller
                 'currency_rate' => $displayCountry->rate,
                 'locale' => app()->getLocale(),
                 'session_id' => session()->getId(),
+                'event_id' => (string) Str::uuid(),
+                'visitor_id' => Tracking::visitorId(),
+                'utm_data' => Tracking::attribution() ?: null,
+                'client_context' => Tracking::clientContext(),
             ]);
 
             foreach ($items as $item) {
@@ -253,9 +271,7 @@ class CheckoutController extends Controller
         $order = Order::where('number', $status['order_number'])->firstOrFail();
 
         if ($status['paid']) {
-            if ($order->payment_status !== 'paid') {
-                $order->update(['payment_status' => 'paid', 'payment_id' => $paymentId, 'paid_at' => now(), 'status' => 'processing']);
-            }
+            static::markPaid($order, $paymentId);
 
             return $this->complete($order);
         }
@@ -263,6 +279,95 @@ class CheckoutController extends Controller
         static::releaseOrder($order);
 
         return redirect()->route('checkout')->withErrors(['payment_method' => tt('لم تتم عملية الدفع، تقدر تحاول مرة ثانية أو تختار طريقة دفع ثانية', 'Payment was not completed. Please try again or choose another method')]);
+    }
+
+    /**
+     * MyFatoorah webhook (Dashboard → Integration Settings → Webhook → {APP_URL}/payment/webhook).
+     * The payload is only a hint: the status is re-read from the MyFatoorah API before anything
+     * changes, so a forged request cannot mark an order paid.
+     */
+    public function webhook(Request $request, MyFatoorah $gateway)
+    {
+        $data = (array) $request->input('Data', []);
+        $paymentId = $data['PaymentId'] ?? data_get($data, 'Transaction.PaymentId');
+        $invoiceId = $data['InvoiceId'] ?? data_get($data, 'Invoice.Id');
+        if (! $paymentId && ! $invoiceId) {
+            return response()->json(['ok' => false], 422);
+        }
+
+        try {
+            $status = $paymentId ? $gateway->status((string) $paymentId) : $gateway->status((string) $invoiceId, 'InvoiceId');
+        } catch (Throwable $e) {
+            report($e);
+
+            return response()->json(['ok' => false], 503); // MyFatoorah retries later
+        }
+
+        $order = $status['order_number'] ? Order::where('number', $status['order_number'])->first() : null;
+        if ($order && $status['paid'] && $order->status !== 'cancelled') {
+            static::markPaid($order, $status['payment_id']);
+            static::confirm($order);
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
+    /** Refill the cart and checkout form from an abandoned checkout (signed link sent on WhatsApp). */
+    public function restore(AbandonedCheckout $checkout)
+    {
+        Cart::restore($checkout->cart ?? []);
+        if ($promo = \App\Models\Coupon::promo()) {
+            session(['coupon' => $promo->code]);
+        }
+        Tracking::track('checkout_restored', ['value' => Tracking::convert($checkout->subtotal)], [
+            'value_kwd' => (float) $checkout->subtotal, 'cart' => true, 'visitor_id' => $checkout->visitor_id ?? Tracking::visitorId(),
+        ]);
+
+        return redirect()->route('checkout')->withInput(array_filter([
+            'name' => $checkout->name,
+            'email' => $checkout->email,
+            'phone' => static::localNumber($checkout->phone),
+            'country' => $checkout->country_code,
+            'city' => $checkout->city,
+            'coupon' => session('coupon'),
+            ...array_intersect_key($checkout->form ?? [], array_flip(['block', 'street', 'avenue', 'property_type', 'apartment', 'floor', 'notes'])),
+        ]));
+    }
+
+    public static function markPaid(Order $order, ?string $paymentId): void
+    {
+        if ($order->payment_status !== 'paid') {
+            $order->update(['payment_status' => 'paid', 'payment_id' => $paymentId, 'paid_at' => now(), 'status' => 'processing']);
+        }
+    }
+
+    /**
+     * Side effects of a confirmed order (cash on delivery placed, or online payment captured):
+     * emails, guest list, abandoned checkout closed, server-side purchase. Runs once per order,
+     * whether the redirect, a reload or the webhook gets here first.
+     */
+    public static function confirm(Order $order): void
+    {
+        if (! Order::whereKey($order->id)->whereNull('confirmed_at')->update(['confirmed_at' => now()])) {
+            return;
+        }
+        $order->refresh();
+
+        GuestCustomer::recordOrder($order);
+        AbandonedCheckout::convert($order);
+        Tracking::purchase($order);
+
+        // Queued: the scheduler's queue worker sends them within a minute, so checkout stays fast.
+        try {
+            if ($order->email) {
+                Mail::to($order->email)->queue(new OrderPlaced($order));
+            }
+            if ($admin = Setting::get('admin_email')) {
+                Mail::to($admin)->queue(new NewOrderAdmin($order));
+            }
+        } catch (Throwable $e) {
+            report($e);
+        }
     }
 
     /** Return stock for an order whose online payment failed. */
@@ -285,22 +390,8 @@ class CheckoutController extends Controller
     protected function complete(Order $order)
     {
         Cart::clear();
-        session()->forget('coupon');
-        AnalyticsEvent::record('purchase', ['order_id' => $order->id, 'value' => $order->total]);
-
-        GuestCustomer::recordOrder($order);
-
-        // Queued: the scheduler's queue worker sends them within a minute, so checkout stays fast.
-        try {
-            if ($order->email) {
-                Mail::to($order->email)->queue(new OrderPlaced($order));
-            }
-            if ($admin = Setting::get('admin_email')) {
-                Mail::to($admin)->queue(new NewOrderAdmin($order));
-            }
-        } catch (Throwable $e) {
-            report($e);
-        }
+        session()->forget(['coupon', 'tl_checkout']);
+        static::confirm($order);
 
         return redirect()->route('invoice.show', $order);
     }

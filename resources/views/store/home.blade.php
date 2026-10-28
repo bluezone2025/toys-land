@@ -158,7 +158,7 @@
                 </div>
                 <a href="{{ route('products.index') }}" class="mt-3 md:mt-0 bg-slate-100 hover:bg-slate-200 text-slate-800 px-5 py-2.5 rounded-xl font-bold text-xs transition">{{ __('store.openFullFilter') }}</a>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5" data-list-name="{{ setting_tr('home_catalog_title', __('store.catalogSecTitle')) }}">
                 @foreach ($catalog as $p)
                     @include('partials.product-card', ['p' => $p])
                 @endforeach

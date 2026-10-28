@@ -181,6 +181,7 @@
 @endsection
 
 @push('scripts')
+<script type="application/json" id="tl-checkout">@json($trackingCart)</script>
 <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
     const form = document.getElementById('checkout-form');
     const countrySelect = form.querySelector('[data-country-select]');

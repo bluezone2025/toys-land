@@ -1,6 +1,6 @@
 {{-- Horizontal product slider with heading. Expects: $id, $title, $sub, $products, $viewAll, optional $wrapClass --}}
 @php $rtl = is_rtl(); @endphp
-<section class="{{ $wrapClass ?? 'w-full mb-12' }}">
+<section class="{{ $wrapClass ?? 'w-full mb-12' }}" data-list-name="{{ $title }}">
     <div class="flex justify-between items-center gap-3 mb-5">
         <div class="min-w-0">
             <h2 class="text-xl font-black text-slate-800">{{ $title }}</h2>

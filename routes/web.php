@@ -8,12 +8,22 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\TrackingController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(\App\Http\Middleware\CompressResponse::class)->group(function () {
     Route::get('/robots.txt', [\App\Http\Controllers\SeoController::class, 'robots']);
     Route::get('/sitemap.xml', [\App\Http\Controllers\SeoController::class, 'sitemap'])->name('sitemap');
 });
+
+// Hybrid tracking: browser events and live checkout capture (same session as the store).
+Route::middleware(\App\Http\Middleware\CaptureAttribution::class)->prefix('api/tracking')->name('tracking.')->group(function () {
+    Route::post('/collect', [TrackingController::class, 'collect'])->middleware('throttle:tracking')->name('collect');
+    Route::post('/checkout-progress', [TrackingController::class, 'checkoutProgress'])->middleware('throttle:checkout-progress')->name('checkout-progress');
+});
+
+// MyFatoorah webhook: confirms paid orders even when the shopper closes the browser before the redirect.
+Route::post('/payment/webhook', [CheckoutController::class, 'webhook'])->middleware('throttle:60,1')->name('payment.webhook');
 
 // Arabic lives at "/", English at "/en/..." — same routes, clean crawlable URLs.
 $storeRoutes = function () {
@@ -30,9 +40,10 @@ $storeRoutes = function () {
     Route::delete('/cart/{key}', [CartController::class, 'remove'])->name('cart.remove');
 
     Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
-    Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:10,1')->name('checkout.store');
-    Route::post('/checkout/summary', [CheckoutController::class, 'summary'])->middleware('throttle:60,1')->name('checkout.summary');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:checkout')->name('checkout.store');
+    Route::post('/checkout/summary', [CheckoutController::class, 'summary'])->middleware('throttle:checkout-summary')->name('checkout.summary');
     Route::get('/payment/callback', [CheckoutController::class, 'callback'])->name('payment.callback');
+    Route::get('/checkout/restore/{checkout}', [CheckoutController::class, 'restore'])->middleware('signed')->name('checkout.restore');
 
     Route::get('/invoice', [OrderController::class, 'latest'])->name('invoice.latest');
     Route::get('/invoice/{order}', [OrderController::class, 'invoice'])->name('invoice.show');

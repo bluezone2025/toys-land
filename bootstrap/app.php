@@ -14,9 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->appendToGroup('store', [
             \App\Http\Middleware\SetStoreLocale::class,
+            \App\Http\Middleware\CaptureAttribution::class,
             \App\Http\Middleware\TrackVisit::class,
             \App\Http\Middleware\CompressResponse::class,
         ]);
+        // Pixel cookies are written by JavaScript and read by the server as-is.
+        $middleware->encryptCookies(except: \App\Support\Tracking::PLAIN_COOKIES);
         // Outermost, so it also sees the cookies added by the session and encryption layers.
         $middleware->prepend(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->web(

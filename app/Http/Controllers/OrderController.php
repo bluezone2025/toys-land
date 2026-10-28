@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Support\Tracking;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -19,6 +20,8 @@ class OrderController extends Controller
     {
         // Signed links (sent by email) open the invoice without a session.
         abort_unless(static::canView($order) || request()->hasValidSignature(), 403);
+        // First view by the buyer: browser purchase with the same event_id as the server copy.
+        Tracking::push(Tracking::browserPurchase($order));
 
         return view('store.invoice', ['order' => $order->load('items', 'country')]);
     }

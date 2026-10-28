@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\AgeGroup;
-use App\Models\AnalyticsEvent;
 use App\Models\Category;
 use App\Models\HeroSlide;
 use App\Models\Product;
+use App\Support\Tracking;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -14,7 +14,7 @@ class StoreController extends Controller
 {
     public function home()
     {
-        $base = fn () => Product::active()->with('ageGroups')->sorted();
+        $base = fn () => Product::active()->with('ageGroups', 'categories')->sorted();
         $groupIds = fn (string $group) => Category::active()->where('home_group', $group)->pluck('id');
 
         $eduIds = $groupIds('edu');
@@ -41,7 +41,7 @@ class StoreController extends Controller
         $search = trim((string) $request->query('search'));
         $sort = (string) $request->query('sort', 'default');
 
-        $query = Product::active()->with('ageGroups');
+        $query = Product::active()->with('ageGroups', 'categories');
         $title = __('store.allToys');
 
         if ($search !== '') {
@@ -50,7 +50,7 @@ class StoreController extends Controller
                 ->orWhere('sku', $search));
             $title = tt('نتائج البحث عن: ', 'Search results for: ').$search;
             if (! $request->has('page')) {
-                AnalyticsEvent::record('search', ['meta' => ['q' => mb_substr($search, 0, 100)]]);
+                Tracking::push(Tracking::track('search', ['search_term' => mb_substr($search, 0, 100)]));
             }
         }
         if ($age) {
@@ -81,7 +81,7 @@ class StoreController extends Controller
 
         $age = static::ageKey($request->route('age') ?? $request->query('age'));
         $sort = (string) $request->query('sort', 'default');
-        $query = $category->products()->active()->with('ageGroups');
+        $query = $category->products()->active()->with('ageGroups', 'categories');
         if ($age) {
             $query->whereHas('ageGroups', fn (Builder $q) => $q->where('key', $age));
         }
@@ -105,12 +105,15 @@ class StoreController extends Controller
         $categoryIds = $product->categories->pluck('id');
 
         // Same-category products first, then the rest of the catalog.
-        $related = Product::active()->with('ageGroups')->whereKeyNot($product->id)
+        $related = Product::active()->with('ageGroups', 'categories')->whereKeyNot($product->id)
             ->whereHas('categories', fn (Builder $q) => $q->whereIn('categories.id', $categoryIds))->sorted()->take(12)->get();
         if ($related->count() < 12) {
-            $related = $related->concat(Product::active()->with('ageGroups')->whereKeyNot($product->id)
+            $related = $related->concat(Product::active()->with('ageGroups', 'categories')->whereKeyNot($product->id)
                 ->whereNotIn('id', $related->pluck('id'))->sorted()->take(12 - $related->count())->get());
         }
+
+        $item = Tracking::item($product);
+        Tracking::push(Tracking::track('view_item', ['value' => $item['price'], 'items' => [$item]], ['product_id' => $product->id, 'value_kwd' => (float) $product->price]));
 
         return view('store.product', [
             'product' => $product,

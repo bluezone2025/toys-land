@@ -37,13 +37,17 @@ class Settings extends Page
     public ?array $data = [];
 
     /** Toggles are stored as '1' / '0' strings. */
-    protected const TOGGLES = ['whatsapp_api_enabled', 'cart_reminder_enabled', 'welcome_enabled', 'pay_knet_enabled', 'pay_card_enabled', 'pay_applepay_enabled', 'pay_cod_enabled'];
+    protected const TOGGLES = ['whatsapp_api_enabled', 'cart_reminder_enabled', 'welcome_enabled', 'pay_knet_enabled', 'pay_card_enabled', 'pay_applepay_enabled', 'pay_cod_enabled',
+        'server_tracking_enabled', 'consent_banner', 'checkout_recovery_enabled'];
+
+    /** Toggles that start switched off when never saved. */
+    protected const OFF_BY_DEFAULT = ['checkout_recovery_enabled'];
 
     public function mount(): void
     {
         $values = Setting::allCached();
         foreach (self::TOGGLES as $key) {
-            $values[$key] = ($values[$key] ?? '1') === '1';
+            $values[$key] = ($values[$key] ?? (in_array($key, self::OFF_BY_DEFAULT, true) ? '0' : '1')) === '1';
         }
         $this->form->fill($values);
     }
@@ -129,9 +133,8 @@ class Settings extends Page
                         ->helperText(\App\Filament\Support\Fields::sizeHint('512 × 512 بكسل (مربعة)', 'PNG بخلفية شفافة')),
                     TextInput::make('google_site_verification')->label('كود التحقق من Google Search Console')->placeholder('الكود فقط بدون <meta>'),
                     TextInput::make('bing_site_verification')->label('كود التحقق من Bing Webmaster'),
-                    TextInput::make('ga4_id')->label('Google Analytics (GA4) Measurement ID')->placeholder('G-XXXXXXXXXX'),
-                    TextInput::make('facebook_pixel_id')->label('Facebook / Meta Pixel ID'),
                 ]),
+                Tab::make('التتبع والبيكسلات')->icon(Heroicon::OutlinedSignal)->columns(2)->schema(self::trackingFields()),
                 Tab::make('نافذة الترحيب')->icon(Heroicon::OutlinedSparkles)->columns(2)->schema([
                     Toggle::make('welcome_enabled')->label('إظهار نافذة الترحيب للزوار')->columnSpanFull(),
                     FileUpload::make('welcome_video_upload')->label('رفع فيديو (MP4) — اختياري')->disk('public')->directory('welcome')
@@ -145,6 +148,57 @@ class Settings extends Page
                 ]),
             ]),
         ]);
+    }
+
+    protected static function trackingFields(): array
+    {
+        $secret = fn (string $key, string $label) => TextInput::make($key)->label($label)->password()->revealable()->extraInputAttributes(['dir' => 'ltr', 'autocomplete' => 'off']);
+        $id = fn (string $key, string $label, ?string $placeholder = null) => TextInput::make($key)->label($label)->placeholder($placeholder)->extraInputAttributes(['dir' => 'ltr']);
+
+        return [
+            Section::make('طريقة التحميل')->columns(2)->columnSpanFull()
+                ->description('كل حدث (مشاهدة، سلة، دفع، شراء) ينرسل من المتصفح ومن السيرفر بنفس رقم الحدث event_id، فالمنصات تحسبه مرة وحدة وما يضيع حتى لو العميل سكّر المتصفح قبل صفحة الشكر.')
+                ->schema([
+                    $id('gtm_id', 'Google Tag Manager Container ID', 'GTM-XXXXXXX'),
+                    \Filament\Forms\Components\Select::make('pixels_via')->label('مين يحمّل البيكسلات في المتصفح؟')->default('direct')->selectablePlaceholder(false)
+                        ->options(['direct' => 'المتجر مباشرة (أسهل — بدون إعداد)', 'gtm' => 'Google Tag Manager فقط (للمتقدمين)'])
+                        ->helperText('في وضع GTM يتعبّى dataLayer بأحداث GA4 القياسية وأنت تضبط الوسوم داخل GTM. لا تفعّل نفس البيكسل في المكانين.'),
+                    Toggle::make('server_tracking_enabled')->label('تفعيل الإرسال من السيرفر (Conversions API)')->columnSpanFull()
+                        ->helperText('ينرسل كل دقيقة عبر مهمة الجدولة (Cron) بدون ما يبطّئ الموقع.'),
+                ]),
+            Section::make('Meta (فيسبوك وإنستغرام)')->columns(3)->columnSpanFull()->schema([
+                $id('facebook_pixel_id', 'Pixel ID'),
+                $secret('meta_capi_token', 'Conversions API Access Token'),
+                $id('meta_test_event_code', 'Test Event Code (للاختبار فقط)', 'TEST12345'),
+            ]),
+            Section::make('TikTok')->columns(3)->columnSpanFull()->schema([
+                $id('tiktok_pixel_id', 'Pixel ID'),
+                $secret('tiktok_access_token', 'Events API Access Token'),
+                $id('tiktok_test_event_code', 'Test Event Code (للاختبار فقط)'),
+            ]),
+            Section::make('Snapchat')->columns(2)->columnSpanFull()->schema([
+                $id('snap_pixel_id', 'Pixel ID'),
+                $secret('snap_capi_token', 'Conversions API Token'),
+            ]),
+            Section::make('Google Analytics 4')->columns(2)->columnSpanFull()->schema([
+                $id('ga4_id', 'Measurement ID', 'G-XXXXXXXXXX'),
+                $secret('ga4_api_secret', 'Measurement Protocol API Secret')->helperText('من GA4: الإدارة ← مصادر البيانات ← Measurement Protocol API secrets. يستخدم لإرسال المشتريات من السيرفر.'),
+            ]),
+            Section::make('الموافقة على الكوكيز (Google Consent Mode v2)')->columns(2)->columnSpanFull()->schema([
+                Toggle::make('consent_banner')->label('إظهار شريط الموافقة على الكوكيز'),
+                \Filament\Forms\Components\Select::make('consent_default')->label('قبل ما يختار الزائر')->default('granted')->selectablePlaceholder(false)
+                    ->options(['granted' => 'مسموح (يقدر يرفض من الشريط) — الأنسب للخليج', 'denied' => 'ممنوع حتى يوافق (مثل أوروبا)']),
+            ]),
+            Section::make('MyFatoorah Webhook')->columnSpanFull()->schema([
+                \Filament\Forms\Components\Placeholder::make('webhook_url')->label('ضع هذا الرابط في MyFatoorah ← Integration Settings ← Webhook (حدث Transaction Status Changed)')
+                    ->content(fn () => route('payment.webhook')),
+            ]),
+            Section::make('استرجاع الدفعات المتروكة تلقائياً على واتساب')->columns(2)->columnSpanFull()->schema([
+                Toggle::make('checkout_recovery_enabled')->label('إرسال رسالة واتساب تلقائية لمن ترك صفحة الدفع')
+                    ->helperText('يتطلب WhatsApp Business API وقالب رسالة معتمد (WHATSAPP_CHECKOUT_TEMPLATE) فيه: {{1}} الاسم، {{2}} رابط إكمال الطلب، {{3}} كود الخصم.'),
+                TextInput::make('checkout_recovery_minutes')->label('ترسل بعد (دقيقة)')->numeric()->minValue(10)->maxValue(1440)->default(30),
+            ]),
+        ];
     }
 
     public function content(Schema $schema): Schema

@@ -1,10 +1,12 @@
+import { fromServer, uuid } from './tracker';
+
 const isRTL = document.documentElement.dir === 'rtl';
 const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
 
-async function post(url, data = {}) {
+async function post(url, data = {}, headers = {}) {
     const res = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf },
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf, ...headers },
         body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error(res.status);
@@ -53,7 +55,9 @@ window.scrollSlider = function (sliderId, direction) {
 window.toggleFavorite = async function (id, event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
     try {
-        const data = await post(window.storeRoutes.favorite, { product_id: id });
+        // The server records the event under the id the browser pixels will use.
+        const data = await post(window.storeRoutes.favorite, { product_id: id }, { 'X-Event-Id': uuid() });
+        fromServer(data.tracking);
         document.querySelectorAll('.fav-icon-' + id).forEach(icon => {
             icon.className = 'fav-icon-' + id + ' ' + (data.active ? 'fa-solid text-pink-500' : 'fa-regular text-slate-400') + ' fa-heart text-sm';
         });
@@ -105,12 +109,13 @@ async function addToCart(payload, button, img) {
         const animation = flyToCart(img);
         const res = await fetch(window.storeRoutes.cartAdd, {
             method: 'POST',
-            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf, ...(payload instanceof FormData ? {} : { 'Content-Type': 'application/json' }) },
+            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf, 'X-Event-Id': uuid(), ...(payload instanceof FormData ? {} : { 'Content-Type': 'application/json' }) },
             body: payload instanceof FormData ? payload : JSON.stringify(payload),
         });
         const data = await res.json();
         await animation;
         if (!res.ok) { showToast(data.message || (isRTL ? 'صار خطأ، حاول مرة ثانية' : 'Something went wrong')); return; }
+        fromServer(data.tracking);
         celebrateCart(data.count);
         markButtonAdded(button);
         showToast(data.message);

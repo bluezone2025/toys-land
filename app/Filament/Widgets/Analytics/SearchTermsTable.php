@@ -16,7 +16,7 @@ class SearchTermsTable extends TableWidget
         return $table
             ->records(fn () => AnalyticsEvent::where('type', 'search')->where('created_at', '>=', now()->subDays(30))
                 ->latest('id')->limit(500)->get()
-                ->countBy(fn ($e) => mb_strtolower(trim($e->meta['q'] ?? '')))
+                ->countBy(fn ($e) => mb_strtolower(trim($e->meta['search_term'] ?? $e->meta['q'] ?? '')))
                 ->filter(fn ($c, $q) => $q !== '')->sortDesc()->take(15)
                 ->mapWithKeys(fn ($c, $q) => [$q => ['q' => $q, 'count' => $c]])->all())
             ->paginated(false)

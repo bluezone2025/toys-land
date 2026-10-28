@@ -6,7 +6,10 @@ use App\Models\Category;
 use App\Support\Cart;
 use App\Support\Favorites;
 use App\Support\Shop;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +23,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::defaultView('pagination::tailwind');
+
+        // Named limiters keep separate counters per route and per shopper: plain "throttle:N,1"
+        // shares one counter per IP across routes, and many GCC mobile users share an IP.
+        foreach (['checkout' => 10, 'checkout-summary' => 60, 'tracking' => 120, 'checkout-progress' => 30] as $name => $perMinute) {
+            RateLimiter::for($name, fn (Request $request) => Limit::perMinute($perMinute)
+                ->by($name.'|'.($request->hasSession() ? $request->session()->getId() : '').'|'.$request->ip()));
+        }
 
         View::composer('layouts.store', function ($view) {
             $view->with([

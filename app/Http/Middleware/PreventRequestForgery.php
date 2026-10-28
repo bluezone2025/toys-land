@@ -11,4 +11,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery as Middleware;
 class PreventRequestForgery extends Middleware
 {
     protected $addHttpCookie = false;
+
+    /** MyFatoorah posts payment updates server-to-server, without a session token. */
+    protected $except = ['payment/webhook'];
 }

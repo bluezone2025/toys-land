@@ -17,6 +17,11 @@ class Order extends Model
         'total' => 'decimal:3',
         'currency_rate' => 'decimal:4',
         'paid_at' => 'datetime',
+        'utm_data' => 'array',
+        'client_context' => 'array',
+        'confirmed_at' => 'datetime',
+        'tracking_sent_at' => 'datetime',
+        'browser_tracked_at' => 'datetime',
     ];
 
     public const STATUSES = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
@@ -36,6 +41,19 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function visitor(): BelongsTo
+    {
+        return $this->belongsTo(VisitorProfile::class, 'visitor_id', 'visitor_id');
+    }
+
+    /** "instagram / paid / ramadan" from the attribution captured at checkout. */
+    public function sourceLabel(string $touch = 'last'): ?string
+    {
+        $t = $this->utm_data[$touch] ?? null;
+
+        return $t ? collect([$t['source'] ?? null, $t['medium'] ?? null, $t['campaign'] ?? null])->filter()->implode(' / ') : null;
     }
 
     public function country(): BelongsTo

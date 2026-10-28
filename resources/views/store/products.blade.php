@@ -44,7 +44,7 @@
         @if ($products->isEmpty())
             <div class="bg-white p-10 rounded-2xl text-center font-bold text-slate-500">{{ tt('ماكو ألعاب بهذا الفلتر حالياً.', 'No toys match this filter.') }}</div>
         @else
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5" data-list-name="{{ $search !== '' ? tt('نتائج البحث', 'Search results') : $pageTitle }}">
                 @foreach ($products as $p)
                     @include('partials.product-card', ['p' => $p])
                 @endforeach

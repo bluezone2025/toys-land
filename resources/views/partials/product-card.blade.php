@@ -1,5 +1,5 @@
 @php $fav = \App\Support\Favorites::has($p->id); $rtl = is_rtl(); @endphp
-<div class="toy-card bg-white rounded-2xl shadow-sm hover:shadow-md overflow-hidden border border-slate-100 flex flex-col justify-between h-full relative">
+<div data-item="{{ json_encode(\App\Support\Tracking::item($p)) }}" class="toy-card bg-white rounded-2xl shadow-sm hover:shadow-md overflow-hidden border border-slate-100 flex flex-col justify-between h-full relative">
     <div>
         <div class="relative overflow-hidden bg-slate-50">
             @if ($p->tr('badge'))

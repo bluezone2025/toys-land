@@ -11,16 +11,21 @@ class AnalyticsEvent extends Model
 
     protected $guarded = [];
 
-    protected $casts = ['meta' => 'array', 'value' => 'decimal:3'];
+    protected $casts = ['meta' => 'array', 'capi' => 'array', 'delivery' => 'array', 'value' => 'decimal:3'];
 
-    public static function record(string $type, array $data = []): void
+    public function user(): BelongsTo
     {
-        static::create([
-            'type' => $type,
-            'session_id' => session()->getId(),
-            'user_id' => auth()->id(),
-            ...$data,
-        ]);
+        return $this->belongsTo(User::class);
+    }
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function visitor(): BelongsTo
+    {
+        return $this->belongsTo(VisitorProfile::class, 'visitor_id', 'visitor_id');
     }
 
     public function product(): BelongsTo

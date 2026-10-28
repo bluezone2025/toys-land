@@ -37,7 +37,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->sidebarCollapsibleOnDesktop()
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
-            ->navigationGroups(['المبيعات', 'التسويق', 'المتجر', 'المحتوى', 'التقارير', 'الإعدادات'])
+            ->navigationGroups(['المبيعات', 'سلوك العملاء', 'التسويق', 'المتجر', 'المحتوى', 'التقارير', 'الإعدادات'])
             ->navigationItems([
                 NavigationItem::make('عرض المتجر')->url('/', shouldOpenInNewTab: true)->icon('heroicon-o-globe-alt')->sort(100),
             ])

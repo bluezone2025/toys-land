@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AnalyticsEvent;
 use App\Models\Product;
 use App\Support\Favorites;
+use App\Support\Tracking;
 use Illuminate\Http\Request;
 
 class FavoriteController extends Controller
@@ -13,11 +13,16 @@ class FavoriteController extends Controller
     {
         $product = Product::active()->findOrFail($request->integer('product_id'));
         $active = Favorites::toggle($product->id);
+        $event = null;
         if ($active) {
-            AnalyticsEvent::record('wishlist', ['product_id' => $product->id]);
+            $item = Tracking::item($product);
+            $event = Tracking::track('add_to_wishlist', ['value' => $item['price'], 'items' => [$item]], [
+                'event_id' => $request->header('X-Event-Id'), 'product_id' => $product->id, 'value_kwd' => (float) $product->price,
+            ]);
         }
 
         return response()->json([
+            'tracking' => $event,
             'active' => $active,
             'count' => count(Favorites::ids()),
             'message' => $active

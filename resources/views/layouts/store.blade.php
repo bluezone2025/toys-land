@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('partials.seo')
+    @include('partials.tracking-head')
     @isset($preloadImage)
         <link rel="preload" as="image" href="{{ \App\Support\Img::url($preloadImage, 960) }}" imagesrcset="{{ \App\Support\Img::srcset($preloadImage, [640, 960, 1600]) }}" imagesizes="100vw" fetchpriority="high">
     @endisset
@@ -103,6 +104,10 @@
                 </div>
             </div>
         </div>
+    @endif
+
+    @if (setting('consent_banner', '1') === '1')
+        @include('partials.consent-banner')
     @endif
 
     @stack('scripts')

@@ -56,14 +56,17 @@ class MyFatoorah
     }
 
     /** @return array{order_number: ?string, paid: bool, payment_id: string} */
-    public function status(string $paymentId): array
+    public function status(string $key, string $keyType = 'PaymentId'): array
     {
-        $data = $this->request('GetPaymentStatus', ['Key' => $paymentId, 'KeyType' => 'PaymentId']);
+        $data = $this->request('GetPaymentStatus', ['Key' => $key, 'KeyType' => $keyType]);
+        // MyFatoorah spells the successful transaction status "Succss".
+        $paid = collect($data['InvoiceTransactions'] ?? [])->firstWhere('TransactionStatus', 'Succss')
+            ?? collect($data['InvoiceTransactions'] ?? [])->firstWhere('TransactionStatus', 'Success');
 
         return [
             'order_number' => $data['CustomerReference'] ?? null,
             'paid' => ($data['InvoiceStatus'] ?? '') === 'Paid',
-            'payment_id' => $paymentId,
+            'payment_id' => $keyType === 'PaymentId' ? $key : (string) ($paid['PaymentId'] ?? $key),
         ];
     }
 }

@@ -129,6 +129,18 @@ class OrderResource extends Resource
                     TextEntry::make('created_at')->label('تاريخ الطلب')->dateTime('Y/m/d h:i A', 'Asia/Kuwait'),
                 ]),
             ]),
+            Section::make('مصدر الطلب والتتبع')->columnSpanFull()->columns(4)->collapsible()->schema([
+                TextEntry::make('last_touch')->label('آخر مصدر قبل الطلب')->getStateUsing(fn (Order $r) => $r->sourceLabel('last'))->placeholder('مباشر / بدون مصدر')->weight('bold'),
+                TextEntry::make('first_touch')->label('أول مصدر جابه للمتجر')->getStateUsing(fn (Order $r) => $r->sourceLabel('first'))->placeholder('مباشر / بدون مصدر'),
+                TextEntry::make('click_ids')->label('نقرة إعلان')->placeholder('لا يوجد')
+                    ->getStateUsing(fn (Order $r) => collect(['fbclid' => 'Meta', 'ttclid' => 'TikTok', 'sccid' => 'Snapchat', 'gclid' => 'Google'])
+                        ->filter(fn ($name, $key) => isset($r->utm_data['last'][$key]) || isset($r->utm_data['first'][$key]))->values()->all())->badge(),
+                TextEntry::make('tracking_sent_at')->label('أُرسل الشراء للمنصات')->since()->placeholder('لم يرسل')
+                    ->belowContent(fn (Order $r) => $r->browser_tracked_at ? 'وتسجل من المتصفح أيضاً' : null),
+                TextEntry::make('journey')->label('رحلة العميل')->getStateUsing(fn (Order $r) => $r->visitor ? 'عرض كل خطوة قبل الطلب ←' : null)->placeholder('—')->color('primary')
+                    ->url(fn (Order $r) => $r->visitor ? \App\Filament\Resources\VisitorProfiles\VisitorProfileResource::getUrl('view', ['record' => $r->visitor]) : null),
+                TextEntry::make('event_id')->label('event_id')->copyable()->size('sm')->color('gray')->placeholder('—'),
+            ]),
             Section::make('المنتجات')->columnSpanFull()->schema([
                 RepeatableEntry::make('items')->label('')->columns(6)->schema([
                     ImageEntry::make('image')->label('')->getStateUsing(fn ($record) => $record->image_url)->imageSize(56),

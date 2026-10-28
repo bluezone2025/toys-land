@@ -58,7 +58,8 @@ class Cart
         static::save(array_merge($saved, $guest));
     }
 
-    public static function add(Product $product, array $optionIds = [], int $qty = 1): void
+    /** @return string the cart line key */
+    public static function add(Product $product, array $optionIds = [], int $qty = 1): string
     {
         $optionIds = static::validOptionIds($product, $optionIds);
         sort($optionIds);
@@ -71,6 +72,15 @@ class Cart
             'qty' => ($cart[$key]['qty'] ?? 0) + max(1, $qty),
         ];
         static::save($cart);
+
+        return $key;
+    }
+
+    /** Replace the cart with saved rows (abandoned checkout recovery). */
+    public static function restore(array $rows): void
+    {
+        $products = Product::active()->whereIn('id', array_column($rows, 'product_id'))->pluck('id')->all();
+        static::save(array_filter($rows, fn ($row) => in_array($row['product_id'] ?? null, $products, false)));
     }
 
     public static function changeQty(string $key, int $delta): void

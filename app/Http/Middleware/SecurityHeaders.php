@@ -63,14 +63,15 @@ class SecurityHeaders
         } else {
             $policy = [
                 "default-src 'none'",
-                "script-src 'self' 'nonce-{$nonce}' https://www.googletagmanager.com https://connect.facebook.net https://cdnjs.cloudflare.com",
+                // Tag Manager, GA4 / Google Ads, Meta, TikTok and Snapchat pixels (see App\Support\Tracking).
+                "script-src 'self' 'nonce-{$nonce}' https://*.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://connect.facebook.net https://analytics.tiktok.com https://sc-static.net https://cdnjs.cloudflare.com",
                 // Laravel's built-in error pages carry an unsigned <style> block.
                 $response->getStatusCode() >= 400 ? "style-src 'self' 'unsafe-inline'" : "style-src 'self' 'nonce-{$nonce}'",
                 "img-src 'self' data: blob: https:",
                 "font-src 'self' data:",
-                "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://www.facebook.com https://connect.facebook.net",
+                "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://www.googleadservices.com https://www.facebook.com https://connect.facebook.net https://*.tiktok.com https://*.tiktokw.us https://tr.snapchat.com https://tr-shadow.snapchat.com https://*.snapchat.com",
                 "media-src 'self' blob: https:",
-                "frame-src https://www.google.com https://maps.google.com https://www.youtube.com https://www.facebook.com",
+                "frame-src https://www.google.com https://maps.google.com https://www.youtube.com https://www.facebook.com https://www.googletagmanager.com https://td.doubleclick.net https://tr.snapchat.com",
                 "manifest-src 'self'",
             ];
         }

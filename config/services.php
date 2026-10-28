@@ -39,6 +39,35 @@ return [
         'token' => env('WHATSAPP_TOKEN'),
         'phone_id' => env('WHATSAPP_PHONE_ID'),
         'cart_template' => env('WHATSAPP_CART_TEMPLATE', 'cart_reminder'),
+        'checkout_template' => env('WHATSAPP_CHECKOUT_TEMPLATE'),
+    ],
+
+    // Tracking ids and server tokens. Values saved in the admin (Settings → Tracking) take priority.
+    'gtm' => [
+        'container_id' => env('GTM_CONTAINER_ID'),
+    ],
+
+    'meta' => [
+        'pixel_id' => env('META_PIXEL_ID'),
+        'capi_token' => env('META_CAPI_TOKEN'),
+        'test_event_code' => env('META_TEST_EVENT_CODE'),
+        'graph_version' => env('META_GRAPH_VERSION', 'v24.0'),
+    ],
+
+    'tiktok' => [
+        'pixel_id' => env('TIKTOK_PIXEL_ID'),
+        'access_token' => env('TIKTOK_ACCESS_TOKEN'),
+        'test_event_code' => env('TIKTOK_TEST_EVENT_CODE'),
+    ],
+
+    'snap' => [
+        'pixel_id' => env('SNAP_PIXEL_ID'),
+        'capi_token' => env('SNAP_CAPI_TOKEN'),
+    ],
+
+    'ga4' => [
+        'measurement_id' => env('GA4_MEASUREMENT_ID'),
+        'api_secret' => env('GA4_API_SECRET'),
     ],
 
     'myfatoorah' => [
