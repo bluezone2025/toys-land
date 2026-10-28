@@ -22,7 +22,7 @@ class TrackingEventResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSignal;
 
-    protected static string|UnitEnum|null $navigationGroup = 'سلوك العملاء';
+    protected static string|UnitEnum|null $navigationGroup = 'العملاء والتتبع';
 
     protected static ?int $navigationSort = 5;
 
